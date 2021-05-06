@@ -8,7 +8,10 @@
 @import './content/LandingPage/landing-page.scss';
 @import './content/LibraryPage/library-page.scss';
 @import './content/CellInfoPage/cell-info-page.scss';
+@import './content/UploadPage/upload-page.scss';
 
 .bx--content {
     min-height: calc(100vh - 3rem);
+    padding-left: 0;
+    padding-right: 0;
 }
