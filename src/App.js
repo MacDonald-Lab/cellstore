@@ -7,6 +7,7 @@ import UIShell from './components/UIShell';
 
 import LandingPage from './content/LandingPage';
 import LibraryPage from './content/LibraryPage';
+import CellInfoPage from './content/CellInfoPage/CellInfoPage';
 
 // Route Definitions
 
@@ -21,6 +22,10 @@ const App = () => (
 
       <Switch>
         <Route exact path="/library" component={LibraryPage} />
+      </Switch>
+
+      <Switch>
+        <Route exact path="/library/cell/:id" component={CellInfoPage} />
       </Switch>
 
     </Content>
