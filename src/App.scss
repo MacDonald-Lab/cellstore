@@ -1,0 +1,12 @@
+@import 'carbon-components/scss/globals/scss/vendor/@carbon/type/scss/font-family.scss';
+@import 'carbon-components/scss/globals/scss/vendor/@carbon/layout/scss/breakpoint.scss';
+@import 'carbon-components/scss/globals/scss/typography.scss';
+@import 'carbon-components/scss/globals/scss/vars.scss';
+
+@import './components/UIShell/ui-shell.scss';
+
+@import './content/LandingPage/landing-page.scss';
+
+.bx--content {
+    min-height: calc(100vh - 3rem);
+}
