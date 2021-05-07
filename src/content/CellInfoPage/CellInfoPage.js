@@ -1,9 +1,10 @@
 import { React } from 'react';
-import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab } from 'carbon-components-react';
+import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button } from 'carbon-components-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Tile } from 'carbon-components-react';
+import { Edit16, TrashCan16 } from '@carbon/icons-react';
 
 
 const CellInfoPage = (props) => {
@@ -44,6 +45,24 @@ const CellInfoPage = (props) => {
 
           </Breadcrumb>
           <h1>{id}</h1>
+        </Column>
+        <Column className="cell-info-page__actions">
+        <Button
+              hasIconOnly
+              renderIcon={Edit16}
+              tooltipAlignment="center"
+              tooltipPosition="bottom"
+              iconDescription="Edit"
+              kind='ghost'
+            />
+        <Button
+              hasIconOnly
+              renderIcon={TrashCan16}
+              tooltipAlignment="center"
+              tooltipPosition="bottom"
+              iconDescription="Delete"
+              kind='danger'
+            />
         </Column>
 
       </Row>
