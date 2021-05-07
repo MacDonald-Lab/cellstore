@@ -18,6 +18,8 @@ const LandingPage = () => {
       <Row>
         <Column>
           <Button onClick={() => history.push('/library')}>Go to Cell Library</Button>
+          <Button onClick={() => history.push('/settings/create')}>Create a Library</Button>
+
         </Column>
       </Row>
     </Grid>
