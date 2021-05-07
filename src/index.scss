@@ -4,6 +4,6 @@ $feature-flags: (
 @import '@carbon/themes/scss/themes';
 
 // Use the gray 10 theme
-// $carbon--theme: $carbon--theme--g10;
-// @include carbon--theme();
+$carbon--theme: $carbon--theme--g10;
+@include carbon--theme();
 @import 'carbon-components/scss/globals/scss/styles.scss';

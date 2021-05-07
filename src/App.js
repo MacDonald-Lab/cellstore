@@ -15,7 +15,7 @@ import UploadPage from './content/UploadPage';
 const App = () => (
   <Router>
     <UIShell />
-    <Content id='main-content'>
+    <Content >
 
       <Switch>
         <Route exact path="/" component={LandingPage} />
@@ -32,8 +32,7 @@ const App = () => (
       <Switch>
         <Route exact path="/library/upload/" component={UploadPage} />
       </Switch>
-
-    </Content>
+      </Content>
   </Router>
 
 )

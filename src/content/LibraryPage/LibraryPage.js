@@ -17,11 +17,11 @@ const LibraryPage = () => {
       <Row>
         <Column lg={12} md={12} sm={16}>
           <Tabs type="container">
-            <Tab id="all-cells" label="All Cells">
+            <Tab id="all-cells" label="All cells">
               <LibraryTable />
            </Tab>
-           <Tab id="advanced-search" label="Advanced Search">
-              <h2>Advanced Search</h2>
+           <Tab id="advanced-search" label="Advanced search">
+              <h2>Advanced search</h2>
 
            </Tab>
           </Tabs>

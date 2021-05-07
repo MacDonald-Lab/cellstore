@@ -3329,7 +3329,7 @@ capture-exit@^2.0.0:
   dependencies:
     rsvp "^4.8.4"
 
-carbon-components-react@^7.33.0:
+carbon-components-react@^7.34.0:
   version "7.34.0"
   resolved "https://registry.yarnpkg.com/carbon-components-react/-/carbon-components-react-7.34.0.tgz#76c75641dbca65901095ba026d8bcde7548a589e"
   integrity sha512-ASnWI6WJQG+Wgz3UlPschw5sDTP09/bIc0F7PGlonYsiB/yvahOcXk+wH/WVW6WPUNzkIFhb+mDiABTctTNOnQ==
@@ -3351,7 +3351,7 @@ carbon-components-react@^7.33.0:
     use-resize-observer "^6.0.0"
     window-or-global "^1.0.1"
 
-carbon-components@^10.33.0:
+carbon-components@^10.34.0:
   version "10.34.0"
   resolved "https://registry.yarnpkg.com/carbon-components/-/carbon-components-10.34.0.tgz#38a8bc4e03193e09459b22caf0fe2c72a64a63e8"
   integrity sha512-KgWIFvJv5lg0puFsjXwIqv99ew8u1gUnrjN6/0vmyz2T/sJxGkDuiGAUlZsjmpsF+z2weK9pDu4cutjHYId2Sg==
