@@ -1,6 +1,7 @@
 import React from 'react';
 import LibraryTable from '../../components/LibraryTable';
 import { Grid, Row, Column, Tabs, Tab } from 'carbon-components-react'
+import Filters from '../../components/Filters';
 
 
 const LibraryPage = () => {
@@ -21,7 +22,7 @@ const LibraryPage = () => {
               <LibraryTable />
            </Tab>
            <Tab id="advanced-search" label="Advanced search">
-              <h2>Advanced search</h2>
+              <Filters />
 
            </Tab>
           </Tabs>
