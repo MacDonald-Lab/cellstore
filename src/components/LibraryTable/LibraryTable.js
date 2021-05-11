@@ -32,8 +32,10 @@ import {
   OverflowMenu,
   OverflowMenuItem,
 } from 'carbon-components-react';
-import { Link, useHistory } from 'react-router-dom';
 
+import { Link, useHistory } from 'react-router-dom';
+import ModalStateManager from '../ModalStateManager'
+import ExportCellModal from '../ExportCellModal';
 
 const headerData = [
   {
@@ -62,15 +64,15 @@ const headerData = [
 const LIBRARY_QUERY = gql`
   query LIBRARY_QUERY {
     allRawDnas {
-    nodes{
-      donorId
-      joanCellId
-      yearsWithT2D
-      age
-      sex
-      diabetesStatus
+      nodes {
+        donorId
+        joanCellId
+        yearsWithT2D
+        age
+        sex
+        diabetesStatus
+      }
     }
-  }
   }`;
 
 const sexName = ["Female", "Male"]
@@ -99,6 +101,7 @@ const LibraryTable = () => {
   console.log(data.allRawDnas.nodes);
 
   // TODO add custom sorting for columns
+  // TODO generalize modal launcher for multiple modals
   return (<>
 
 
@@ -188,11 +191,22 @@ const LibraryTable = () => {
                   <TableSelectRow {...getSelectionProps({ row })} />
                   {row.cells.map((cell) => (<TableCell key={cell.id}>{cell.value}</TableCell>))}
                   <TableCell className="bx--table-column-menu">
-                    <OverflowMenu size="md" light flipped>
-                      <OverflowMenuItem itemText="View" onClick={() => history.push('/library/cell/' + row.id)}/>
-                      <OverflowMenuItem itemText="Edit" />
-                      <OverflowMenuItem itemText="Delete" isDelete hasDivider />
-                    </OverflowMenu>
+
+                    <ModalStateManager renderLauncher={({ setOpen }) =>
+                      <OverflowMenu size="md" light flipped>
+                        <OverflowMenuItem itemText="View" onClick={() => history.push('/library/cell/' + row.id)} />
+                        <OverflowMenuItem itemText="Edit" />
+                        <OverflowMenuItem itemText="Export as .csv" onClick={(e) => {
+                          setOpen(true)
+                          console.log(e)
+                        }} />
+                        <OverflowMenuItem itemText="Delete" isDelete hasDivider />
+                      </OverflowMenu>
+                    }>
+                      {(modalProps) => <ExportCellModal {...modalProps} id={row.id} />}
+                    </ModalStateManager>
+
+
                   </TableCell>
 
                 </TableRow>
