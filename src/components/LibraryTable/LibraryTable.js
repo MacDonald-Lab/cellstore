@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Delete16 as Delete,
   Save16 as Save,
@@ -31,6 +31,7 @@ import {
   DataTableSkeleton,
   OverflowMenu,
   OverflowMenuItem,
+  Pagination,
 } from 'carbon-components-react';
 
 import { Link, useHistory } from 'react-router-dom';
@@ -89,6 +90,9 @@ const getRowItems = (rows) =>
 const LibraryTable = () => {
 
   const history = useHistory()
+  const [pageInfo, setPageInfo] = useState({page: 1, pageSize: 10})
+  var min = (pageInfo.page - 1) * pageInfo.pageSize
+  var max = (pageInfo.page * pageInfo.pageSize) - 1
 
   const { loading, error, data } = useQuery(LIBRARY_QUERY)
   // Wait for the request to complete
@@ -102,6 +106,7 @@ const LibraryTable = () => {
 
   // TODO add custom sorting for columns
   // TODO generalize modal launcher for multiple modals
+  // FIXME pagination on filter
   return (<>
 
 
@@ -186,8 +191,8 @@ const LibraryTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <TableRow {...getRowProps({ row })}>
+              {rows.map((row, i) => {
+                if (min <= i && i <= max) return <TableRow {...getRowProps({ row })}>
                   <TableSelectRow {...getSelectionProps({ row })} />
                   {row.cells.map((cell) => (<TableCell key={cell.id}>{cell.value}</TableCell>))}
                   <TableCell className="bx--table-column-menu">
@@ -209,12 +214,29 @@ const LibraryTable = () => {
                   </TableCell>
 
                 </TableRow>
-              ))}
+})}
             </TableBody>
           </Table>
         </TableContainer>
       )}
     </DataTable>
+    <Pagination
+      backwardText="Previous page"
+      forwardText="Next page"
+      itemsPerPageText="Items per page:"
+      page={pageInfo.page}
+      pageNumberText="Page Number"
+      pageSize={pageInfo.pageSize}
+      onChange={(e) => setPageInfo(e)}
+      pageSizes={[
+        10,
+        20,
+        30,
+        40,
+        50
+      ]}
+      totalItems={data.allRawDnas.nodes.length}
+    />
   </>);
 }
 
