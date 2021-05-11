@@ -5,12 +5,16 @@ import {
   HeaderContainer,
   HeaderName,
   HeaderNavigation,
+  HeaderMenu,
   HeaderMenuButton,
   HeaderMenuItem,
   HeaderGlobalBar,
   HeaderGlobalAction,
   SkipToContent,
   SideNav,
+  SideNavMenu,
+  SideNavMenuItem,
+  SideNavLink,
   SideNavItems,
   HeaderSideNavItems,
 } from 'carbon-components-react';
@@ -21,55 +25,65 @@ import {
   Settings20,
   Notification20,
   UserAvatar20,
+  Fade16,
+  Add16
 } from '@carbon/icons-react';
 
-// TODO: close sidebar on click
 // TODO: Loop header items and make isCurrentPage dynamic
-
+// FIXME: iscurrentpage styling on sidebar
 
 const UIShell = () => {
   const location = useLocation()
 
-  return (
-  <HeaderContainer
-    render={({ isSideNavExpanded, onClickSideNavExpand }) => (
-      <Header aria-label="CellSTORE Header">
-        <SkipToContent />
-        <HeaderMenuButton
-          aria-label="Open menu"
-          onClick={onClickSideNavExpand}
-          isActive={isSideNavExpanded}
-        />
-        <HeaderName element={Link} to="/" prefix="[Placeholder]">
-          CellSTORE
-        </HeaderName>
-        <HeaderNavigation aria-label="CellSTORE Header">
-          <HeaderMenuItem isCurrentPage={location.pathname === '/library'} element={Link} to="/library">Cell Library</HeaderMenuItem>
-        </HeaderNavigation>
-        <SideNav
-          aria-label="Side navigation"
-          expanded={isSideNavExpanded}
-          isPersistent={false}>
-          <SideNavItems>
-            <HeaderSideNavItems>
-              <HeaderMenuItem element={Link} to="/library">Cell Library</HeaderMenuItem>
-            </HeaderSideNavItems>
-          </SideNavItems>
-        </SideNav>
-        <HeaderGlobalBar>
-          <HeaderGlobalAction aria-label="Notifications">
-            <Notification20 />
-          </HeaderGlobalAction>
-          <HeaderGlobalAction aria-label="User Avatar">
-            <UserAvatar20 />
-          </HeaderGlobalAction>
-          <HeaderGlobalAction aria-label="Settings">
-            <Settings20 />
-          </HeaderGlobalAction>
+  const MenuItems = (props) => <>
+    <HeaderMenu aria-label="Link 4" menuLinkName="Libraries" isCurrentPage={location.pathname === '/library'}>
+      <HeaderMenuItem element={Link} to="/library" onClick={props.onClick}>Human Cells</HeaderMenuItem>
+      <HeaderMenuItem element={Link} to="/library" onClick={props.onClick}>STEM Cells</HeaderMenuItem>
+      <HeaderMenuItem element={Link} to="/settings/create" onClick={props.onClick}><Add16 />Create new</HeaderMenuItem>
+    </HeaderMenu>
+    <HeaderMenuItem isCurrentPage={location.pathname === '/computations'} element={Link} to="/computations" onClick={props.onClick}>Computations</HeaderMenuItem>
 
-        </HeaderGlobalBar>
-      </Header>
-    )}
-  />
-)};
+  </>
+
+  return (
+    <HeaderContainer
+      render={({ isSideNavExpanded, onClickSideNavExpand }) =>
+        <Header aria-label="CellSTORE Header">
+          <SkipToContent />
+          <HeaderMenuButton
+            aria-label="Open menu"
+            onClick={onClickSideNavExpand}
+            isActive={isSideNavExpanded}
+          />
+          <HeaderName element={Link} to="/" prefix="[Placeholder]">CellSTORE</HeaderName>
+          <HeaderNavigation aria-label="CellSTORE Header">
+            <MenuItems />
+          </HeaderNavigation>
+          <SideNav aria-label="Side navigation" expanded={isSideNavExpanded} isPersistent={false}>
+            <SideNavItems>
+              <HeaderSideNavItems>
+                <MenuItems onClick={onClickSideNavExpand} />
+              </HeaderSideNavItems>
+            </SideNavItems>
+          </SideNav>
+
+
+
+          <HeaderGlobalBar>
+            <HeaderGlobalAction aria-label="Notifications">
+              <Notification20 />
+            </HeaderGlobalAction>
+            <HeaderGlobalAction aria-label="User Avatar">
+              <UserAvatar20 />
+            </HeaderGlobalAction>
+            <HeaderGlobalAction aria-label="Settings">
+              <Settings20 />
+            </HeaderGlobalAction>
+
+          </HeaderGlobalBar>
+        </Header>
+      }
+    />
+  )
+};
 export default UIShell;
