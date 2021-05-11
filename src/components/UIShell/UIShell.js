@@ -39,7 +39,7 @@ const UIShell = () => {
     <HeaderMenu aria-label="Link 4" menuLinkName="Libraries" isCurrentPage={location.pathname === '/library'}>
       <HeaderMenuItem element={Link} to="/library" onClick={props.onClick}>Human Cells</HeaderMenuItem>
       <HeaderMenuItem element={Link} to="/library" onClick={props.onClick}>STEM Cells</HeaderMenuItem>
-      <HeaderMenuItem element={Link} to="/settings/create" onClick={props.onClick}><Add16 />Create new</HeaderMenuItem>
+      <HeaderMenuItem element={Link} to="/settings/create" onClick={props.onClick}><Add16 />Create library</HeaderMenuItem>
     </HeaderMenu>
     <HeaderMenuItem isCurrentPage={location.pathname === '/computations'} element={Link} to="/computations" onClick={props.onClick}>Computations</HeaderMenuItem>
 
