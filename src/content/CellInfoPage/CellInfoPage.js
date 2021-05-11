@@ -43,8 +43,11 @@ const CellInfoPage = (props) => {
       <Row className="cell-info-page__banner">
         <Column>
           <Breadcrumb>
+          <BreadcrumbItem isCurrentPage>
+              <>Libraries</>
+            </BreadcrumbItem>
             <BreadcrumbItem>
-              <Link to="/library">Cell Library</Link>
+              <Link to="/library">Human Cells</Link>
             </BreadcrumbItem>
 
           </Breadcrumb>
