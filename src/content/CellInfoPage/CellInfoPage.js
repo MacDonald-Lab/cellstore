@@ -8,6 +8,7 @@ import ExportCellModal from '../../components/ExportCellModal'
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Tile } from 'carbon-components-react';
 import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
+import DeleteCellModal from '../../components/DeleteCellModal';
 
 
 const CellInfoPage = (props) => {
@@ -69,14 +70,19 @@ const CellInfoPage = (props) => {
             iconDescription="Edit"
             kind='ghost'
           />
-          <Button
-            hasIconOnly
-            renderIcon={TrashCan16}
-            tooltipAlignment="center"
-            tooltipPosition="bottom"
-            iconDescription="Delete"
-            kind='danger'
-          />
+          <ModalStateManager renderLauncher={({ setOpen }) =>
+            <Button
+              hasIconOnly
+              renderIcon={TrashCan16}
+              tooltipAlignment="center"
+              tooltipPosition="bottom"
+              iconDescription="Delete"
+              kind='danger'
+              onClick={() => setOpen(true)}
+            />
+          }>
+          {(modalProps) => <DeleteCellModal {...modalProps} id={parse.joanCellId} redirect />}
+        </ModalStateManager>
         </Column>
 
       </Row>
