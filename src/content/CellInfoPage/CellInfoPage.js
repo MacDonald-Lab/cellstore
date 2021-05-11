@@ -1,10 +1,13 @@
 import { React } from 'react';
-import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button } from 'carbon-components-react';
+import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button, ButtonSet } from 'carbon-components-react';
 import { Link, useParams } from 'react-router-dom';
+
+import ModalStateManager from '../../components/ModalStateManager'
+import ExportCellModal from '../../components/ExportCellModal'
 
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Tile } from 'carbon-components-react';
-import { Edit16, TrashCan16 } from '@carbon/icons-react';
+import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
 
 
 const CellInfoPage = (props) => {
@@ -27,7 +30,7 @@ const CellInfoPage = (props) => {
     variables: { id: id }
   })
 
-  if (loading) return (<Loading />);          
+  if (loading) return (<Loading />);
   if (error) return `Error! ${error.message}`;
   const parse = data.rawDnaByJoanCellId
 
@@ -47,22 +50,33 @@ const CellInfoPage = (props) => {
           <h1>{id}</h1>
         </Column>
         <Column className="cell-info-page__actions">
-        <Button
-              hasIconOnly
-              renderIcon={Edit16}
-              tooltipAlignment="center"
-              tooltipPosition="bottom"
-              iconDescription="Edit"
-              kind='ghost'
-            />
-        <Button
-              hasIconOnly
-              renderIcon={TrashCan16}
-              tooltipAlignment="center"
-              tooltipPosition="bottom"
-              iconDescription="Delete"
-              kind='danger'
-            />
+          <ModalStateManager renderLauncher={({ setOpen }) =>
+            <Button
+              renderIcon={Download16}
+              kind='primary'
+              onClick={() => {
+                setOpen(true)
+              }}>Export to .csv</Button>
+          }>
+            {(modalProps) => <ExportCellModal {...modalProps} id={parse.joanCellId} />}
+          </ModalStateManager>
+
+          <Button
+            hasIconOnly
+            renderIcon={Edit16}
+            tooltipAlignment="center"
+            tooltipPosition="bottom"
+            iconDescription="Edit"
+            kind='ghost'
+          />
+          <Button
+            hasIconOnly
+            renderIcon={TrashCan16}
+            tooltipAlignment="center"
+            tooltipPosition="bottom"
+            iconDescription="Delete"
+            kind='danger'
+          />
         </Column>
 
       </Row>

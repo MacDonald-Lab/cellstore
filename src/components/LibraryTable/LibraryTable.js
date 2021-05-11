@@ -196,9 +196,8 @@ const LibraryTable = () => {
                       <OverflowMenu size="md" light flipped>
                         <OverflowMenuItem itemText="View" onClick={() => history.push('/library/cell/' + row.id)} />
                         <OverflowMenuItem itemText="Edit" />
-                        <OverflowMenuItem itemText="Export as .csv" onClick={(e) => {
+                        <OverflowMenuItem itemText="Export as .csv" onClick={() => {
                           setOpen(true)
-                          console.log(e)
                         }} />
                         <OverflowMenuItem itemText="Delete" isDelete hasDivider />
                       </OverflowMenu>

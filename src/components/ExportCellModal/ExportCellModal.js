@@ -52,7 +52,7 @@ const ExportCellModal = (props) => {
         variables: { id: id }
     })
 
-    return <ComposedModal preventCloseOnClickOutside open={open} onClose={() => setOpen(false)}>
+    return <ComposedModal open={open} onClose={() => setOpen(false)}>
         <ModalHeader label={'[current library name]'} title='Export cell to .csv' />
         <ModalBody>
             <p>You will be exporting the following cell: <strong>{id}</strong></p>
