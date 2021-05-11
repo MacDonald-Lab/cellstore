@@ -37,6 +37,7 @@ import {
 import { Link, useHistory } from 'react-router-dom';
 import ModalStateManager from '../ModalStateManager'
 import ExportCellModal from '../ExportCellModal';
+import ExportCellsModal from '../ExportCellsModal';
 
 const headerData = [
   {
@@ -90,7 +91,7 @@ const getRowItems = (rows) =>
 const LibraryTable = () => {
 
   const history = useHistory()
-  const [pageInfo, setPageInfo] = useState({page: 1, pageSize: 10})
+  const [pageInfo, setPageInfo] = useState({ page: 1, pageSize: 10 })
   var min = (pageInfo.page - 1) * pageInfo.pageSize
   var max = (pageInfo.page * pageInfo.pageSize) - 1
 
@@ -131,20 +132,17 @@ const LibraryTable = () => {
               >
                 Delete
           </TableBatchAction>
-              <TableBatchAction
-                tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
-                renderIcon={Save}
-                onClick={() => console.log('clicked')}
-              >
-                Save
-          </TableBatchAction>
-              <TableBatchAction
-                tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
-                renderIcon={Download}
-                onClick={() => console.log('clicked')}
-              >
-                Download
-          </TableBatchAction>
+              <ModalStateManager renderLauncher={({ setOpen }) =>
+                <TableBatchAction
+                  tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
+                  renderIcon={Download}
+                  onClick={() => setOpen(true)}
+                >
+                  Export to CSV
+                </TableBatchAction>
+              }>
+                {(modalProps) => <ExportCellsModal {...modalProps} id={selectedRows} />}
+              </ModalStateManager>
             </TableBatchActions>
             <TableToolbarContent>
               <TableToolbarSearch
@@ -209,12 +207,10 @@ const LibraryTable = () => {
                     }>
                       {(modalProps) => <ExportCellModal {...modalProps} id={row.id} />}
                     </ModalStateManager>
-
-
                   </TableCell>
 
                 </TableRow>
-})}
+              })}
             </TableBody>
           </Table>
         </TableContainer>
