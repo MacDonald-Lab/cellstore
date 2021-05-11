@@ -12,14 +12,11 @@ import {
   HeaderGlobalAction,
   SkipToContent,
   SideNav,
-  SideNavMenu,
-  SideNavMenuItem,
-  SideNavLink,
   SideNavItems,
   HeaderSideNavItems,
 } from 'carbon-components-react';
 
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useHistory } from 'react-router-dom'
 
 import {
   Settings20,
@@ -34,6 +31,7 @@ import {
 
 const UIShell = () => {
   const location = useLocation()
+  const history = useHistory()
 
   const MenuItems = (props) => <>
     <HeaderMenu aria-label="Link 4" menuLinkName="Libraries" isCurrentPage={location.pathname === '/library'}>
@@ -76,7 +74,7 @@ const UIShell = () => {
             <HeaderGlobalAction aria-label="User Avatar">
               <UserAvatar20 />
             </HeaderGlobalAction>
-            <HeaderGlobalAction aria-label="Settings">
+            <HeaderGlobalAction aria-label="Settings" onClick={() => history.push('/settings')}>
               <Settings20 />
             </HeaderGlobalAction>
 

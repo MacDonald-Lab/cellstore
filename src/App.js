@@ -10,6 +10,7 @@ import LibraryPage from './content/LibraryPage';
 import CellInfoPage from './content/CellInfoPage/CellInfoPage';
 import UploadPage from './content/UploadPage';
 import CreateLibraryPage from './content/CreateLibraryPage';
+import SettingsPage from './content/SettingsPage';
 
 // Route Definitions
 
@@ -32,6 +33,10 @@ const App = () => (
 
       <Switch>
         <Route exact path="/library/upload/" component={UploadPage} />
+      </Switch>
+
+      <Switch>
+        <Route exact path='/settings' component={SettingsPage} />
       </Switch>
 
       <Switch>
