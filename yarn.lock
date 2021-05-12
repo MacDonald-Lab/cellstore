@@ -5807,7 +5807,7 @@ graphile-build@4.11.0:
     pluralize "^7.0.0"
     semver "^6.0.0"
 
-graphile-utils@^4.11.2:
+graphile-utils@^4.11.2, graphile-utils@^4.5.6:
   version "4.11.2"
   resolved "https://registry.yarnpkg.com/graphile-utils/-/graphile-utils-4.11.2.tgz#264ede219a9c735cab3861fcd6b31da66495de1b"
   integrity sha512-XEDtU+R3dWPMeQ+R8BpbkFbf/U8xyVXJEF91jcdGXY0REPMr4sPypbtKJVGF73VqA1pPCEkfthbVd/6DiueUwQ==
@@ -9568,7 +9568,15 @@ postgraphile-plugin-connection-filter@^2.2.1:
   resolved "https://registry.yarnpkg.com/postgraphile-plugin-connection-filter/-/postgraphile-plugin-connection-filter-2.2.1.tgz#36b0d699edde67b2bc4ac92578bda339009aa666"
   integrity sha512-afnINc5+7WVHL/8+nllVIyotWsUTd8m7sxp2QbtuVvC1+Kn7vteHM6//O3HIbDBU4w1gQ+/SGYRhSa2bSOQmmg==
 
-postgraphile@^4.11.0:
+postgraphile-plugin-many-create-update-delete@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/postgraphile-plugin-many-create-update-delete/-/postgraphile-plugin-many-create-update-delete-1.0.6.tgz#b379169c4631547330819acafc3ae1766c8ee57f"
+  integrity sha512-wPCM7IZ4fbBKpbl4TacM2PCC1peqNeezuhD+NPFV9j9+WKGSIOtHaBfOnfqk3YUksYxcioBd/v1nfOJ5ZI57Qg==
+  dependencies:
+    graphile-utils "^4.5.6"
+    postgraphile "^4.7.0"
+
+postgraphile@^4.11.0, postgraphile@^4.7.0:
   version "4.11.0"
   resolved "https://registry.yarnpkg.com/postgraphile/-/postgraphile-4.11.0.tgz#5ddcad1e0fe0f8b2c7e03e29542c1b7a0ab54515"
   integrity sha512-PyOzULrRjb4TMaw+odIeA/dqxW+Rr9tXFIuf6tj9Cy6Nq9Y474ZV/sHap5lH8eRLJx0BqxS73v/+8+ITFUDB1A==

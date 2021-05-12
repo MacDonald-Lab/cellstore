@@ -19,6 +19,7 @@
     "papaparse": "^5.3.0",
     "postgraphile": "^4.11.0",
     "postgraphile-plugin-connection-filter": "^2.2.1",
+    "postgraphile-plugin-many-create-update-delete": "^1.0.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-papaparse": "^3.14.0",
@@ -33,7 +34,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "db": "npx postgraphile --append-plugins postgraphile-plugin-connection-filter -c postgres://postgres:123@localhost:5432/cellstore --watch -o"
+    "db": "npx postgraphile --append-plugins postgraphile-plugin-connection-filter,postgraphile-plugin-many-create-update-delete -c postgres://postgres:123@localhost:5432/cellstore --watch -o"
   },
   "eslintConfig": {
     "extends": [
