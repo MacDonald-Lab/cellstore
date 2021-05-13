@@ -29,7 +29,6 @@ const handleExport = (id, { loading, error, data }) => {
 
         if (error || data.allRawDnas === null) alert('There was an error retrieving cell: ' + id)
         else {
-            console.log(data)
             const csv = Papa.unparse(data.allRawDnas.nodes)
 
             const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -62,7 +61,7 @@ const ExportCellsModal = (props) => {
         <ModalHeader label={'[current library name]'} title='Export cells to CSV file' />
         <ModalBody>
             <p>You will be exporting the following cells:</p>
-            {id.map((item) => <p><strong>{item.id}</strong></p>)}
+            {id.map((item) => <strong key={item.id}>{item.id}</strong>)}
         </ModalBody>
         <ModalFooter primaryButtonText="Download" secondaryButtonText="Cancel" onRequestSubmit={() => {
             getQuery({ variables: { ids: ids } })

@@ -27,7 +27,6 @@ const LIBRARY_QUERY = gql`
 const handleExport = (data) => {
     if (data.allRawDnas === null) alert('There was an error retrieving library')
     else {
-        console.log(data)
         const csv = Papa.unparse(data.allRawDnas.nodes)
 
         const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

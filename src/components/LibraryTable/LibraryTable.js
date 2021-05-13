@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Delete16 as Delete,
+  TrashCan16 as Delete,
   Download16 as Download,
   Upload16,
 } from '@carbon/icons-react';
@@ -102,7 +102,6 @@ const LibraryTable = () => {
   // Something went wrong with the data fetching
   if (error) return `Error! ${error.message}`;
   // If we're here, we've got our data!
-  console.log(data.allRawDnas.nodes);
 
   // TODO add custom sorting for columns
   // TODO generalize modal launcher for multiple modals
@@ -127,7 +126,6 @@ const LibraryTable = () => {
               <TableBatchAction
                 tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
                 renderIcon={Delete}
-                onClick={() => console.log('clicked')}
               >
                 Delete
           </TableBatchAction>
@@ -164,15 +162,6 @@ const LibraryTable = () => {
               {/* <AddRNAModal /> */}
               <Button onClick={() => history.push('/library/upload')} size="small" kind="primary" renderIcon={Upload16}>Upload to Library</Button>
 
-
-              {/* <Button
-            tabIndex={getBatchActionProps().shouldShowBatchActions ? -1 : 0}
-            onClick={() => console.log('clicked')}
-            size="small"
-            kind="primary"
-          >
-            Add new
-          </Button> */}
             </TableToolbarContent>
           </TableToolbar>
           <Table>

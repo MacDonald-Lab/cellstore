@@ -42,7 +42,6 @@ const SelectLibrary = (props) => {
   const handleUpdate = (e) => {
 
 
-    console.log(e.target.value)
     if (currentValue !== 'none') {
       options[currentValue] = [options[currentValue][0], false]
       stateOptions(options)
@@ -142,7 +141,6 @@ const UploadPage = (props) => {
 
   const handleFileUpload = (evt, { addedFiles }) => {
     var count = 0; // cache the running count
-    // console.log(addedFiles[0])
     setLoading(true)
     setUploadedFile(addedFiles[0])
     papa.parse(uploadedFile, {
@@ -152,11 +150,9 @@ const UploadPage = (props) => {
         if (count === 0) {
           setFileHeaders(Object.keys(result.data))
         }
-        console.log(result.data)
         count++;
       },
       complete: function (results, file) {
-        console.log('parsing complete read', count, 'records.');
         setLoading(false)
 
       }
@@ -181,12 +177,10 @@ const UploadPage = (props) => {
           // }
 
           addCell({ variables: editedResults })
-          // console.log({...result.data})
         // }
         count++;
       },
       complete: function (results, file) {
-        console.log('add to db complete', count, 'records.');
         setLoading(false)
 
       }
