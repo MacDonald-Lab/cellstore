@@ -3,6 +3,7 @@ import { React } from 'react';
 
 import { useQuery, gql } from '@apollo/client';
 import Papa from 'papaparse'
+import ColumnSelection from '../ColumnSelection';
 
 // Sample Props?
 // - id and library
@@ -56,6 +57,7 @@ const ExportCellModal = (props) => {
         <ModalHeader label={'[current library name]'} title='Export cell to .csv' />
         <ModalBody>
             <p>You will be exporting the following cell: <strong>{id}</strong></p>
+            <ColumnSelection />
         </ModalBody>
         <ModalFooter primaryButtonText="Download" secondaryButtonText="Cancel" onRequestSubmit={() => {
             handleExport(id, query)
