@@ -24,28 +24,25 @@ const LIBRARY_QUERY = gql`
             }
         }`;
 
-const handleExport = ({ loading, error, data }) => {
-    if (!loading) {
+const handleExport = (data) => {
+    if (data.allRawDnas === null) alert('There was an error retrieving library')
+    else {
+        console.log(data)
+        const csv = Papa.unparse(data.allRawDnas.nodes)
 
-        if (error || data.allRawDnas === null) alert('There was an error retrieving library')
-        else {
-            console.log(data)
-            const csv = Papa.unparse(data.allRawDnas.nodes)
-
-            const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            var csvURL = null;
-            if (navigator.msSaveBlob) {
-                csvURL = navigator.msSaveBlob(csvData, 'download.csv');
-            }
-            else {
-                csvURL = window.URL.createObjectURL(csvData);
-            }
-
-            const tempLink = document.createElement('a');
-            tempLink.href = csvURL;
-            tempLink.setAttribute('download', `humanCell_export.csv`);
-            tempLink.click();
+        const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var csvURL = null;
+        if (navigator.msSaveBlob) {
+            csvURL = navigator.msSaveBlob(csvData, 'download.csv');
         }
+        else {
+            csvURL = window.URL.createObjectURL(csvData);
+        }
+
+        const tempLink = document.createElement('a');
+        tempLink.href = csvURL;
+        tempLink.setAttribute('download', `humanCell_export.csv`);
+        tempLink.click();
     }
 }
 
@@ -53,7 +50,12 @@ const ExportLibraryModal = (props) => {
 
     const { open, setOpen } = props
 
-    const [getQuery, query] = useLazyQuery(LIBRARY_QUERY)
+    const [getQuery, { loading }] = useLazyQuery(LIBRARY_QUERY, {
+        onCompleted: (d) => {
+            handleExport(d)
+            setOpen(false)
+        }
+    })
 
     // TODO: Display number only if there are too many items
 
@@ -62,13 +64,7 @@ const ExportLibraryModal = (props) => {
         <ModalBody>
             <p>You will be exporting the whole library</p>
         </ModalBody>
-        <ModalFooter primaryButtonText="Download" secondaryButtonText="Cancel" onRequestSubmit={() => {
-            getQuery()
-            console.log(query)
-            handleExport(query)
-            setOpen(false)
-        }
-        } />
+        <ModalFooter primaryButtonText="Download" secondaryButtonText="Cancel" onRequestSubmit={() => getQuery()} primaryButtonDisabled={loading} />
     </ComposedModal>
 }
 
