@@ -33,30 +33,26 @@ const Filters = () => {
         const tempFilters = { ...filters }
         tempFilters[id] = value
         setFilters(tempFilters)
-        console.log(event)
     }
 
+    // TODO refer to other DB filtering options and implement with text fields
     return (
         <>
             <h4>Filters</h4>
 
             <h5>General Information</h5>
-            {filterDefinitions.map((item) => (
-                <>
+            {filterDefinitions.map((item, i) =>
+            <div key={i}>
                     <h6>{item.name}</h6>
                     <div id={item.id}>
+                        {item.options.map((filterItem) => <Checkbox labelText={filterItem.name} id={item.id + '-' + filterItem.id} key={item.id + '-' + filterItem.id} onChange={handleCheckbox} />)}
+                    </div>
+                </div>
+            )}
 
-                    {item.options.map((filterItem) => (
-                        
-                        <Checkbox labelText={filterItem.name} id={item.id + '-' + filterItem.id} onChange={handleCheckbox} />
-                        ))}
-                        </div>
-                        </>
-            ))}
             <ButtonSet>
-
-            <Button kind="secondary" onClick={() => setFilters({})} renderIcon={Erase16}>Clear Filters</Button>
-            <Button onClick={() => console.log(filters)} renderIcon={Search16}>Search</Button>
+                <Button kind="secondary" onClick={() => setFilters({})} renderIcon={Erase16}>Clear Filters</Button>
+                <Button renderIcon={Search16}>Search</Button>
             </ButtonSet>
 
         </>
