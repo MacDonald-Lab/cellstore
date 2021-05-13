@@ -1,6 +1,17 @@
-# Getting Started with Create React App
+# CellSTORE
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+CellSTORE *(Cell Storage To Organize Research Everywhere)* is a web-based biobank management tool. It supports basic management functionality and will soon support algorithm processing online. CellSTORE is written in React and uses PostgreSQL as the default database.
+
+![Create Library Page Screenshot](img/create-cell-library.png)
+
+## Getting Started
+
+1. Clone repo.
+2. Setup and start PostgreSQL with default schemas.
+2. Run `yarn` to download dependencies.
+3. Run `yarn db` to start PostGraphile.
+4. Run `yarn start` to start app in development mode.
+
 
 ## Available Scripts
 
