@@ -11,6 +11,7 @@ import CellInfoPage from './content/CellInfoPage/CellInfoPage';
 import UploadPage from './content/UploadPage';
 import CreateLibraryPage from './content/CreateLibraryPage';
 import SettingsPage from './content/SettingsPage';
+import ComputationPage from './content/ComputationPage';
 
 // Route Definitions
 
@@ -42,6 +43,11 @@ const App = () => (
       <Switch>
         <Route exact path='/settings/create' component={CreateLibraryPage} />
       </Switch>
+
+      <Switch>
+        <Route exact path='/computations' component={ComputationPage} />
+      </Switch>
+
     </Content>
   </Router>
 
