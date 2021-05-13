@@ -12,6 +12,7 @@ import UploadPage from './content/UploadPage';
 import CreateLibraryPage from './content/CreateLibraryPage';
 import SettingsPage from './content/SettingsPage';
 import ComputationPage from './content/ComputationPage';
+import ImageClassificationTestPage from './content/ImageClassificationTestPage';
 
 // Route Definitions
 
@@ -46,6 +47,10 @@ const App = () => (
 
       <Switch>
         <Route exact path='/computations' component={ComputationPage} />
+      </Switch>
+
+      <Switch>
+        <Route exact path='/computations/image-test' component={ImageClassificationTestPage} />
       </Switch>
 
     </Content>

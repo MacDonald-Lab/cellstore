@@ -1,0 +1,2 @@
+import ImageClassificationTestPage from './ImageClassificationTestPage'
+export default ImageClassificationTestPage
