@@ -22,7 +22,6 @@ import {
   Settings20,
   Notification20,
   UserAvatar20,
-  Fade16,
   Add16
 } from '@carbon/icons-react';
 

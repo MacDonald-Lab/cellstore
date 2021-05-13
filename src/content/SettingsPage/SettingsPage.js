@@ -1,5 +1,5 @@
 import { Download16 } from '@carbon/icons-react';
-import { Accordion, AccordionItem, Button, Column, Grid, Row, StructuredListBody, StructuredListCell, StructuredListRow, StructuredListWrapper } from 'carbon-components-react';
+import { Accordion, AccordionItem, Button, Column, Grid, Row } from 'carbon-components-react';
 import { React } from 'react';
 import ExportLibraryModal from '../../components/ExportLibraryModal';
 import ModalStateManager from '../../components/ModalStateManager';

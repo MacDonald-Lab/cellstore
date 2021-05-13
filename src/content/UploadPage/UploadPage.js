@@ -105,7 +105,7 @@ const UploadPage = (props) => {
 
   // -- DB Mutation
 
-  const [addCell, { loadingMutation, errorMutation }] = useMutation(ADD_CELL, {
+  const [addCell, { errorMutation }] = useMutation(ADD_CELL, {
     update(cache, { data: { addCell } }) {
       cache.modify({
         fields: {
@@ -150,7 +150,7 @@ const UploadPage = (props) => {
       worker: true, // Don't bog down the main thread if its a big file
       step: function (result) {
         if (count === 0) {
-          // setFileHeaders(result.data)
+          setFileHeaders(Object.keys(result.data))
         }
         console.log(result.data)
         count++;

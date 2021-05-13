@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Delete16 as Delete,
-  Save16 as Save,
   Download16 as Download,
   Upload16,
 } from '@carbon/icons-react';
@@ -189,8 +188,7 @@ const LibraryTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row, i) => {
-                if (min <= i && i <= max) return <TableRow {...getRowProps({ row })}>
+              {rows.filter((element, i) => min <= i && i <= max).map(row => <TableRow {...getRowProps({ row })}>
                   <TableSelectRow {...getSelectionProps({ row })} />
                   {row.cells.map((cell) => (<TableCell key={cell.id}>{cell.value}</TableCell>))}
                   <TableCell className="bx--table-column-menu">
@@ -210,7 +208,7 @@ const LibraryTable = () => {
                   </TableCell>
 
                 </TableRow>
-              })}
+              )}
             </TableBody>
           </Table>
         </TableContainer>

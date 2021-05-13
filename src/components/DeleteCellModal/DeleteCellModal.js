@@ -20,7 +20,7 @@ import {useHistory} from 'react-router-dom'
 const DeleteCellModal = (props) => {
 
     const { open, setOpen, id, redirect } = props
-    const [deleteCell, { loadingMutation, errorMutation }] = useMutation(DELETION_MUTATION)
+    const [deleteCell, { errorMutation }] = useMutation(DELETION_MUTATION)
     const history = useHistory()
 
     return <ComposedModal open={open} onClose={() => setOpen(false)}>

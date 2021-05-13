@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, SelectItem, Select, TextInput, Dropdown } from 'carbon-components-react';
+import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown } from 'carbon-components-react';
 import { Link } from 'react-router-dom'
 import { Add16, ArrowDown16, ArrowUp16, TrashCan16 } from '@carbon/icons-react';
 
@@ -17,11 +17,8 @@ const CreateLibraryPage = (props) => {
 
   // states
 
-  const [mainName, setMainName] = useState('')
-  const [mainID, setMainID] = useState('')
   const [fields, setFields] = useState([])
 
-  const [addSelector, setAddSelector] = useState('none')
 
   // constants
 
