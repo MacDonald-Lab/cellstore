@@ -18,3 +18,8 @@
     padding-left: 0;
     padding-right: 0;
 }
+
+html {
+    overflow: -moz-scrollbars-vertical; 
+    overflow-y: scroll;
+}

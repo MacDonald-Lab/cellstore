@@ -18,3 +18,13 @@
     display: flex;
     align-items: flex-end;
 }
+
+.create-library-page__data-icon {
+    position: absolute;
+    bottom: $spacing-03;
+    left: $spacing-03;
+}
+
+.create-library-page__field-row {
+    padding-bottom: $spacing-04;
+}
