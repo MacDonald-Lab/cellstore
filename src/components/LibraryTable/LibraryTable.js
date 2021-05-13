@@ -37,6 +37,7 @@ import { Link, useHistory } from 'react-router-dom';
 import ModalStateManager from '../ModalStateManager'
 import ExportCellModal from '../ExportCellModal';
 import ExportCellsModal from '../ExportCellsModal';
+import DeleteCellsModal from '../DeleteCellsModal';
 
 const headerData = [
   {
@@ -123,12 +124,17 @@ const LibraryTable = () => {
         <TableContainer>
           <TableToolbar>
             <TableBatchActions {...getBatchActionProps()}>
-              <TableBatchAction
-                tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
-                renderIcon={Delete}
-              >
-                Delete
-          </TableBatchAction>
+              <ModalStateManager renderLauncher={({ setOpen }) =>
+                <TableBatchAction
+                  tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
+                  renderIcon={Delete}
+                  onClick={() => setOpen(true)}
+                >
+                  Delete
+              </TableBatchAction>
+              }>
+                {(modalProps) => <DeleteCellsModal {...modalProps} id={selectedRows} />}
+              </ModalStateManager>
               <ModalStateManager renderLauncher={({ setOpen }) =>
                 <TableBatchAction
                   tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
@@ -178,25 +184,25 @@ const LibraryTable = () => {
             </TableHead>
             <TableBody>
               {rows.filter((element, i) => min <= i && i <= max).map(row => <TableRow {...getRowProps({ row })}>
-                  <TableSelectRow {...getSelectionProps({ row })} />
-                  {row.cells.map((cell) => (<TableCell key={cell.id}>{cell.value}</TableCell>))}
-                  <TableCell className="bx--table-column-menu">
+                <TableSelectRow {...getSelectionProps({ row })} />
+                {row.cells.map((cell) => (<TableCell key={cell.id}>{cell.value}</TableCell>))}
+                <TableCell className="bx--table-column-menu">
 
-                    <ModalStateManager renderLauncher={({ setOpen }) =>
-                      <OverflowMenu size="md" light flipped>
-                        <OverflowMenuItem itemText="View" onClick={() => history.push('/library/cell/' + row.id)} />
-                        <OverflowMenuItem itemText="Edit" />
-                        <OverflowMenuItem itemText="Export as .csv" onClick={() => {
-                          setOpen(true)
-                        }} />
-                        <OverflowMenuItem itemText="Delete" isDelete hasDivider />
-                      </OverflowMenu>
-                    }>
-                      {(modalProps) => <ExportCellModal {...modalProps} id={row.id} />}
-                    </ModalStateManager>
-                  </TableCell>
+                  <ModalStateManager renderLauncher={({ setOpen }) =>
+                    <OverflowMenu size="md" light flipped>
+                      <OverflowMenuItem itemText="View" onClick={() => history.push('/library/cell/' + row.id)} />
+                      <OverflowMenuItem itemText="Edit" />
+                      <OverflowMenuItem itemText="Export as .csv" onClick={() => {
+                        setOpen(true)
+                      }} />
+                      <OverflowMenuItem itemText="Delete" isDelete hasDivider />
+                    </OverflowMenu>
+                  }>
+                    {(modalProps) => <ExportCellModal {...modalProps} id={row.id} />}
+                  </ModalStateManager>
+                </TableCell>
 
-                </TableRow>
+              </TableRow>
               )}
             </TableBody>
           </Table>
