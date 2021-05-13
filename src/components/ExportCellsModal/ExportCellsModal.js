@@ -10,8 +10,8 @@ import Papa from 'papaparse'
 
 // TODO add options for columns
 
-const LIBRARY_QUERY = gql`
-        query LIBRARY_QUERY($ids: [String!]) {
+const EXPORT_CELLS_QUERY = gql`
+        query EXPORT_CELLS_QUERY($ids: [String!]) {
             allRawDnas(filter: {joanCellId: {in: $ids}}){
                 nodes{
                 joanCellId
@@ -24,27 +24,25 @@ const LIBRARY_QUERY = gql`
             }
         }`;
 
-const handleExport = (id, { loading, error, data }) => {
-    if (!loading) {
+const handleExport = (data) => {
 
-        if (error || data.allRawDnas === null) alert('There was an error retrieving cell: ' + id)
-        else {
-            const csv = Papa.unparse(data.allRawDnas.nodes)
+    if (data.allRawDnas === null) alert('There was an error retrieving cells')
+    else {
+        const csv = Papa.unparse(data.allRawDnas.nodes)
 
-            const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            var csvURL = null;
-            if (navigator.msSaveBlob) {
-                csvURL = navigator.msSaveBlob(csvData, 'download.csv');
-            }
-            else {
-                csvURL = window.URL.createObjectURL(csvData);
-            }
-
-            const tempLink = document.createElement('a');
-            tempLink.href = csvURL;
-            tempLink.setAttribute('download', `humanCell_export.csv`);
-            tempLink.click();
+        const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var csvURL = null;
+        if (navigator.msSaveBlob) {
+            csvURL = navigator.msSaveBlob(csvData, 'download.csv');
         }
+        else {
+            csvURL = window.URL.createObjectURL(csvData);
+        }
+
+        const tempLink = document.createElement('a');
+        tempLink.href = csvURL;
+        tempLink.setAttribute('download', `humanCell_export.csv`);
+        tempLink.click();
     }
 }
 
@@ -53,7 +51,12 @@ const ExportCellsModal = (props) => {
     const { open, setOpen, id } = props
 
     const ids = id.map(item => item.id)
-    const [getQuery, query] = useLazyQuery(LIBRARY_QUERY)
+    const [getQuery, { loading }] = useLazyQuery(EXPORT_CELLS_QUERY, {
+        onCompleted: (d) => {
+            handleExport(d)
+            setOpen(false)
+        }
+    })
 
     // TODO: Display number only if there are too many items
 
@@ -63,10 +66,8 @@ const ExportCellsModal = (props) => {
             <p>You will be exporting the following cells:</p>
             {id.map((item) => <strong key={item.id}>{item.id}</strong>)}
         </ModalBody>
-        <ModalFooter primaryButtonText="Download" secondaryButtonText="Cancel" onRequestSubmit={() => {
+        <ModalFooter primaryButtonText="Download" primaryButtonDisabled={loading} secondaryButtonText="Cancel" onRequestSubmit={() => {
             getQuery({ variables: { ids: ids } })
-            handleExport(id, query)
-            setOpen(false)
         }
         } />
     </ComposedModal>

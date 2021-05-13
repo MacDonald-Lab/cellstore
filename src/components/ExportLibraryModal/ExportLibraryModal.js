@@ -10,8 +10,8 @@ import Papa from 'papaparse'
 
 // TODO add options for columns
 
-const LIBRARY_QUERY = gql`
-        query LIBRARY_QUERY {
+const EXPORT_LIBRARY_QUERY = gql`
+        query EXPORT_LIBRARY_QUERY {
             allRawDnas{
                 nodes{
                 joanCellId
@@ -49,7 +49,7 @@ const ExportLibraryModal = (props) => {
 
     const { open, setOpen } = props
 
-    const [getQuery, { loading }] = useLazyQuery(LIBRARY_QUERY, {
+    const [getQuery, { loading }] = useLazyQuery(EXPORT_LIBRARY_QUERY, {
         onCompleted: (d) => {
             handleExport(d)
             setOpen(false)
