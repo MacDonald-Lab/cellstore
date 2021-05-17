@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser'
 
 import pkg from 'sequelize';
 const { Sequelize, DataTypes, QueryInterface } = pkg;
@@ -31,7 +33,8 @@ try {
 // SETUP WEB SERVER
 
 const app = express();
-
+app.use(express.json())
+app.use(cors())
 
 // DEFINE REQUESTS
 
@@ -44,7 +47,9 @@ app.all('/', (req, res) => {
 
 //This chunk creates a table, only if it doesn't already exist
 app.post('/createTable', (req, res) => {
-    queryInterface.createTable('patient_extra_info', {
+
+    console.log(`Request recieved to create table ${req.body.tableName}`)
+    queryInterface.createTable(req.body.tableName, {
       name: DataTypes.STRING,
       isBetaMember: {
         type: DataTypes.BOOLEAN,
