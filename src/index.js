@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config()
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
@@ -15,7 +18,7 @@ import 'core-js/modules/es.object.values';;
 // Apollo/GraphQL Database Connection
 
 const client = new ApolloClient({
-  uri: 'http://localhost:5000/graphql',
+  uri: process.env.GRAPH_URI,
   cache: new InMemoryCache()
 
 })

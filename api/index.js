@@ -1,7 +1,10 @@
+import dotenv from 'dotenv';
+dotenv.config()
+
 import express from 'express';
 
 const app = express();
-const port = 5001
+const port = process.env.BACKEND_PORT
 
 app.all('/', (req, res) => {
     console.log('Request received')
