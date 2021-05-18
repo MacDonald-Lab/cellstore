@@ -1,7 +1,9 @@
 import { React, useState } from 'react';
 import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, SelectableTile, AspectRatio, ButtonSet } from 'carbon-components-react';
 import { Link } from 'react-router-dom'
-import { Add16, ArrowDown16, ArrowUp16, ChartArea32, ChartCustom32, DataConnected32, TrashCan16, WatsonHealthDna32 } from '@carbon/icons-react';
+import { Add16, ArrowDown16, ArrowUp16, ChartArea32, ChartCustom32, DataConnected32, Download16, TrashCan16, WatsonHealthDna32 } from '@carbon/icons-react';
+import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
+import ModalStateManager from '../../components/ModalStateManager';
 
 const FormProgress = (props) => (
   <ProgressIndicator className="create-library-page__progress" currentIndex={props.step}>
@@ -79,7 +81,7 @@ const CreateLibraryPage = (props) => {
       </Column>
     </Row>
 
-    
+
     {fields.map((item, i) => (
       <Row className='create-library-page__field-row'>
         <Column>
@@ -163,6 +165,12 @@ const CreateLibraryPage = (props) => {
     <Row>
       <Column>
         <Button renderIcon={Add16} onClick={handleAddField}>Add field</Button>
+        <ModalStateManager renderLauncher={({ setOpen }) =>
+          <Button onClick={() => setOpen(true)} renderIcon={Download16}>Import fields from file</Button>
+        }>
+          {(modalProps) => <ImportColumnNamesModal {...modalProps} />}
+        </ModalStateManager>
+
 
       </Column>
 
@@ -216,16 +224,16 @@ const CreateLibraryPage = (props) => {
 
 
     )}
-        <Row>
-          <Column>
-            <br />
-            <ButtonSet>
-              <Button kind='secondary' onClick={() => setPage(0)}>Return to descriptors</Button>
+    <Row>
+      <Column>
+        <br />
+        <ButtonSet>
+          <Button kind='secondary' onClick={() => setPage(0)}>Return to descriptors</Button>
 
-              <Button onClick={() => setPage(2)}>Continue to Review</Button>
-            </ButtonSet>
-          </Column>
-        </Row>
+          <Button onClick={() => setPage(2)}>Continue to Review</Button>
+        </ButtonSet>
+      </Column>
+    </Row>
 
   </>
 
