@@ -47,7 +47,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "backend": "nodemon api/index.js",
-    "db": "npx postgraphile -n 0.0.0.0 --append-plugins postgraphile-plugin-connection-filter,postgraphile-plugin-many-create-update-delete -c postgres://postgres:123@localhost:5432/cellstore --watch --cors"
+    "db": "nodemon api/postgraphile.js"
   },
   "eslintConfig": {
     "extends": [
