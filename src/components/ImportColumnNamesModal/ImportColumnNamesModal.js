@@ -63,7 +63,6 @@ const ImportColumnNamesModal = (props) => {
 
     const handleCheckbox = (value, id, event) => {
 
-
         var index = fileHeaders.findIndex(element => `field-check__${element.name}` === id)
 
         fileHeaders[index].selected = value
@@ -102,7 +101,6 @@ const ImportColumnNamesModal = (props) => {
     }
 
     const handleSubmit = () => {
-
 
         fieldSetState([...fieldState, ...fileHeaders.filter(({ selected }) => selected === true).map(({ friendlyName, type, name }) => {
             if (friendlyName === undefined) friendlyName = name

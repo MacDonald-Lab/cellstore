@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, SelectItem, Select } from 'carbon-components-react';
+import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, SelectItem, Select, Dropdown } from 'carbon-components-react';
 import { Link } from 'react-router-dom'
 import papa from 'papaparse'
 import { useMutation, gql } from '@apollo/client';
@@ -31,45 +31,68 @@ const ADD_CELL = gql`
   }
 `;
 
+function useForceUpdate() {
+  const [value, setValue] = useState(0); // integer state
+  return () => setValue(value => value + 1); // update the state to force render
+}
 
 const SelectLibrary = (props) => {
   const options = props.options
   const stateOptions = props.stateOptions
   const id = props.id
 
-  const [currentValue, setCurrentValue] = useState('none')
+  const [currentValue, setCurrentValue] = useState(null)
+  const forceUpdate = useForceUpdate()
 
-  const handleUpdate = (e) => {
+  const handleUpdate = ({ selectedItem }) => {
 
+    setCurrentValue(selectedItem)
 
-    if (currentValue !== 'none') {
-      options[currentValue] = [options[currentValue][0], false]
-      stateOptions(options)
-    }
+    // var index = options.findIndex(element => `${element.nameFromFile}` === currentValue)
 
-    if (e.target.value !== 'none') {
-      options[e.target.value] = [options[e.target.value][0], true]
-      stateOptions(options)
-    }
+    // if (index !== -1){
+    //   options[index].used = !options[index].used 
+    //   stateOptions(options)
+    // }
 
+    // var index = options.findIndex(element => `${element.nameFromFile}` === e.target.value)
 
-    setCurrentValue(e.target.value)
+    // if (index !== -1){
+    //   options[index].used = !options[index].used 
+    //   stateOptions(options)
+    // }
 
+    // setCurrentValue(e.target.value)
+    // forceUpdate()
   }
 
   return (
-    <Select id={id} defaultValue="none" onChange={handleUpdate}>
-      <SelectItem
-        value="none"
-        text="None"
-      />
-      {
-        options.map((item, i) => (
-          <SelectItem value={i} disabled={item[1]} text={item[0]} />
-        ))
-      }
 
-    </Select>
+    <Dropdown
+      id={id}
+      titleText="Dropdown label"
+      items={options}
+      selectedItem={currentValue}
+      itemToString={(item) => (item ? item.nameFromFile : '')}
+      onChange={handleUpdate}
+    />
+
+    // <Select id={id} defaultValue="none" onChange={handleUpdate}>
+    //   <SelectItem 
+    //     value={currentValue}
+    //     text={'NULL'}
+    //   />
+    //   <SelectItem
+    //     value="none"
+    //     text="None"
+    //   />
+    //   {
+    //     options.map((item, i) => (
+    //       <SelectItem value={item.nameFromFile} disabled={item.used} text={item.nameFromFile} />
+    //     ))
+    //   }
+
+    // </Select>
   )
 }
 
@@ -86,7 +109,21 @@ const FormProgress = (props) => (
 const UploadPage = (props) => {
 
 
-
+  const findDuplicates = (arr) => {
+        const distinct = new Set(arr);        // to improve performance
+    const filtered = arr.filter(item => {
+        // remove the element from the set on very first encounter
+        if (distinct.has(item)) {
+            distinct.delete(item);
+        }
+        // return the element on subsequent encounters
+        else {
+            return item;
+        }
+    });
+ 
+    return [...new Set(filtered)]
+  }
 
 
   // State counter (pages)
@@ -95,12 +132,29 @@ const UploadPage = (props) => {
   // States
   const [uploadedFile, setUploadedFile] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [fileHeaders, setFileHeaders] = useState([])
-  const [libraryOptions, setLibraryOptions] = useState([
-    ["Helo", false],
-    ['hi', false],
-    ['uo', false]
-  ])
+  const [fileHeaders, setFileHeaders] = useState(null)
+  const [duplicates, setDuplicates] = useState([])
+
+  const [columns, setColumns] = useState([{
+    name: 'a',
+    friendlyName: 'Column A',
+    selectedItem: null
+  }, {
+    name: 'b',
+    friendlyName: 'Column B',
+    selectedItem: null
+  }, {
+    name: 'c',
+    friendlyName: 'Column C',
+    selectedItem: null
+  }, {
+    name: 'd',
+    friendlyName: 'Column D',
+    selectedItem: null
+  },
+
+  ]
+  )
 
   // -- DB Mutation
 
@@ -130,31 +184,36 @@ const UploadPage = (props) => {
   })
 
 
+  const forceUpdate = useForceUpdate()
+
+  const handleUpdate = ({ selectedItem }) => {
+
+    // setCurrentValue(selectedItem)
+  }
+
+
 
   // Upload Handlers
   const handleItemDelete = (evt, { uuid }) => {
     // code for multiple files
     // setUploadedFiles(uploadedFiles.filter((item, index) => index !== parseInt(uuid)))
     setUploadedFile(null)
+    setFileHeaders(null)
 
   }
 
   const handleFileUpload = (evt, { addedFiles }) => {
-    var count = 0; // cache the running count
     setLoading(true)
     setUploadedFile(addedFiles[0])
-    papa.parse(uploadedFile, {
+    papa.parse(addedFiles[0], {
       header: true,
       worker: true, // Don't bog down the main thread if its a big file
-      step: function (result) {
-        if (count === 0) {
-          setFileHeaders(Object.keys(result.data))
-        }
-        count++;
-      },
-      complete: function (results, file) {
+      step: function (result, parser) {
+        setFileHeaders(Object.keys(result.data).map(key => ({
+          nameFromFile: key,
+                })))
         setLoading(false)
-
+        parser.abort()
       }
     })
   }
@@ -167,16 +226,16 @@ const UploadPage = (props) => {
       worker: true, // Don't bog down the main thread if its a big file
       step: function (result) {
         // if (count === 10) {
-          const editedResults = result.data
-          editedResults.diabetes_status = parseInt(editedResults.diabetes_status)
-          editedResults.years_with_t2d = parseInt(editedResults.years_with_t2d)
-          editedResults.age = parseInt(editedResults.age)
-          editedResults.sex = parseInt(editedResults.sex)
-          // if (editedResults.years_with_t2d === null) {
+        const editedResults = result.data
+        editedResults.diabetes_status = parseInt(editedResults.diabetes_status)
+        editedResults.years_with_t2d = parseInt(editedResults.years_with_t2d)
+        editedResults.age = parseInt(editedResults.age)
+        editedResults.sex = parseInt(editedResults.sex)
+        // if (editedResults.years_with_t2d === null) {
 
-          // }
+        // }
 
-          addCell({ variables: editedResults })
+        addCell({ variables: editedResults })
         // }
         count++;
       },
@@ -237,7 +296,6 @@ const UploadPage = (props) => {
               }
 
               {loading ? <><p>Processing</p> <InlineLoading /></> : <p>Not processing</p>}
-              <p>{fileHeaders}</p>
             </FormGroup>
 
             <Button>Continue to Label Data</Button>
@@ -255,12 +313,34 @@ const UploadPage = (props) => {
 
       </Row>
       <Row>
-        {fileHeaders.map((item, i) => (
-          <Column sm={2} md={2} lg={2} className="upload-page__label">
+
+        {fileHeaders && columns.map((item, i) => (
+          <Column sm={4} md={4} lg={4} className="upload-page__label">
             <Tile>
-              <AspectRatio ratio="1x1">
-                <p>{item}</p>
-                <SelectLibrary id={i} options={libraryOptions} stateOptions={setLibraryOptions} />
+              <AspectRatio ratio="2x1">
+                <p>{item.friendlyName}</p>
+
+                <Dropdown
+                  id={i}
+                  titleText={item.name}
+                  items={fileHeaders}
+                  warn={duplicates.includes(item.selectedItem)}
+                  warnText='Warning: this item has been selected more than once'
+                  selectedItem={item.selectedItem}
+                  itemToString={(item) => (item ? item.nameFromFile : '')}
+                  onChange={({selectedItem}) => {
+                    
+                    const temp = columns
+                    temp[i].selectedItem = selectedItem
+                    setColumns(temp)
+                    console.log(findDuplicates(temp.map(item => item.selectedItem)))
+                    setDuplicates(findDuplicates(temp.map(item => item.selectedItem)))
+                    forceUpdate()
+
+                    // checkWarnings()
+
+                  }}
+                />
               </AspectRatio>
             </Tile>
           </Column>
