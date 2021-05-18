@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, Accordion, AccordionItem, Checkbox, SelectableTile, AspectRatio, ButtonSet } from 'carbon-components-react';
+import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, SelectableTile, AspectRatio, ButtonSet } from 'carbon-components-react';
 import { Link } from 'react-router-dom'
 import { Add16, ArrowDown16, ArrowUp16, ChartArea32, ChartCustom32, DataConnected32, TrashCan16, WatsonHealthDna32 } from '@carbon/icons-react';
 

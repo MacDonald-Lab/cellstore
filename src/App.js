@@ -17,50 +17,26 @@ import LoginPage from './content/LoginPage';
 
 // Route Definitions
 
-const App = () => (
-  <Router>
-    <UIShell />
-    <Content >
+const App = () => <Router>
 
-      <Switch>
-        <Route exact path="/" component={LandingPage} />
-      </Switch>
+  <UIShell />
 
-      <Switch>
-        <Route exact path="/library" component={LibraryPage} />
-      </Switch>
+  <Content >
 
-      <Switch>
-        <Route exact path="/library/cell/:id" component={CellInfoPage} />
-      </Switch>
+    <Switch>
+      <Route exact path="/" component={LandingPage} />
+      <Route exact path="/library" component={LibraryPage} />
+      <Route exact path="/library/cell/:id" component={CellInfoPage} />
+      <Route exact path="/library/upload/" component={UploadPage} />
+      <Route exact path='/settings' component={SettingsPage} />
+      <Route exact path='/settings/create' component={CreateLibraryPage} />
+      <Route exact path='/computations' component={ComputationPage} />
+      <Route exact path='/computations/image-test' component={ImageClassificationTestPage} />
+      <Route exact path='/login' component={LoginPage} />
+    </Switch>
 
-      <Switch>
-        <Route exact path="/library/upload/" component={UploadPage} />
-      </Switch>
+  </Content>
 
-      <Switch>
-        <Route exact path='/settings' component={SettingsPage} />
-      </Switch>
-
-      <Switch>
-        <Route exact path='/settings/create' component={CreateLibraryPage} />
-      </Switch>
-
-      <Switch>
-        <Route exact path='/computations' component={ComputationPage} />
-      </Switch>
-
-      <Switch>
-        <Route exact path='/computations/image-test' component={ImageClassificationTestPage} />
-      </Switch>
-
-      <Switch>
-        <Route exact path='/login' component={LoginPage} />
-      </Switch>
-
-    </Content>
-  </Router>
-
-)
+</Router>
 
 export default App;
