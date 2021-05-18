@@ -168,7 +168,7 @@ const CreateLibraryPage = (props) => {
         <ModalStateManager renderLauncher={({ setOpen }) =>
           <Button onClick={() => setOpen(true)} renderIcon={Download16}>Import fields from file</Button>
         }>
-          {(modalProps) => <ImportColumnNamesModal {...modalProps} />}
+          {(modalProps) => <ImportColumnNamesModal {...modalProps} fieldState={fields} fieldSetState={setFields}/>}
         </ModalStateManager>
 
 

@@ -1,9 +1,13 @@
-import { ComposedModal, ModalFooter, ModalHeader, ModalBody, FileUploaderDropContainer, FileUploaderItem, Checkbox, TextInput } from 'carbon-components-react';
+import { ComposedModal, ModalFooter, ModalHeader, ModalBody, FileUploaderDropContainer, FileUploaderItem, Checkbox, TextInput, ButtonSet, Button } from 'carbon-components-react';
 import { React, useState } from 'react';
 
 import papa from 'papaparse'
 
-function getType(str) {
+const getType = (str) => {
+
+    // Infer type of string
+    // Taken from https://stackoverflow.com/questions/16775547/javascript-guess-data-type-from-string
+
     if (typeof str !== 'string') str = str.toString();
     var nan = isNaN(Number(str));
     var isfloat = /^\d*(\.|,)\d*$/;
@@ -25,17 +29,23 @@ function getType(str) {
     }
 }
 
+function useForceUpdate() {
+    const [value, setValue] = useState(0); // integer state
+    return () => setValue(value => value + 1); // update the state to force render
+}
 
 const ImportColumnNamesModal = (props) => {
+
+    const forceUpdate = useForceUpdate()
 
     const [uploadedFile, setUploadedFile] = useState(null)
     const [fileHeaders, setFileHeaders] = useState(null)
     const [buttonDisabled, setButtonDisabled] = useState(true)
 
-    const { open, setOpen } = props
+    const { open, setOpen, fieldState, fieldSetState } = props
 
     const handleFileUpload = (evt, { addedFiles }) => {
-         setUploadedFile(addedFiles[0])
+        setUploadedFile(addedFiles[0])
         papa.parse(addedFiles[0], {
             header: true,
             worker: true, // Don't bog down the main thread if its a big file
@@ -46,18 +56,20 @@ const ImportColumnNamesModal = (props) => {
                     selected: false,
                     friendlyName: undefined
                 })))
-                 parser.abort()
+                parser.abort()
             }
         })
     }
 
     const handleCheckbox = (value, id, event) => {
-        const index = fileHeaders.findIndex(element => element.name === id)
 
-        fileHeaders[index].selected = !fileHeaders[index].selected
-        console.log(fileHeaders)
+
+        var index = fileHeaders.findIndex(element => `field-check__${element.name}` === id)
+
+        fileHeaders[index].selected = value
         setFileHeaders(fileHeaders)
 
+        forceUpdate()
         setButtonDisabled(checkSubmit())
     }
 
@@ -74,7 +86,6 @@ const ImportColumnNamesModal = (props) => {
         if (e.target.value !== "") value = e.target.value
 
         fileHeaders[index].friendlyName = value
-        console.log(fileHeaders)
         setFileHeaders(fileHeaders)
     }
 
@@ -88,6 +99,36 @@ const ImportColumnNamesModal = (props) => {
     const handleClose = () => {
         setOpen(false)
         handleItemDelete()
+    }
+
+    const handleSubmit = () => {
+
+
+        fieldSetState([...fieldState, ...fileHeaders.filter(({ selected }) => selected === true).map(({ friendlyName, type, name }) => {
+            if (friendlyName === undefined) friendlyName = name
+            return [friendlyName, type]
+        })])
+
+    }
+
+    const handleClearAll = () => {
+        setFileHeaders(fileHeaders.map(item => ({
+            ...item,
+            selected: false
+        })))
+
+        setButtonDisabled(true)
+
+    }
+
+    const handleSelectAll = () => {
+        setFileHeaders(fileHeaders.map(item => ({
+            ...item,
+            selected: true
+        })))
+
+        setButtonDisabled(false)
+
     }
 
     return <ComposedModal open={open} onClose={handleClose}>
@@ -105,23 +146,39 @@ const ImportColumnNamesModal = (props) => {
                         onAddFiles={handleFileUpload}
                     /> : <>
 
-
                         <FileUploaderItem
                             name={uploadedFile.name} key={'u-file'} uuid={'u-file'} status={"edit"} onDelete={handleItemDelete} />
-                        {fileHeaders.map(field => <>
 
-                            <Checkbox key={field.name} id={field.name} labelText={field.name} onChange={handleCheckbox} />
-                            <p><strong>Type: </strong>{field.type}</p>
-                            <TextInput onChange={handleFriendlyName} placeholder='Set a friendly name' id={field.name} value={field.friendlyName} />
+                        <ButtonSet>
+                            <Button kind='secondary' onClick={handleClearAll}>Clear selected</Button>
+                            <Button onClick={handleSelectAll}>Select all</Button>
+                        </ButtonSet>
 
-                        </>
-                        )}
+                        <fieldset>
+
+                            {fileHeaders.map(field => <>
+
+                                <Checkbox key={field.name} id={`field-check__${field.name}`} labelText={field.name} onChange={handleCheckbox} checked={field.selected} />
+
+                                {field.selected &&
+
+                                    <>
+                                        <p><strong>Type: </strong>{field.type}</p>
+                                        <TextInput onChange={handleFriendlyName} placeholder={`Set a friendly name for '${field.name}'`} id={field.name} value={field.friendlyName} />
+                                    </>
+                                }
+
+
+
+                            </>
+                            )}
+                        </fieldset>
                     </>
             }
 
 
         </ModalBody>
-        <ModalFooter primaryButtonText="Import" secondaryButtonText="Cancel" primaryButtonDisabled={buttonDisabled} />
+        <ModalFooter primaryButtonText="Import" secondaryButtonText="Cancel" onRequestSubmit={handleSubmit} primaryButtonDisabled={buttonDisabled} />
     </ComposedModal>
 }
 
