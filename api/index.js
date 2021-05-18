@@ -34,7 +34,7 @@ try {
 
 const app = express();
 app.use(express.json())
-app.use(cors())
+// app.use(cors())
 
 // DEFINE REQUESTS
 
@@ -62,89 +62,50 @@ app.post('/createTable', (req, res) => {
 
 const allFunctions = () => {
 
+  //Still isn't working in order, functions are not called consecutively 
 
-  
-  //This chunk creates a column within the specified table
-  queryInterface.addColumn('patient_extra_info', 'Diabetes_status', { type: DataTypes.STRING });
-  
-  //Delete columns that are specified
-  queryInterface.removeColumn('patient_extra_info', 'Diabetes_status', {});
-  
-  //Delete tables
-  queryInterface.dropTable('patient_extra_info', {});
+  //Testing functions
+  deleteATable('gene_mutations');
+  createATable('gene_mutations');
+  createAColumn('gene_mutations', 'SOD1');
   
   
-  //created to add genes into
-  queryInterface.createTable('gene_expression', {
-    name: DataTypes.STRING,
-    isBetaMember: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      allowNull: false
-    }
-  });
-  
-  let column_n = 4;
-  //Loops through a specified number of times, likely a number which is the length of strings in an array
-  //pulled from the columns of a csv file
-  //This uses a simple numbering system
-  for (let i = 0; i < (column_n + 1); i++){
-      queryInterface.addColumn('gene_expression', `gene${i}`, {type: DataTypes.STRING });
-  }
-  
-  //removes these columns
-  for (let i = 0; i < (column_n + 1); i++){
-    queryInterface.removeColumn('gene_expression', `gene${i}`, {});
-  }
-  
-  //deletes all tables !!!CAREFUL!!! 
-  /*
-  queryInterface.dropAllTables(cell_db, {})
-  */
-  
-  queryInterface.renameTable('gene_expression', 'gene_expression_and_ID', {});
-  
-  
-  //test array that contains gene expressions 
-  var gene_expressions = ["SOD1","BEX1","ID4","XR"];
-  
-  //Loops through gene_expression names and populates them into a table... with specific names
-  let fLen = gene_expressions.length;
-  for (let i = 0; i < fLen; i++) {
-    queryInterface.addColumn('gene_expression_and_ID', gene_expressions[i], {type: DataTypes.STRING });
-  }
-  
-  //Delete tables
-  queryInterface.dropTable('gene_expression_and_ID', {});
+  //FUNCTIONS
   
   //function to rename a table
-  function renameATable(original_name, new_name) {
-    queryInterface.renameTable(original_name, new_name, {});
+  async function renameATable(original_name, new_name) {
+    await queryInterface.renameTable(original_name, new_name, {});
   }
   
   //function to add columns using a numbered system
-  function addNamedColumns(table_name, array_of_columns){
-    let fLen = array_of_columns.length;
-    for (let i = 0; i < fLen; i++) {
-      queryInterface.addColumn(table_name, array_of_columns[i], {type: DataTypes.STRING });
+  async function addNamedColumns(table_name, array_of_columns){
+    let column_n = array_of_columns.length;
+    for (let i = 0; i < (column_n + 1); i++) {
+      await queryInterface.addColumn(table_name, array_of_columns[i], {type: DataTypes.STRING });
     }
   }
   
   //deletes an array of columns that are passed in
-  function deleteNamedColumns(table_name, array_of_columns ){
+  async function deleteNamedColumns(table_name, array_of_columns ){
+    let column_n = array_of_columns.length;
     for (let i = 0; i < (column_n + 1); i++){
-      queryInterface.removeColumn(table_name, array_of_columns[i], {});
+      await queryInterface.removeColumn(table_name, array_of_columns[i], {});
     }
   }
   
+  //create a specified column
+  async function createAColumn(table_name, column_to_add){
+    await queryInterface.addColumn(table_name, column_to_add, {type: DataTypes.STRING });  
+  }
+  
   //deletes a specified column
-  function deleteAColumn(table_name, column_to_drop){
-    queryInterface.removeColumn(table_name, column_to_drop, {});
+  async function deleteAColumn(table_name, column_to_drop){
+    await queryInterface.removeColumn(table_name, column_to_drop, {});
   }
   
   //creates a table in this name
-  function createATable(table_name){
-    queryInterface.createTable(table_name, {
+  async function createATable(table_name){
+    await queryInterface.createTable(table_name, {
       name: DataTypes.STRING,
       isBetaMember: {
         type: DataTypes.BOOLEAN,
@@ -154,13 +115,20 @@ const allFunctions = () => {
     });
   }
   
+  async function deleteATable(table_name){
+    await queryInterface.dropTable(table_name, {});
+  }
+  
   /*
   //populates a table with specified data bitsies
-  function populateColumn(table_name, column_name, inserted_data){
-    db.sequelize.query("INSERT INTO")
+  async function populateColumn(table_name, column_name, inserted_data){
+    sequelize.query("INSERT patient_extra_info (ID) VALUES (10450);")
   }
   */
-  //NEEDS TO BE FIXED SO IT PROPERLY POPULATES THE TABLE
+  //NEEDS TO BE FIXED SO IT CAN PROPERLY POPULATE THE TABLE
+  
+  
+
 
 }
 
