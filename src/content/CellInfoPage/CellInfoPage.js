@@ -1,5 +1,5 @@
 import { React } from 'react';
-import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button } from 'carbon-components-react';
+import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button, Tag } from 'carbon-components-react';
 import { Link, useParams } from 'react-router-dom';
 
 import ModalStateManager from '../../components/ModalStateManager'
@@ -171,7 +171,7 @@ const CellInfoPage = (props) => {
 
                 {parse.humanCellsGeneExpressionByForeignId && 
                 
-                Object.keys(parse.humanCellsGeneExpressionByForeignId.expression).map(key => <p><strong>{key}</strong> {parse.humanCellsGeneExpressionByForeignId.expression[key]}</p>)
+                Object.keys(parse.humanCellsGeneExpressionByForeignId.expression).map(key => <Tag>{key} <strong>{parse.humanCellsGeneExpressionByForeignId.expression[key]}</strong></Tag>)
                 }
             </Tab>
             <Tab id="e-phys" label="Electrophysiological Data">

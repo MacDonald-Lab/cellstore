@@ -18,7 +18,8 @@ app.use(postgraphile(
         enhanceGraphiql: true,
         appendPlugins: [many.default || many, filter],
         dynamicJson: true,
-        enableCors: true
+        enableCors: true,
+        bodySizeLimit: '10MB'
     }
 ))
 
