@@ -12,29 +12,6 @@ import DeleteCellModal from '../../components/DeleteCellModal';
 import { SimpleBarChart } from '@carbon/charts-react';
 
 
-const chartData = [
-  {
-    "group": "ABC",
-    "value": 65000
-  },
-  {
-    "group": "DEF",
-    "value": 29123
-  },
-  {
-    "group": "INS",
-    "value": 35213
-  },
-  {
-    "group": "JKL",
-    "value": 51213
-  },
-  {
-    "group": "GLU",
-    "value": 16932
-  }
-]
-
 const chartOptions = {
   "title": "Common gene expressions",
   "axes": {
@@ -46,7 +23,7 @@ const chartOptions = {
       "mapsTo": "value"
     }
   },
-  "height": "400px"
+  "height": "450px"
 }
 
 const CellInfoPage = (props) => {
@@ -75,6 +52,14 @@ const CellInfoPage = (props) => {
   if (loading) return (<Loading />);
   if (error) return `Error! ${error.message}`;
   const parse = data.rawDnaByJoanCellId
+  const arrayGenes = Object.keys(parse.humanCellsGeneExpressionByForeignId.expression).map(key => 
+    ({
+      "group": key,
+      "value": parseInt(parse.humanCellsGeneExpressionByForeignId.expression[key])
+    })).sort((a, b) => b.value - a.value)
+
+    const smallArrayGenes = arrayGenes.slice(0, 9)
+    const medArrayGenes = arrayGenes.slice(0, 101)
 
   if (parse == null) return <h1>Cell {id} not found</h1>
 
@@ -167,12 +152,23 @@ const CellInfoPage = (props) => {
               <h2>
                 Gene Expression
             </h2>
-            <SimpleBarChart data={chartData} options={chartOptions} />
+                <br />
+            {smallArrayGenes &&
+            
+                <SimpleBarChart data={smallArrayGenes} options={chartOptions} />
+              }
+              <br />
 
-                {parse.humanCellsGeneExpressionByForeignId && 
+                {medArrayGenes && <>
+
+                <h4>Top 100 Genes</h4>
+                <br />
                 
-                Object.keys(parse.humanCellsGeneExpressionByForeignId.expression).map(key => <Tag>{key} <strong>{parse.humanCellsGeneExpressionByForeignId.expression[key]}</strong></Tag>)
+
+                {medArrayGenes.map(item => <Tag>{item.group} <strong>{item.value}</strong></Tag>)}
+                </>
                 }
+
             </Tab>
             <Tab id="e-phys" label="Electrophysiological Data">
               <h2>Electrophysiological Data</h2>
