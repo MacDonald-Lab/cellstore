@@ -9,7 +9,45 @@ import { useQuery, gql } from '@apollo/client';
 import { Loading, Tile } from 'carbon-components-react';
 import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
 import DeleteCellModal from '../../components/DeleteCellModal';
+import { SimpleBarChart } from '@carbon/charts-react';
 
+
+const chartData = [
+  {
+    "group": "ABC",
+    "value": 65000
+  },
+  {
+    "group": "DEF",
+    "value": 29123
+  },
+  {
+    "group": "INS",
+    "value": 35213
+  },
+  {
+    "group": "JKL",
+    "value": 51213
+  },
+  {
+    "group": "GLU",
+    "value": 16932
+  }
+]
+
+const chartOptions = {
+  "title": "Common gene expressions",
+  "axes": {
+    "left": {
+      "mapsTo": "group",
+      "scaleType": "labels"
+    },
+    "bottom": {
+      "mapsTo": "value"
+    }
+  },
+  "height": "400px"
+}
 
 const CellInfoPage = (props) => {
 
@@ -129,6 +167,8 @@ const CellInfoPage = (props) => {
               <h2>
                 Gene Expression
             </h2>
+            <SimpleBarChart data={chartData} options={chartOptions} />
+
                 {parse.humanCellsGeneExpressionByForeignId && 
                 
                 Object.keys(parse.humanCellsGeneExpressionByForeignId.expression).map(key => <p><strong>{key}</strong> {parse.humanCellsGeneExpressionByForeignId.expression[key]}</p>)

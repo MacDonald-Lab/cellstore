@@ -5,6 +5,8 @@
   "type": "module",
   "dependencies": {
     "@apollo/client": "^3.3.16",
+    "@carbon/charts": "^0.41.64",
+    "@carbon/charts-react": "^0.41.64",
     "@carbon/colors": "^10.24.0",
     "@carbon/grid": "^10.25.0",
     "@carbon/icons-react": "^10.30.0",
@@ -20,6 +22,7 @@
     "cookie-parser": "^1.4.5",
     "core-js": "^3.11.1",
     "cors": "^2.8.5",
+    "d3": "5.x",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "graphql": "^15.5.0",
