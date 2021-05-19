@@ -1,8 +1,9 @@
 import { React, useState } from 'react';
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, SelectItem, Select, Dropdown } from 'carbon-components-react';
+import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, SelectItem, Select, Dropdown, ButtonSet } from 'carbon-components-react';
 import { Link } from 'react-router-dom'
 import papa from 'papaparse'
 import { useMutation, gql } from '@apollo/client';
+import {Close16} from '@carbon/icons-react'
 
 const ADD_CELL = gql`
   mutation AddCell(
@@ -110,18 +111,18 @@ const UploadPage = (props) => {
 
 
   const findDuplicates = (arr) => {
-        const distinct = new Set(arr);        // to improve performance
+    const distinct = new Set(arr);        // to improve performance
     const filtered = arr.filter(item => {
-        // remove the element from the set on very first encounter
-        if (distinct.has(item)) {
-            distinct.delete(item);
-        }
-        // return the element on subsequent encounters
-        else {
-            return item;
-        }
+      // remove the element from the set on very first encounter
+      if (distinct.has(item)) {
+        distinct.delete(item);
+      }
+      // return the element on subsequent encounters
+      else {
+        return item;
+      }
     });
- 
+
     return [...new Set(filtered)]
   }
 
@@ -211,7 +212,7 @@ const UploadPage = (props) => {
       step: function (result, parser) {
         setFileHeaders(Object.keys(result.data).map(key => ({
           nameFromFile: key,
-                })))
+        })))
         setLoading(false)
         parser.abort()
       }
@@ -328,24 +329,42 @@ const UploadPage = (props) => {
                   warnText='Warning: this item has been selected more than once'
                   selectedItem={item.selectedItem}
                   itemToString={(item) => (item ? item.nameFromFile : '')}
-                  onChange={({selectedItem}) => {
-                    
+                  onChange={({ selectedItem }) => {
+
                     const temp = columns
                     temp[i].selectedItem = selectedItem
                     setColumns(temp)
-                    console.log(findDuplicates(temp.map(item => item.selectedItem)))
                     setDuplicates(findDuplicates(temp.map(item => item.selectedItem)))
                     forceUpdate()
 
-                    // checkWarnings()
-
                   }}
                 />
+                <Button 
+                hasIconOnly
+                renderIcon={Close16}
+                kind="ghost"
+                iconDescription="Clear field"
+                onClick={() => {
+                    const temp = columns
+                    temp[i].selectedItem = null
+                    setColumns(temp)
+                    forceUpdate()
+
+                }} />
               </AspectRatio>
             </Tile>
           </Column>
         ))}
 
+      </Row>
+      <Row>
+        <Column>
+          <ButtonSet>
+            <Button>Clear settings</Button>
+            <Button>Save as template</Button>
+            <Button>Use template</Button>
+          </ButtonSet>
+        </Column>
       </Row>
       <Row>
         <Column>
@@ -355,9 +374,6 @@ const UploadPage = (props) => {
         </Column>
 
       </Row>
-
-
-
 
     </Grid>
 
