@@ -32,6 +32,18 @@ const ADD_CELL = gql`
   }
 `;
 
+
+const ADD_EXPRESSION = gql`
+mutation ADD_EXPRESSION($expression: JSON!, $foreignId: String!){
+  createHumanCellsGeneExpression(
+    input: {humanCellsGeneExpression: {expression: $expression, foreignId: $foreignId}, clientMutationId: "add-mutation"}
+  ) {
+    clientMutationId
+  }
+}
+
+`
+
 function useForceUpdate() {
   // eslint-disable-next-line
   const [value, setValue] = useState(0); // integer state
@@ -74,6 +86,7 @@ const UploadPage = (props) => {
 
   // States
   const [uploadedFile, setUploadedFile] = useState(null)
+  const [uploadedFileExprssions, setUploadedFileExpression] = useState(null)
   const [loading, setLoading] = useState(false)
   const [fileHeaders, setFileHeaders] = useState(null)
   const [duplicates, setDuplicates] = useState([])
@@ -126,6 +139,8 @@ const UploadPage = (props) => {
     }
   })
 
+  const [addExpression, { errorMutationExpression }] = useMutation(ADD_EXPRESSION)
+
 
   const forceUpdate = useForceUpdate()
 
@@ -153,7 +168,25 @@ const UploadPage = (props) => {
       }
     })
   }
+  const handleFileUploadExpression = (evt, { addedFiles }) => {
+    setLoading(true)
+    setUploadedFileExpression(addedFiles[0])
+    papa.parse(addedFiles[0], {
+      header: true,
+      worker: true, // Don't bog down the main thread if its a big file
+      step: function (results, parser) {
 
+        const id = results.data['joan_cell_id']
+        delete results.data['joan_cell_id']          
+        addExpression({ variables: {
+          foreignId: id,
+          expression: results.data
+        }})
+        setLoading(false)
+        parser.abort()
+      }
+    })
+  }
   const handleFileSubmit = () => {
     var count = 0; // cache the running count
     setLoading(true)
@@ -306,6 +339,14 @@ const UploadPage = (props) => {
         <Column>
 
           <h1>Review</h1>
+                  <FileUploaderDropContainer
+                    labelText="Drag and drop gene expression file here or click to upload"
+                    accept={['.csv']}
+                    multiple={false}
+                    name="Upload images"
+                    onAddFiles={handleFileUploadExpression}
+                  />
+
           <FormProgress step={2} />
         </Column>
 
