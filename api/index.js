@@ -62,50 +62,86 @@ app.post('/createTable', (req, res) => {
 
 const allFunctions = () => {
 
-  //Still isn't working in order, functions are not called consecutively 
 
-  //Testing functions
-  deleteATable('gene_mutations');
-  createATable('gene_mutations');
-  createAColumn('gene_mutations', 'SOD1');
-  
-  
-  //FUNCTIONS
-  
-  //function to rename a table
-  async function renameATable(original_name, new_name) {
-    await queryInterface.renameTable(original_name, new_name, {});
-  }
-  
-  //function to add columns using a numbered system
-  async function addNamedColumns(table_name, array_of_columns){
+//_________________
+//UTILITY FUNCTIONS
+//_________________
+
+//*** a resolve and reject has been added into a promise in order to later add error checking ***
+//TODO: add error checking with promises
+
+//simple sleep functions
+function sleep(seconds) {
+  return new Promise(resolve => setTimeout(resolve, (seconds * 1000) ));
+}
+
+
+//function to rename a table
+function renameATable(original_name, new_name) {
+  return new Promise(function(resolve, reject){
+
+    queryInterface.renameTable(original_name, new_name, {});
+
+    resolve();
+  });  
+}
+
+
+//function to add columns using a numbered system
+function addNamedColumns(table_name, array_of_columns){
+  return new Promise(function(resolve, reject){
+
     let column_n = array_of_columns.length;
     for (let i = 0; i < (column_n + 1); i++) {
-      await queryInterface.addColumn(table_name, array_of_columns[i], {type: DataTypes.STRING });
+      queryInterface.addColumn(table_name, array_of_columns[i], {type: DataTypes.STRING });
     }
-  }
-  
-  //deletes an array of columns that are passed in
-  async function deleteNamedColumns(table_name, array_of_columns ){
-    let column_n = array_of_columns.length;
+    
+    resolve();
+  });  
+}
+
+
+//deletes an array of columns that are passed in
+function deleteNamedColumns(table_name, columns_array){
+  return new Promise(function(resolve, reject){
+
+    let column_n = columns_array.length;
     for (let i = 0; i < (column_n + 1); i++){
-      await queryInterface.removeColumn(table_name, array_of_columns[i], {});
+      queryInterface.removeColumn(table_name, columns_array[i], {});
     }
-  }
-  
-  //create a specified column
-  async function createAColumn(table_name, column_to_add){
-    await queryInterface.addColumn(table_name, column_to_add, {type: DataTypes.STRING });  
-  }
-  
-  //deletes a specified column
-  async function deleteAColumn(table_name, column_to_drop){
-    await queryInterface.removeColumn(table_name, column_to_drop, {});
-  }
-  
-  //creates a table in this name
-  async function createATable(table_name){
-    await queryInterface.createTable(table_name, {
+
+    resolve();
+  });  
+}
+
+
+//create a specified column
+function createAColumn(table_name, column_to_add){
+  return new Promise(function(resolve, reject){
+
+    queryInterface.addColumn(table_name, column_to_add, {type: DataTypes.STRING });  
+
+    resolve();
+  });
+}
+
+
+//deletes a specified column
+function deleteAColumn(table_name, column_to_drop){
+  return new Promise(function(resolve, reject){
+
+    queryInterface.removeColumn(table_name, column_to_drop, {});
+    
+    resolve();
+  });
+}
+
+
+//creates a table in this name
+function createATable(table_name){
+  return new Promise(function(resolve, reject){
+
+    queryInterface.createTable(table_name, {
       name: DataTypes.STRING,
       isBetaMember: {
         type: DataTypes.BOOLEAN,
@@ -113,21 +149,61 @@ const allFunctions = () => {
         allowNull: false
       }
     });
+
+    resolve();
+  });
+}
+
+
+//deletes a table
+function deleteATable(table_name){
+  return new Promise(function(resolve, reject){
+
+    queryInterface.dropTable(table_name, {});
+    
+    resolve();
+  });
+}
+
+//*****************************
+//RAW SQL BASED FUNCTIONS RSBFs 
+//*****************************
+
+//populate column
+function populateColumn(table_name, column_name, inserted_data){
+  sequelize.query("INSERT INTO "+ table_name + "(" + column_name + ") VALUES(" + inserted_data + ");");
+}
+
+//populate table with multiple columns full of data
+function populateColumns(table_name, columns_array, inserted_data_array){
+  let column_n = columns_array.length;
+  for(let i = 0; i < (column_n + 1); i++){
+    sequelize.query("INSERT INTO "+ table_name + "(" + columns_array[i] + ") VALUES(" + inserted_data_array[i] + ");");
   }
-  
-  async function deleteATable(table_name){
-    await queryInterface.dropTable(table_name, {});
-  }
-  
-  /*
-  //populates a table with specified data bitsies
-  async function populateColumn(table_name, column_name, inserted_data){
-    sequelize.query("INSERT patient_extra_info (ID) VALUES (10450);")
-  }
-  */
-  //NEEDS TO BE FIXED SO IT CAN PROPERLY POPULATE THE TABLE
-  
-  
+}
+
+//Tane's TODO: -Add primary key, constraints, select and alter functionality to the functions
+
+//NOTE using raw queries may make the program vulnerable to SQL injection?
+
+//______________
+//test function
+//______________
+
+async function test_all_functions() {
+  deleteATable('gene_mutations');
+  await sleep(2);
+  createATable('gene_mutations');
+  await sleep(2);
+  createAColumn('gene_mutations', 'SOD1');
+  await sleep(2);
+  populateColumn('gene_mutations', 'SOD1', '1452')
+  console.log("Test complete! Ctrl+C to exit");
+}
+
+test_all_functions();
+
+//yeet?
 
 
 }
