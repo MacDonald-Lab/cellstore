@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, SelectItem, Select, Dropdown, ButtonSet } from 'carbon-components-react';
+import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, Dropdown, ButtonSet } from 'carbon-components-react';
 import { Link } from 'react-router-dom'
 import papa from 'papaparse'
 import { useMutation, gql } from '@apollo/client';
@@ -33,68 +33,9 @@ const ADD_CELL = gql`
 `;
 
 function useForceUpdate() {
+  // eslint-disable-next-line
   const [value, setValue] = useState(0); // integer state
   return () => setValue(value => value + 1); // update the state to force render
-}
-
-const SelectLibrary = (props) => {
-  const options = props.options
-  const stateOptions = props.stateOptions
-  const id = props.id
-
-  const [currentValue, setCurrentValue] = useState(null)
-  const forceUpdate = useForceUpdate()
-
-  const handleUpdate = ({ selectedItem }) => {
-
-    setCurrentValue(selectedItem)
-
-    // var index = options.findIndex(element => `${element.nameFromFile}` === currentValue)
-
-    // if (index !== -1){
-    //   options[index].used = !options[index].used 
-    //   stateOptions(options)
-    // }
-
-    // var index = options.findIndex(element => `${element.nameFromFile}` === e.target.value)
-
-    // if (index !== -1){
-    //   options[index].used = !options[index].used 
-    //   stateOptions(options)
-    // }
-
-    // setCurrentValue(e.target.value)
-    // forceUpdate()
-  }
-
-  return (
-
-    <Dropdown
-      id={id}
-      titleText="Dropdown label"
-      items={options}
-      selectedItem={currentValue}
-      itemToString={(item) => (item ? item.nameFromFile : '')}
-      onChange={handleUpdate}
-    />
-
-    // <Select id={id} defaultValue="none" onChange={handleUpdate}>
-    //   <SelectItem 
-    //     value={currentValue}
-    //     text={'NULL'}
-    //   />
-    //   <SelectItem
-    //     value="none"
-    //     text="None"
-    //   />
-    //   {
-    //     options.map((item, i) => (
-    //       <SelectItem value={item.nameFromFile} disabled={item.used} text={item.nameFromFile} />
-    //     ))
-    //   }
-
-    // </Select>
-  )
 }
 
 const FormProgress = (props) => (
@@ -116,6 +57,7 @@ const UploadPage = (props) => {
       // remove the element from the set on very first encounter
       if (distinct.has(item)) {
         distinct.delete(item);
+        return false
       }
       // return the element on subsequent encounters
       else {
@@ -187,13 +129,6 @@ const UploadPage = (props) => {
 
   const forceUpdate = useForceUpdate()
 
-  const handleUpdate = ({ selectedItem }) => {
-
-    // setCurrentValue(selectedItem)
-  }
-
-
-
   // Upload Handlers
   const handleItemDelete = (evt, { uuid }) => {
     // code for multiple files
@@ -242,6 +177,7 @@ const UploadPage = (props) => {
       },
       complete: function (results, file) {
         setLoading(false)
+        console.log(`finished with ${count} rows`)
 
       }
     })

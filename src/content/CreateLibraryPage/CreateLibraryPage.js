@@ -48,7 +48,7 @@ const cellDataTypes = [
   },
 ]
 
-const CreateLibraryPage = (props) => {
+const CreateLibraryPage = () => {
 
   // states
 
