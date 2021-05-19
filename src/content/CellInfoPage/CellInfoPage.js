@@ -24,6 +24,9 @@ const CellInfoPage = (props) => {
         age
         sex
         diabetesStatus
+        humanCellsGeneExpressionByForeignId {
+          expression
+        }
     }
     }`;
 
@@ -36,6 +39,8 @@ const CellInfoPage = (props) => {
   const parse = data.rawDnaByJoanCellId
 
   if (parse == null) return <h1>Cell {id} not found</h1>
+
+  console.log(parse)
 
   return (<>
     <Grid>
@@ -124,6 +129,10 @@ const CellInfoPage = (props) => {
               <h2>
                 Gene Expression
             </h2>
+                {parse.humanCellsGeneExpressionByForeignId && 
+                
+                Object.keys(parse.humanCellsGeneExpressionByForeignId.expression).map(key => <p><strong>{key}</strong> {parse.humanCellsGeneExpressionByForeignId.expression[key]}</p>)
+                }
             </Tab>
             <Tab id="e-phys" label="Electrophysiological Data">
               <h2>Electrophysiological Data</h2>
