@@ -19,20 +19,22 @@ const dbHost = 'localhost'
 // ESTABLISH DATABASE CONNECTION
 
 
-const getConnection = (name) => new Sequelize(name, dbUsername, dbPassword, {
+ 
+
+// create database if not exist
+const baseSequelize = new Sequelize('postgres', dbUsername, dbPassword, {
   host: dbHost,
   dialect: 'postgres'
 })
 
-// create database if not exist
-// TODO: refactor so this only runs when there is no database
-
-const baseSequelize = getConnection('postgres')
-baseSequelize.query(`CREATE DATABASE ${dbName}`)
+await baseSequelize.query(`CREATE DATABASE ${dbName}`).catch(() => {console.log('Database already exists, skipping creation')})
 baseSequelize.close()
 
-// connect to actual database
-const sequelize = getConnection(dbName)
+// // connect to actual database
+const sequelize = new Sequelize(dbName, dbUsername, dbPassword, {
+  host: dbHost,
+  dialect: 'postgres',
+})
 
 // create default table to store settings if not exist
 // TODO move to models file
@@ -42,7 +44,6 @@ const cellstore_table = sequelize.define('cellstore', {
     primaryKey: true,
     unique: true,
     allowNull: false
-
   },
   data: {
     type: DataTypes.JSON
@@ -54,15 +55,15 @@ const cellstore_table = sequelize.define('cellstore', {
   }
 )
 
-cellstore_table.sync()
+await cellstore_table.sync()
 
-//this is the query library
+// this is the query library
 const queryInterface = sequelize.getQueryInterface();
 
 
 // test connection
 try {
-  sequelize.authenticate();
+  await sequelize.authenticate();
   console.log('Connection has been established successfully.');
 } catch (error) {
   console.error('Unable to connect to the database:', error);
