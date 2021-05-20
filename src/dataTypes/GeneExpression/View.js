@@ -1,4 +1,4 @@
-import { React, Component } from 'react';
+import { React } from 'react';
 import { Tag } from 'carbon-components-react';
 import { SimpleBarChart } from '@carbon/charts-react';
 
@@ -33,23 +33,21 @@ export const initView = (libraryName, queryData) => {
         return {
             id: 'GeneExpression',
             friendlyName: 'Gene expression',
-            component: class extends Component {
-                render = () => <>
+            component: () => (<>
 
-                    {smallArrayGenes &&
-                        <SimpleBarChart data={smallArrayGenes} options={chartOptions} />
-                    }
+                {smallArrayGenes &&
+                    <SimpleBarChart data={smallArrayGenes} options={chartOptions} />
+                }
+
+
+                {medArrayGenes && <>
+                    <h4>Top 100 Genes</h4>
+                    <h6>Sorted by Count</h6>
                     <br />
+                    {medArrayGenes.map(item => <Tag>{item.group} <strong>{item.value}</strong></Tag>)}
+                </>}
 
-                    {medArrayGenes && <>
-                        <h4>Top 100 Genes</h4>
-                        <h6>Sorted by Count</h6>
-                        <br />
-                        {medArrayGenes.map(item => <Tag>{item.group} <strong>{item.value}</strong></Tag>)}
-                    </>}
-
-                </>
-            }
+            </>)
         }
     }
 

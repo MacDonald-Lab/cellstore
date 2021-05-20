@@ -1,5 +1,5 @@
 import { React } from 'react';
-import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button, Tag } from 'carbon-components-react';
+import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button} from 'carbon-components-react';
 import { Link, useParams } from 'react-router-dom';
 
 import ModalStateManager from '../../components/ModalStateManager'

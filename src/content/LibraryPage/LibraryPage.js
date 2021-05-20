@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, UnorderedList, ListItem, Tag } from 'carbon-components-react'
+import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag } from 'carbon-components-react'
 
 import LibraryTable from '../../components/LibraryTable';
 import Filters from '../../components/Filters';
@@ -12,7 +12,7 @@ const LibraryPage = () => {
 
   // TODO: transform to state and/or db query
   const favourites = [{
-    id: '1001200602_A6',
+    id: '1001200609_C6',
     color: 'magenta'
   }, {
     id: '1001200602_B6',

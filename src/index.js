@@ -15,7 +15,7 @@ import 'core-js/modules/es.object.values';
 // Apollo/GraphQL Database Connection
 
 const client = new ApolloClient({
-  uri: 'http://localhost:5000/graphql',
+  uri: 'http://10.0.0.21:5000/graphql',
   cache: new InMemoryCache()
 
 })

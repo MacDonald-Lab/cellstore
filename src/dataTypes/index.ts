@@ -6,7 +6,7 @@ const types = [
 
 const initDescriptions = () => types.map(type => type.initDescription())
 
-const initViews = (libraryName, queryData) => {
+const initViews = (libraryName: string, queryData: JSON) => {
     const views = []
     for (var type in types) {
         const view = types[type].initView(libraryName, queryData)
@@ -15,9 +15,11 @@ const initViews = (libraryName, queryData) => {
     return views
 }  
 
-export default {
+const moduleExports = {
     initViews,
     initDescriptions,
-    
+
     GeneExpression
 }
+
+export default moduleExports

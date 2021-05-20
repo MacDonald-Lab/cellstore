@@ -1,7 +1,9 @@
 import {initView} from './View'
 import {initDescription} from './Description'
 
-export default {
+const moduleExports = {
     initView,
     initDescription
 }
+
+export default moduleExports

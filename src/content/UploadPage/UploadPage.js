@@ -86,6 +86,8 @@ const UploadPage = (props) => {
 
   // States
   const [uploadedFile, setUploadedFile] = useState(null)
+
+  // eslint-disable-next-line
   const [uploadedFileExprssions, setUploadedFileExpression] = useState(null)
   const [loading, setLoading] = useState(false)
   const [fileHeaders, setFileHeaders] = useState(null)
@@ -139,6 +141,7 @@ const UploadPage = (props) => {
     }
   })
 
+  // eslint-disable-next-line
   const [addExpression, { errorMutationExpression }] = useMutation(ADD_EXPRESSION)
 
 
