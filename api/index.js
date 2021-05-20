@@ -105,7 +105,7 @@ await dbLibrary.sync()
 app.all('/createLibraryDB', async (req, res) => {
 
   const key = req.body['libraryName']
-  const data = req.body['libraryKeys']
+  const data = req.body['libraryColumns']
   const options = req.body['libraryOptions']
 
   console.log(`creating library database ${key}`)
