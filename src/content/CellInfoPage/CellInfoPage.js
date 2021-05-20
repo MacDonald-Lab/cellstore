@@ -9,24 +9,9 @@ import { useQuery, gql } from '@apollo/client';
 import { Loading, Tile } from 'carbon-components-react';
 import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
 import DeleteCellModal from '../../components/DeleteCellModal';
-import { SimpleBarChart } from '@carbon/charts-react';
+import DataTypes from '../../dataTypes'
 
-
-const chartOptions = {
-  "title": "Common gene expressions",
-  "axes": {
-    "left": {
-      "mapsTo": "group",
-      "scaleType": "labels"
-    },
-    "bottom": {
-      "mapsTo": "value"
-    }
-  },
-  "height": "450px"
-}
-
-const CellInfoPage = (props) => {
+const CellInfoPage = () => {
 
   const { id } = useParams()
 
@@ -52,18 +37,12 @@ const CellInfoPage = (props) => {
   if (loading) return (<Loading />);
   if (error) return `Error! ${error.message}`;
   const parse = data.rawDnaByJoanCellId
-  const arrayGenes = Object.keys(parse.humanCellsGeneExpressionByForeignId.expression).map(key => 
-    ({
-      "group": key,
-      "value": parseInt(parse.humanCellsGeneExpressionByForeignId.expression[key])
-    })).sort((a, b) => b.value - a.value)
 
-    const smallArrayGenes = arrayGenes.slice(0, 9)
-    const medArrayGenes = arrayGenes.slice(0, 101)
 
   if (parse == null) return <h1>Cell {id} not found</h1>
 
-  console.log(parse)
+  const views = DataTypes.initViews('humanCells', data)
+
 
   return (<>
     <Grid>
@@ -71,7 +50,7 @@ const CellInfoPage = (props) => {
       <Row className="cell-info-page__banner">
         <Column>
           <Breadcrumb>
-          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbItem isCurrentPage>
               <>Libraries</>
             </BreadcrumbItem>
             <BreadcrumbItem>
@@ -112,8 +91,8 @@ const CellInfoPage = (props) => {
               onClick={() => setOpen(true)}
             />
           }>
-          {(modalProps) => <DeleteCellModal {...modalProps} id={parse.joanCellId} redirect />}
-        </ModalStateManager>
+            {(modalProps) => <DeleteCellModal {...modalProps} id={parse.joanCellId} redirect />}
+          </ModalStateManager>
         </Column>
 
       </Row>
@@ -148,32 +127,11 @@ const CellInfoPage = (props) => {
       <Row>
         <Column>
           <Tabs>
-            <Tab id="gene-expression" label="Gene Expression">
-              <h2>
-                Gene Expression
-            </h2>
-                <br />
-            {smallArrayGenes &&
-            
-                <SimpleBarChart data={smallArrayGenes} options={chartOptions} />
-              }
+            {views.map((item) => <Tab key={item.id} id={item.id} label={item.friendlyName}>
+              <h3>{item.friendlyName}</h3>
               <br />
-
-                {medArrayGenes && <>
-
-                <h4>Top 100 Genes</h4>
-                <br />
-                
-
-                {medArrayGenes.map(item => <Tag>{item.group} <strong>{item.value}</strong></Tag>)}
-                </>
-                }
-
-            </Tab>
-            <Tab id="e-phys" label="Electrophysiological Data">
-              <h2>Electrophysiological Data</h2>
-            </Tab>
-
+              <item.component />
+            </Tab>)}
           </Tabs>
         </Column>
       </Row>
