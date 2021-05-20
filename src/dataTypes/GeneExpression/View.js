@@ -7,7 +7,7 @@ export const initView = (libraryName, queryData) => {
 
     const parsedQuery = queryData['rawDnaByJoanCellId'][`${libraryName}GeneExpressionByForeignId`]
     const chartOptions = {
-        "title": "Common gene expressions",
+        "title": "Common Gene Expressions",
         "axes": {
             "left": {
                 "mapsTo": "group",
