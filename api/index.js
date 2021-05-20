@@ -18,19 +18,16 @@ const dbHost = 'localhost'
 
 // ESTABLISH DATABASE CONNECTION
 
-
- 
-
 // create database if not exist
 const baseSequelize = new Sequelize('postgres', dbUsername, dbPassword, {
   host: dbHost,
   dialect: 'postgres'
 })
 
-await baseSequelize.query(`CREATE DATABASE ${dbName}`).catch(() => {console.log('Database already exists, skipping creation')})
+await baseSequelize.query(`CREATE DATABASE ${dbName}`).catch(() => { console.log('Database already exists, skipping creation') })
 baseSequelize.close()
 
-// // connect to actual database
+// connect to actual database
 const sequelize = new Sequelize(dbName, dbUsername, dbPassword, {
   host: dbHost,
   dialect: 'postgres',
@@ -70,7 +67,6 @@ try {
 }
 
 
-
 // SETUP WEB SERVER
 
 const app = express();
@@ -78,6 +74,78 @@ app.use(express.json())
 // app.use(cors())
 
 // DEFINE REQUESTS
+
+// TODO get sequelize definitions from database and use in own
+
+const dbLibrary = sequelize.define('dbLibrary', {
+  key: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+    unique: true,
+    allowNull: false
+  },
+  data: {
+    type: DataTypes.JSON
+  },
+  options: {
+    type: DataTypes.JSON
+  }
+},
+  {
+    freezeTableName: true,
+    tableName: 'dbLibrary'
+  }
+)
+await dbLibrary.sync()
+
+// I don't thing this will be exposed in the end, 
+// just can be used as a private function with definitions stored
+// in JS files
+
+app.all('/createLibraryDB', async (req, res) => {
+
+  const key = req.body['libraryName']
+  const data = req.body['libraryKeys']
+  const options = req.body['libraryOptions']
+
+  console.log(`creating library database ${key}`)
+
+  // add entry to library 'cache' table
+  await dbLibrary.create({ key: key, data: data, options: options })
+
+  // create table for library
+  const newLibrary = sequelize.define(key, data, options)
+  await newLibrary.sync()
+
+  res.status(200).send()
+
+
+})
+
+app.all('/addItemToLibrary', async (req, res) => {
+
+  const name = req.body['libraryName']
+  const item = req.body['libraryItem']
+
+  console.log(`adding item to library ${name}`)
+
+  const { key, data, options } = await dbLibrary.findByPk(name)
+
+  // reconstruct data type object from string representation
+  for (const property in data) {
+    data[property]['type'] = DataTypes[data[property]['type']]
+  }
+
+  // define library object and create if not created
+  const newLibrary = sequelize.define(key, data, options)
+  await newLibrary.sync()
+
+  // add item to library
+  await newLibrary.create(item)
+
+  res.status(200).send()
+
+})
 
 // hello world request
 app.all('/', (req, res) => {
