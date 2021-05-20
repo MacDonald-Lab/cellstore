@@ -5,15 +5,15 @@ import express from 'express';
 import seq from 'sequelize';
 const { Sequelize, DataTypes } = seq;
 
+import libraryModel from './models/library.js'
+import settingsModel from './models/settings.js'
+
 const port = process.env.BACKEND_PORT
 const dbName = 'cellstore_db_test'
 const dbUsername = 'postgres'
 const dbPassword = '123'
 const dbHost = 'localhost'
 // const dbPort = 5432
-
-
-//TODO: turn the chunks of code into functions that can be called on the front end!
 
 
 // ESTABLISH DATABASE CONNECTION
@@ -33,31 +33,6 @@ const sequelize = new Sequelize(dbName, dbUsername, dbPassword, {
   dialect: 'postgres',
 })
 
-// create default table to store settings if not exist
-// TODO move to models file
-const cellstore_table = sequelize.define('cellstore', {
-  key: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    unique: true,
-    allowNull: false
-  },
-  data: {
-    type: DataTypes.JSON
-  }
-},
-  {
-    freezeTableName: true,
-    tableName: 'cellstore'
-  }
-)
-
-await cellstore_table.sync()
-
-// this is the query library
-const queryInterface = sequelize.getQueryInterface();
-
-
 // test connection
 try {
   await sequelize.authenticate();
@@ -66,6 +41,17 @@ try {
   console.error('Unable to connect to the database:', error);
 }
 
+// create default tables if not exist
+
+const models = {
+  Library: libraryModel(sequelize, DataTypes),
+  Settings: settingsModel(sequelize, DataTypes)
+}
+
+sequelize.sync()
+
+// this is the query library
+const queryInterface = sequelize.getQueryInterface();
 
 // SETUP WEB SERVER
 
@@ -74,29 +60,6 @@ app.use(express.json())
 // app.use(cors())
 
 // DEFINE REQUESTS
-
-// TODO get sequelize definitions from database and use in own
-
-const dbLibrary = sequelize.define('dbLibrary', {
-  key: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    unique: true,
-    allowNull: false
-  },
-  data: {
-    type: DataTypes.JSON
-  },
-  options: {
-    type: DataTypes.JSON
-  }
-},
-  {
-    freezeTableName: true,
-    tableName: 'dbLibrary'
-  }
-)
-await dbLibrary.sync()
 
 // I don't thing this will be exposed in the end, 
 // just can be used as a private function with definitions stored
@@ -118,7 +81,6 @@ app.all('/createLibraryDB', async (req, res) => {
   await newLibrary.sync()
 
   res.status(200).send()
-
 
 })
 
@@ -168,6 +130,8 @@ app.post('/createTable', (req, res) => {
   });
   res.status(200).send()
 })
+
+//TODO: turn the chunks of code into functions that can be called on the front end!
 
 const allFunctions = () => {
 
@@ -275,47 +239,47 @@ const allFunctions = () => {
   }
 
 
-//changes the datatype of a column to float
-function columnDatatypeFloat(table_name, column_name){
-  queryInterface.changeColumn(table_name, column_name, {
-    type: DataTypes.FLOAT,
-    defaultValue: 0.0,
-    allowNull: false
-  });
-}
+  //changes the datatype of a column to float
+  function columnDatatypeFloat(table_name, column_name) {
+    queryInterface.changeColumn(table_name, column_name, {
+      type: DataTypes.FLOAT,
+      defaultValue: 0.0,
+      allowNull: false
+    });
+  }
 
 
-//changes the datatype of a column to int
-function columnDatatypeInt(table_name, column_name){
-  queryInterface.changeColumn(table_name, column_name, {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
-    allowNull: false
-  });
-}
+  //changes the datatype of a column to int
+  function columnDatatypeInt(table_name, column_name) {
+    queryInterface.changeColumn(table_name, column_name, {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false
+    });
+  }
 
 
-function columnDatatypeString(table_name, column_name){
-  queryInterface.changeColumn(table_name, column_name, {
-    type: DataTypes.STRING,
-    defaultValue: '',
-    allowNull: false
-  });
-}
+  function columnDatatypeString(table_name, column_name) {
+    queryInterface.changeColumn(table_name, column_name, {
+      type: DataTypes.STRING,
+      defaultValue: '',
+      allowNull: false
+    });
+  }
 
-//adds a primary key
-function addPrimaryKey(table_name, column_name, name_of_constraint_name){
-  queryInterface.addConstraint(table_name, {
-    fields: [column_name],
-    type: 'primary key',
-    name: name_of_constraint_name
- });
-}
+  //adds a primary key
+  function addPrimaryKey(table_name, column_name, name_of_constraint_name) {
+    queryInterface.addConstraint(table_name, {
+      fields: [column_name],
+      type: 'primary key',
+      name: name_of_constraint_name
+    });
+  }
 
 
-//*****************************
-//RAW SQL BASED FUNCTIONS RSBFs 
-//*****************************
+  //*****************************
+  //RAW SQL BASED FUNCTIONS RSBFs 
+  //*****************************
 
   //populate column
   function populateColumn(table_name, column_name, inserted_data) {
@@ -330,13 +294,13 @@ function addPrimaryKey(table_name, column_name, name_of_constraint_name){
     }
   }
 
-function renameAColumn(table_name, column_name, new_column_name){
-  sequelize.query("ALTER TABLE "+ table_name + " RENAME " + column_name + " TO " + new_column_name + ");");
-}
+  function renameAColumn(table_name, column_name, new_column_name) {
+    sequelize.query("ALTER TABLE " + table_name + " RENAME " + column_name + " TO " + new_column_name + ");");
+  }
 
-function selectAllFromTable(table_name){
-  sequelize.query("SELECT * FROM " + table_name + ");");
-}
+  function selectAllFromTable(table_name) {
+    sequelize.query("SELECT * FROM " + table_name + ");");
+  }
 
   //NOTE using raw queries may make the program vulnerable to SQL injection?
 
@@ -357,7 +321,7 @@ function selectAllFromTable(table_name){
 
   test_all_functions();
 
-//yeet
+  //yeet
 
 
 }
