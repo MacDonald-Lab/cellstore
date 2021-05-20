@@ -165,6 +165,45 @@ function deleteATable(table_name){
   });
 }
 
+
+//changes the datatype of a column to float
+function columnDatatypeFloat(table_name, column_name){
+  queryInterface.changeColumn(table_name, column_name, {
+    type: DataTypes.FLOAT,
+    defaultValue: 0.0,
+    allowNull: false
+  });
+}
+
+
+//changes the datatype of a column to int
+function columnDatatypeInt(table_name, column_name){
+  queryInterface.changeColumn(table_name, column_name, {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    allowNull: false
+  });
+}
+
+
+function columnDatatypeString(table_name, column_name){
+  queryInterface.changeColumn(table_name, column_name, {
+    type: DataTypes.STRING,
+    defaultValue: '',
+    allowNull: false
+  });
+}
+
+//adds a primary key
+function addPrimaryKey(table_name, column_name, name_of_constraint_name){
+  queryInterface.addConstraint(table_name, {
+    fields: [column_name],
+    type: 'primary key',
+    name: name_of_constraint_name
+ });
+}
+
+
 //*****************************
 //RAW SQL BASED FUNCTIONS RSBFs 
 //*****************************
@@ -182,7 +221,13 @@ function populateColumns(table_name, columns_array, inserted_data_array){
   }
 }
 
-//Tane's TODO: -Add primary key, constraints, select and alter functionality to the functions
+function renameAColumn(table_name, column_name, new_column_name){
+  sequelize.query("ALTER TABLE "+ table_name + " RENAME " + column_name + " TO " + new_column_name + ");");
+}
+
+function selectAllFromTable(table_name){
+  sequelize.query("SELECT * FROM " + table_name + ");");
+}
 
 //NOTE using raw queries may make the program vulnerable to SQL injection?
 
@@ -203,7 +248,7 @@ async function test_all_functions() {
 
 test_all_functions();
 
-//yeet?
+//yeet
 
 
 }
