@@ -34,7 +34,6 @@ export const initView = (libraryName, queryData) => {
             id: 'GeneExpression',
             friendlyName: 'Gene expression',
             component: class extends Component {
-
                 render = () => <>
 
                     {smallArrayGenes &&
@@ -50,16 +49,10 @@ export const initView = (libraryName, queryData) => {
                     </>}
 
                 </>
-                
-
             }
-
         }
-
     }
 
     return null
-
-
 
 }

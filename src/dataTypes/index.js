@@ -4,6 +4,7 @@ const types = [
     GeneExpression
 ]
 
+const initDescriptions = () => types.map(type => type.initDescription())
 
 const initViews = (libraryName, queryData) => {
     const views = []
@@ -15,5 +16,8 @@ const initViews = (libraryName, queryData) => {
 }  
 
 export default {
-    initViews
+    initViews,
+    initDescriptions,
+    
+    GeneExpression
 }

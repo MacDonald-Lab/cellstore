@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Add16, ArrowDown16, ArrowUp16, ChartArea32, ChartCustom32, DataConnected32, Download16, TrashCan16, WatsonHealthDna32 } from '@carbon/icons-react';
 import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
 import ModalStateManager from '../../components/ModalStateManager';
+import DataTypes from '../../dataTypes'
 
 const FormProgress = (props) => (
   <ProgressIndicator className="create-library-page__progress" currentIndex={props.step}>
@@ -15,7 +16,9 @@ const FormProgress = (props) => (
 
 )
 
-const cellDataTypes = [
+const typeDescriptions = DataTypes.initDescriptions()
+
+const oldCellDataTypes = [
   {
     name: "Genes",
     types: [
@@ -168,7 +171,7 @@ const CreateLibraryPage = () => {
         <ModalStateManager renderLauncher={({ setOpen }) =>
           <Button onClick={() => setOpen(true)} renderIcon={Download16}>Import fields from file</Button>
         }>
-          {(modalProps) => <ImportColumnNamesModal {...modalProps} fieldState={fields} fieldSetState={setFields}/>}
+          {(modalProps) => <ImportColumnNamesModal {...modalProps} fieldState={fields} fieldSetState={setFields} />}
         </ModalStateManager>
 
 
@@ -194,7 +197,7 @@ const CreateLibraryPage = () => {
       </Column>
     </Row>
 
-    {cellDataTypes.map((item, i) =>
+    {oldCellDataTypes.map((item, i) =>
       <>
         <Row>
           <Column>
@@ -224,6 +227,23 @@ const CreateLibraryPage = () => {
 
 
     )}
+
+    <Row condensed>
+      {typeDescriptions.map(item => <Column sm={2} md={4} lg={4}>
+        <SelectableTile id={item.id} name="tiles" key={item.id}>
+          <AspectRatio ratio='2x1'>
+            <p><strong>{item.name}</strong></p>
+            <p>{item.description}</p>
+            <div className={'create-library-page__data-icon'}>
+              <item.icon />
+            </div>
+          </AspectRatio>
+        </SelectableTile>
+      </Column>
+
+      )}
+    </Row>
+
     <Row>
       <Column>
         <br />
