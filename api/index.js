@@ -86,7 +86,9 @@ app.all('/setSettings', async (req, res) => {
 
   console.log('updating settings')
 
-  await models.Settings.create({ key: 'settings', data: payload })
+  await models.Settings.update({ key: 'settings', data: payload }, {
+    where: {key: 'settings'}
+  })
 
   res.status(200).send()
 
