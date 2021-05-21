@@ -11,12 +11,12 @@ export default (sequelize, DataTypes) =>
                 unique: true,
                 allowNull: false
             },
-            data: {
+            definition: {
                 type: DataTypes.JSON
             },
-            options: {
+            schema: {
                 type: DataTypes.JSON
-            }
+            },
         },
 
         {

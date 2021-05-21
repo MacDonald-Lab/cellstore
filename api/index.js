@@ -101,6 +101,45 @@ app.all('/setSettings', async (req, res) => {
 
 })
 
+
+const DATA_TYPE_MAPS = {
+  string: DataTypes.STRING,
+  int: DataTypes.INTEGER,
+  multiselect: DataTypes.INTEGER
+}
+
+app.all('/createLibrary', async (req, res) => {
+  const {name, fields } = req.body
+
+  const libraryDefinition = req.body
+
+  // create database schema
+
+  const schema = Object.fromEntries(fields.map(field => {
+    const def = {
+      type: DATA_TYPE_MAPS[field.dataType],
+      primaryKey: field.primaryKey
+    }
+    return [field['name'], def]
+  }))
+
+  const LibraryModel = sequelize.define(name, schema, {
+    freezeTableName: true,
+    tableName: name
+  })
+
+  // create table
+
+  LibraryModel.sync()
+
+  // TODO create tables for data types
+
+  // store info in database
+
+  models.Library.create({key: name, definition: libraryDefinition, schema: schema})
+
+})
+
 app.all('/createLibraryDB', async (req, res) => {
 
   const key = req.body['libraryName']
