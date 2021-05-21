@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.scss';
 
@@ -17,9 +17,25 @@ import LoginPage from './content/LoginPage';
 
 // Route Definitions
 
-const App = () => <Router>
+const App = () => {
 
-  <UIShell />
+  const [settings, setSettings] = useState(null)
+  useEffect(() => {
+
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:5001/getSettings', {
+
+      })
+      setSettings(await response.json())
+    }
+
+    fetchData()
+
+  }, [])
+
+return <Router>
+
+  <UIShell organizationName={settings ? settings['organizationName'] : ""}/>
 
   <Content >
 
@@ -37,6 +53,6 @@ const App = () => <Router>
 
   </Content>
 
-</Router>
+</Router>}
 
 export default App;

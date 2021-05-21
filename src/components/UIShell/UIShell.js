@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Header,
@@ -28,9 +28,11 @@ import {
 // TODO: Loop header items and make isCurrentPage dynamic
 // FIXME: iscurrentpage styling on sidebar
 
-const UIShell = () => {
+const UIShell = ({ organizationName }) => {
   const location = useLocation()
   const history = useHistory()
+
+
 
   const MenuItems = (props) => <>
     <HeaderMenu aria-label="Link 4" menuLinkName="Libraries" isCurrentPage={location.pathname === '/library'}>
@@ -52,7 +54,7 @@ const UIShell = () => {
             onClick={onClickSideNavExpand}
             isActive={isSideNavExpanded}
           />
-          <HeaderName element={Link} to="/" prefix="[Placeholder]">CellSTORE</HeaderName>
+          <HeaderName element={Link} to="/" prefix={organizationName}>CellSTORE</HeaderName>
           <HeaderNavigation aria-label="CellSTORE Header">
             <MenuItems />
           </HeaderNavigation>

@@ -4,6 +4,7 @@ dotenv.config()
 import express from 'express';
 import seq from 'sequelize';
 const { Sequelize, DataTypes } = seq;
+import cors from 'cors';
 
 import libraryModel from './models/library.js'
 import settingsModel from './models/settings.js'
@@ -42,7 +43,6 @@ try {
 }
 
 // create default tables if not exist
-
 const models = {
   Library: libraryModel(sequelize, DataTypes),
   Settings: settingsModel(sequelize, DataTypes)
@@ -53,17 +53,44 @@ sequelize.sync()
 // this is the query library
 const queryInterface = sequelize.getQueryInterface();
 
+
+
 // SETUP WEB SERVER
 
 const app = express();
 app.use(express.json())
-// app.use(cors())
+app.use(cors())
 
 // DEFINE REQUESTS
 
 // I don't thing this will be exposed in the end, 
 // just can be used as a private function with definitions stored
 // in JS files
+
+app.all('/getSettings', async (req, res) => {
+
+  console.log('requesting settings or null if do not exist yet')
+
+  const settings = await models.Settings.findByPk('settings')
+
+
+  if (settings) res.status(200).send(settings['data'])
+
+  res.status(520).send()
+
+})
+
+app.all('/setSettings', async (req, res) => {
+
+  const payload = req.body['payload']
+
+  console.log('updating settings')
+
+  await models.Settings.create({ key: 'settings', data: payload })
+
+  res.status(200).send()
+
+})
 
 app.all('/createLibraryDB', async (req, res) => {
 
@@ -74,7 +101,7 @@ app.all('/createLibraryDB', async (req, res) => {
   console.log(`creating library database ${key}`)
 
   // add entry to library 'cache' table
-  await dbLibrary.create({ key: key, data: data, options: options })
+  await models.Library.create({ key: key, data: data, options: options })
 
   // create table for library
   const newLibrary = sequelize.define(key, data, options)
@@ -91,7 +118,7 @@ app.all('/addItemToLibrary', async (req, res) => {
 
   console.log(`adding item to library ${name}`)
 
-  const { key, data, options } = await dbLibrary.findByPk(name)
+  const { key, data, options } = await model.Library.findByPk(name)
 
   // reconstruct data type object from string representation
   for (const property in data) {

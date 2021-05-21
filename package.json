@@ -50,7 +50,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "backend": "nodemon api/index.js",
-    "db": "nodemon api/postgraphile.js"
+    "db": "nodemon --watch api api/postgraphile.js"
   },
   "eslintConfig": {
     "extends": [
@@ -76,5 +76,9 @@
     "@types/react": "^17.0.6",
     "@types/react-dom": "^17.0.5",
     "nodemon": "^2.0.7"
+  },
+    "nodemonConfig": {
+    "ignore": ["src/*"],
+    "delay": 1000
   }
 }
