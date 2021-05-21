@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 
 import { useHistory } from 'react-router-dom'
 import { Button, Grid, Row, Column, ClickableTile, AspectRatio } from 'carbon-components-react';
@@ -6,9 +6,21 @@ import { Add16, Table32 } from '@carbon/icons-react';
 
 
 const LandingPage = () => {
-
+  
   const history = useHistory()
-  const libraries = [
+  const [libraries, setLibraries] = useState(null)
+  useEffect(() => {
+
+    const getData = async () => {
+      const response = await fetch('http://localhost:5001/getLibraries')
+      setLibraries(await response.json())
+    }
+    getData()
+  }, [])
+
+  if (!libraries) return <p>Loading...</p>
+
+  const oldLibraries = [
     {
       name: 'Human Cells',
       description: 'Description',
@@ -40,7 +52,7 @@ const LandingPage = () => {
       </Row>
       <Row condensed>
 
-        {libraries.map((item) =>
+        {oldLibraries.map((item) =>
           <Column sm={2} md={4} lg={4} max={3}>
 
             <ClickableTile href={'/library'}>
@@ -53,6 +65,29 @@ const LandingPage = () => {
                 <br />
                 <p>{item.description}</p>
                 <p>Last updated: {item.lastUpdated}</p>
+                <div className="landing-page__table-icon">
+
+                  <Table32 />
+                </div>
+              </AspectRatio>
+            </ClickableTile>
+          </Column>
+        )}
+      </Row>
+      <Row condensed>
+
+        {libraries.map((item) =>
+          <Column sm={2} md={4} lg={4} max={3}>
+
+            <ClickableTile href={`/library/${item.name}`}>
+              <AspectRatio ratio="4x3">
+                <h4>
+                  <strong>
+                    {item['friendlyName']}
+                  </strong>
+                </h4>
+                <br />
+                <p>{item.description}</p>
                 <div className="landing-page__table-icon">
 
                   <Table32 />

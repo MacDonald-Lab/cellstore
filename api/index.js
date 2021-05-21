@@ -95,7 +95,7 @@ app.all('/setSettings', async (req, res) => {
     },
   )
 
-  if (!setting[1]) await models.Settings.update(object, {where: {key: 'settings'}})
+  if (!setting[1]) await models.Settings.update(object, { where: { key: 'settings' } })
 
   res.status(200).send()
 
@@ -109,8 +109,8 @@ const DATA_TYPE_MAPS = {
 }
 
 app.all('/createLibrary', async (req, res) => {
-  const {name, fields } = req.body
 
+  const { name, fields } = req.body
   const libraryDefinition = req.body
 
   // create database schema
@@ -130,13 +130,25 @@ app.all('/createLibrary', async (req, res) => {
 
   // create table
 
-  LibraryModel.sync()
+  await LibraryModel.sync()
 
   // TODO create tables for data types
 
   // store info in database
 
-  models.Library.create({key: name, definition: libraryDefinition, schema: schema})
+  await models.Library.create({ key: name, definition: libraryDefinition, schema: schema })
+
+  res.status(200).send()
+
+})
+
+app.all('/getLibraries', async (req, res) => {
+  
+  const libraries = await models.Library.findAll({
+    attributes: ['definition']
+  })
+
+  res.status(200).send(libraries.map(library => library.definition))
 
 })
 
