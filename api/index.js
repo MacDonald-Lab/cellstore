@@ -85,10 +85,17 @@ app.all('/setSettings', async (req, res) => {
   const payload = req.body['payload']
 
   console.log('updating settings')
+  const object = { key: 'settings', data: payload }
 
-  await models.Settings.update({ key: 'settings', data: payload }, {
-    where: {key: 'settings'}
-  })
+  const setting = await models.Settings.findOrCreate(
+
+    {
+      where: { key: 'settings' },
+      defaults: object
+    },
+  )
+
+  if (!setting[1]) await models.Settings.update(object, {where: {key: 'settings'}})
 
   res.status(200).send()
 

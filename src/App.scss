@@ -14,6 +14,28 @@
 @import './content/CreateLibraryPage/create-library-page.scss';
 @import './content/SettingsPage/settings-page.scss';
 
+
+.loading__container {
+  -webkit-app-region:drag;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading__elements {
+  text-align: center;
+
+}
+
+.loading__indicator {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+
 .bx--content {
     // min-height: calc(100vh - 3rem);
     background-color: $layer;
