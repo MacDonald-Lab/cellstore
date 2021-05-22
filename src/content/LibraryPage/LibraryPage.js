@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag } from 'carbon-components-react'
+import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag, DataTableSkeleton } from 'carbon-components-react'
 import { Link, useParams } from 'react-router-dom';
 
 import LibraryTable from '../../components/LibraryTable';
@@ -13,6 +13,7 @@ const LibraryPage = () => {
   const { libraryName } = useParams()
 
   const [library, setLibrary] = useState(null)
+  const [libraryData, setLibraryData] = useState(null)
   const [loading, setLoading] = useState(true)
   useEffect(() => {
 
@@ -27,8 +28,19 @@ const LibraryPage = () => {
         })
       })
 
-      if (response.status === 404) setLibrary(null)
-      else setLibrary(await response.json())
+      if (response.status !== 404) setLibrary(await response.json())
+
+      const response2 = await fetch('http://localhost:5001/getLibraryData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          libraryName: libraryName
+        })
+      })
+
+      if (response.status !== 404) setLibraryData(await response2.json())
       setLoading(false)
     }
 
@@ -72,8 +84,8 @@ const LibraryPage = () => {
     }
   ]
 
-  if (loading) return <p>Loading...</p>
-  if (!library) return <p>Cannot find library with id: {libraryName}</p>
+  if (loading) return <DataTableSkeleton showHeader={false} />
+  if (!library || !libraryData) return <p>Cannot find library with id: {libraryName}</p>
 
   return (
     <Grid>
@@ -96,7 +108,7 @@ const LibraryPage = () => {
         <Column lg={12} md={12} sm={16}>
           <Tabs type="container">
             <Tab id="all-cells" label="All cells">
-              <LibraryTable />
+              <LibraryTable library={library} libraryData={libraryData}/>
             </Tab>
             <Tab id="advanced-search" label="Advanced search">
               <Filters />

@@ -5,8 +5,6 @@ import {
   Upload16,
 } from '@carbon/icons-react';
 
-import { useQuery, gql } from '@apollo/client';
-
 import {
   DataTable,
   Table,
@@ -25,9 +23,7 @@ import {
   TableToolbarContent,
   TableToolbarSearch,
   TableToolbarMenu,
-  Tag,
   Button,
-  DataTableSkeleton,
   OverflowMenu,
   OverflowMenuItem,
   Pagination,
@@ -39,70 +35,30 @@ import ExportCellModal from '../ExportCellModal';
 import ExportCellsModal from '../ExportCellsModal';
 import DeleteCellsModal from '../DeleteCellsModal';
 
-const headerData = [
-  {
-    header: 'Joan Cell ID',
-    key: 'joanCellId',
-  },
-  {
-    header: 'Donor ID',
-    key: 'donorId',
-  },
-  {
-    header: 'Age',
-    key: 'age',
-  },
-  {
-    header: 'Sex',
-    key: 'sex',
-  },
-  {
-    header: 'Diabetes',
-    key: 'diabetesStatus',
-  },
-];
+const getHeaderData = (library) => library.viewingTableColumns.map(columnId => ({
+  header: library.fields.find(field => field.name === columnId).friendlyName,
+  key: columnId
+}))
 
-
-const LIBRARY_QUERY = gql`
-  query LIBRARY_QUERY {
-    allRawDnas {
-      nodes {
-        donorId
-        joanCellId
-        yearsWithT2D
-        age
-        sex
-        diabetesStatus
-      }
-    }
-  }`;
-
-const sexName = ["Female", "Male"]
-
-const getRowItems = (rows) =>
-  rows.map((row) => ({
+// const sexName = ["Female", "Male"]
+// <Tag type={["gray", "purple", "green", "blue"][row.diabetesStatus]}>{["None", "Type 2", "Pre-diabetes", "Type 1"][row.diabetesStatus]}</Tag>
+const getRowItems = (library, libraryData) =>
+{  
+  const pkName = library.fields.find(field => field.primaryKey === true).name
+  
+  return libraryData.map((row) => ({
     ...row,
-    id: row.joanCellId,
-    sex: sexName[row.sex],
-    diabetesStatus: <Tag type={["gray", "purple", "green", "blue"][row.diabetesStatus]}>{["None", "Type 2", "Pre-diabetes", "Type 1"][row.diabetesStatus]}</Tag>,
-    joanCellId: <Link to={`/library/cell/` + row.joanCellId}><Button kind="ghost">{row.joanCellId}</Button></Link>,
-  }));
+    id: row[pkName],
+    [pkName]: <Link to={`/library/${library.name}/cells/${row[pkName]}`}>{row[pkName]}</Link>,
+  }))};
 
-const LibraryTable = () => {
+const LibraryTable = ({library, libraryData}) => {
 
   const history = useHistory()
   const [pageInfo, setPageInfo] = useState({ page: 1, pageSize: 10 })
   var min = (pageInfo.page - 1) * pageInfo.pageSize
   var max = (pageInfo.page * pageInfo.pageSize) - 1
 
-  const { loading, error, data } = useQuery(LIBRARY_QUERY)
-  // Wait for the request to complete
-  if (loading) return (
-    <DataTableSkeleton showHeader={false} />
-  );
-  // Something went wrong with the data fetching
-  if (error) return `Error! ${error.message}`;
-  // If we're here, we've got our data!
 
   // TODO add custom sorting for columns
   // TODO generalize modal launcher for multiple modals
@@ -110,7 +66,7 @@ const LibraryTable = () => {
   return (<>
 
 
-    <DataTable isSortable rows={getRowItems(data.allRawDnas.nodes)} headers={headerData}>
+    <DataTable isSortable rows={getRowItems(library, libraryData)} headers={getHeaderData(library)}>
       {({
         rows,
         headers,
@@ -224,7 +180,7 @@ const LibraryTable = () => {
         40,
         50
       ]}
-      totalItems={data.allRawDnas.nodes.length}
+      totalItems={libraryData.length}
     />
   </>);
 }

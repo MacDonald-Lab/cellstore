@@ -163,6 +163,24 @@ app.all('/getLibrary', async (req, res) => {
 
 })
 
+app.all('/getLibraryData', async (req, res) => {
+
+  const libraryName = req.body['libraryName']
+  
+  const library = await models.Library.findByPk(libraryName)
+
+  const newLibrary = sequelize.define(libraryName, library['schema'], {
+    freezeTableName: true,
+    tableName: libraryName
+  }
+)
+  const data = await newLibrary.findAll()
+
+  if (!newLibrary) res.status(404).send()
+  else res.status(200).send(data)
+
+})
+
 app.all('/createLibraryDB', async (req, res) => {
 
   const key = req.body['libraryName']
