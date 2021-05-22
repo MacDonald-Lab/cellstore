@@ -19,23 +19,23 @@ import LoginPage from './content/LoginPage';
 import InitialSetupPage from './content/InitialSetupPage'
 
 const LoadingScreen = () => <div className="loading__container">
-    <div className="loading__elements">
-      <h1>CellSTORE</h1>
-      <br />
-      <br />
-      <br />
-      <br />
-      <div className="loading__indicator">
+  <div className="loading__elements">
+    <h1>CellSTORE</h1>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div className="loading__indicator">
 
       <Loading small={true} withOverlay={false} />
-      </div>
-      <br />
-      <p>Please wait while the application loads.</p>
-
-
     </div>
+    <br />
+    <p>Please wait while the application loads.</p>
+
 
   </div>
+
+</div>
 
 
 // Route Definitions
@@ -48,11 +48,8 @@ const App = () => {
 
     const fetchData = async () => {
       const response = await fetch('http://localhost:5001/getSettings', {
-
       })
-      
-      if (response.status === 520) setSettings(null)
-      else setSettings(await response.json())
+      if (response.status !== 520) setSettings(await response.json())
       setLoading(false)
     }
 
@@ -61,7 +58,7 @@ const App = () => {
   }, [])
 
 
-  if (loading) return <LoadingScreen /> 
+  if (loading) return <LoadingScreen />
   if (!settings) return <InitialSetupPage />
 
   return <Router>
@@ -72,10 +69,9 @@ const App = () => {
 
       <Switch>
         <Route exact path="/" component={LandingPage} />
-        <Route exact path="/library" component={LibraryPage} />
-        <Route exact path="/library/cell/:id" component={CellInfoPage} />
-        <Route exact path="/library/upload/" component={UploadPage} />
         <Route exact path="/library/:libraryName" component={LibraryPage} />
+        <Route exact path="/library/:libraryName/cell/:cellId" component={CellInfoPage} />
+        <Route exact path="/library/:libraryName/upload/" component={UploadPage} />
         <Route exact path='/settings' component={SettingsPage} />
         <Route exact path='/settings/create' component={CreateLibraryPage} />
         <Route exact path='/computations' component={ComputationPage} />

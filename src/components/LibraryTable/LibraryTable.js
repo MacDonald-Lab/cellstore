@@ -49,7 +49,7 @@ const getRowItems = (library, libraryData) =>
   return libraryData.map((row) => ({
     ...row,
     id: row[pkName],
-    [pkName]: <Link to={`/library/${library.name}/cells/${row[pkName]}`}>{row[pkName]}</Link>,
+    [pkName]: <Link to={`/library/${library.name}/cell/${row[pkName]}`}>{row[pkName]}</Link>,
   }))};
 
 const LibraryTable = ({library, libraryData}) => {

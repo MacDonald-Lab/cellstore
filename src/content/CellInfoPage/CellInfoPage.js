@@ -1,47 +1,66 @@
-import { React } from 'react';
-import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button} from 'carbon-components-react';
+import { React, useState, useEffect } from 'react';
+import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button, Tag } from 'carbon-components-react';
 import { Link, useParams } from 'react-router-dom';
 
 import ModalStateManager from '../../components/ModalStateManager'
 import ExportCellModal from '../../components/ExportCellModal'
 
-import { useQuery, gql } from '@apollo/client';
 import { Loading, Tile } from 'carbon-components-react';
 import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
 import DeleteCellModal from '../../components/DeleteCellModal';
+import FieldItemView from '../../components/FieldItemView';
 import DataTypes from '../../dataTypes'
+
+
 
 const CellInfoPage = () => {
 
-  const { id } = useParams()
+  const { libraryName, cellId } = useParams()
 
-  const LIBRARY_QUERY = gql`
-    query LIBRARY_QUERY($id: String!) {
-      rawDnaByJoanCellId(joanCellId: $id){
-        donorId
-        joanCellId
-        yearsWithT2D
-        age
-        sex
-        diabetesStatus
-        humanCellsGeneExpressionByForeignId {
-          expression
-        }
+  const [library, setLibrary] = useState(null)
+  const [cell, setCell] = useState(null)
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:5001/getLibrary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          libraryName: libraryName
+        })
+      })
+
+      if (response.status !== 404) setLibrary(await response.json())
+
+      const response2 = await fetch('http://localhost:5001/getCell', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          libraryName: libraryName,
+          cellId: cellId
+        })
+      })
+
+      if (response.status !== 404) setCell(await response2.json())
+      setLoading(false)
     }
-    }`;
 
-  const { loading, error, data } = useQuery(LIBRARY_QUERY, {
-    variables: { id: id }
-  })
+    fetchData()
 
-  if (loading) return (<Loading />);
-  if (error) return `Error! ${error.message}`;
-  const parse = data.rawDnaByJoanCellId
+  }, [])
 
+  if (loading) return (<Loading />)
+  if (!library || !cell) return <p>Error</p>
 
-  if (parse == null) return <h1>Cell {id} not found</h1>
+  const pkName = library.fields.find(field => field.primaryKey === true).name
 
-  const views = DataTypes.initViews('humanCells', data)
+  // const views = DataTypes.initViews(libraryName, libraryData)
+  const views = []
 
 
   return (<>
@@ -58,7 +77,7 @@ const CellInfoPage = () => {
             </BreadcrumbItem>
 
           </Breadcrumb>
-          <h1>{id}</h1>
+          <h1>{cell[pkName]}</h1>
         </Column>
         <Column className="cell-info-page__actions">
           <ModalStateManager renderLauncher={({ setOpen }) =>
@@ -69,7 +88,7 @@ const CellInfoPage = () => {
                 setOpen(true)
               }}>Export to .csv</Button>
           }>
-            {(modalProps) => <ExportCellModal {...modalProps} id={parse.joanCellId} />}
+            {(modalProps) => <ExportCellModal {...modalProps} id={'placeholder'} />}
           </ModalStateManager>
 
           <Button
@@ -91,7 +110,7 @@ const CellInfoPage = () => {
               onClick={() => setOpen(true)}
             />
           }>
-            {(modalProps) => <DeleteCellModal {...modalProps} id={parse.joanCellId} redirect />}
+            {(modalProps) => <DeleteCellModal {...modalProps} id={'placeholder'} redirect />}
           </ModalStateManager>
         </Column>
 
@@ -102,26 +121,15 @@ const CellInfoPage = () => {
         <Column sm={4} md={4} max={4}>
           <Tile >
             <AspectRatio ratio="2x1">
-              <h6>GENERAL INFORMATION</h6>
-              <p>Joan Cell ID: {parse.joanCellId}</p>
-              <p>Donor ID: {parse.donorId}</p>
-              <p>Age: {parse.age}</p>
-              <p>Sex: {["Female", "Male"][parse.sex]}</p>
-
+              <h6>CELL INFORMATION</h6>
+              <br />
+              {library.fields.map(field => <p>
+                <strong>{field.friendlyName}</strong> : <FieldItemView field={field} cell={cell} />
+              </p>)}
             </AspectRatio>
           </Tile>
         </Column>
 
-
-        <Column sm={4} md={4} max={4}>
-          <Tile >
-            <AspectRatio ratio="2x1">
-              <h6>DIABETES INFORMATION</h6>
-              <p>Status: {["None", "Type 2", "Pre-diabetes", "Type 1"][parse.diabetesStatus]}</p>
-            </AspectRatio>
-          </Tile>
-
-        </Column>
       </Row>
 
       <Row>

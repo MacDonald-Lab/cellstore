@@ -163,6 +163,24 @@ app.all('/getLibrary', async (req, res) => {
 
 })
 
+app.all('/getCell', async (req, res) => {
+
+  const libraryName = req.body['libraryName']
+  const cellId = req.body['cellId']
+  
+  const library = await models.Library.findByPk(libraryName)
+
+  const newLibrary = sequelize.define(libraryName, library['schema'], {
+    freezeTableName: true,
+    tableName: libraryName
+  }
+)
+  const data = await newLibrary.findByPk(cellId)
+
+  if (!newLibrary) res.status(404).send()
+  else res.status(200).send(data)
+})
+
 app.all('/getLibraryData', async (req, res) => {
 
   const libraryName = req.body['libraryName']
