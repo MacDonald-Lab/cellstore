@@ -152,6 +152,17 @@ app.all('/getLibraries', async (req, res) => {
 
 })
 
+app.all('/getLibrary', async (req, res) => {
+
+  const libraryName = req.body['libraryName']
+  
+  const library = await models.Library.findByPk(libraryName)
+
+  if (!library) res.status(404).send()
+  else res.status(200).send(library['definition'])
+
+})
+
 app.all('/createLibraryDB', async (req, res) => {
 
   const key = req.body['libraryName']

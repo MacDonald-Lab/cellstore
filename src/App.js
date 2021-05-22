@@ -18,6 +18,26 @@ import LoginPage from './content/LoginPage';
 
 import InitialSetupPage from './content/InitialSetupPage'
 
+const LoadingScreen = () => <div className="loading__container">
+    <div className="loading__elements">
+      <h1>CellSTORE</h1>
+      <br />
+      <br />
+      <br />
+      <br />
+      <div className="loading__indicator">
+
+      <Loading small={true} withOverlay={false} />
+      </div>
+      <br />
+      <p>Please wait while the application loads.</p>
+
+
+    </div>
+
+  </div>
+
+
 // Route Definitions
 
 const App = () => {
@@ -41,25 +61,7 @@ const App = () => {
   }, [])
 
 
-  if (loading) return <div className="loading__container">
-    <div className="loading__elements">
-      <h1>CellSTORE</h1>
-      <br />
-      <br />
-      <br />
-      <br />
-      <div className="loading__indicator">
-
-      <Loading small={true} withOverlay={false} />
-      </div>
-      <br />
-      <p>Please wait while the application loads.</p>
-
-
-    </div>
-
-  </div>
-
+  if (loading) return <LoadingScreen /> 
   if (!settings) return <InitialSetupPage />
 
   return <Router>
@@ -73,6 +75,7 @@ const App = () => {
         <Route exact path="/library" component={LibraryPage} />
         <Route exact path="/library/cell/:id" component={CellInfoPage} />
         <Route exact path="/library/upload/" component={UploadPage} />
+        <Route exact path="/library/:libraryName" component={LibraryPage} />
         <Route exact path='/settings' component={SettingsPage} />
         <Route exact path='/settings/create' component={CreateLibraryPage} />
         <Route exact path='/computations' component={ComputationPage} />

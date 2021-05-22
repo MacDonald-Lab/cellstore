@@ -1,5 +1,6 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag } from 'carbon-components-react'
+import { Link, useParams } from 'react-router-dom';
 
 import LibraryTable from '../../components/LibraryTable';
 import Filters from '../../components/Filters';
@@ -9,6 +10,31 @@ import { Tag16 } from '@carbon/icons-react';
 const LibraryPage = () => {
 
   const history = useHistory()
+  const { libraryName } = useParams()
+
+  const [library, setLibrary] = useState(null)
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:5001/getLibrary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          libraryName: libraryName
+        })
+      })
+
+      if (response.status === 404) setLibrary(null)
+      else setLibrary(await response.json())
+      setLoading(false)
+    }
+
+    fetchData()
+
+  }, [])
 
   // TODO: transform to state and/or db query
   const favourites = [{
@@ -27,24 +53,27 @@ const LibraryPage = () => {
   ]
 
   const tags = [
-{
-    id: 'to-process',
-    color: 'magenta',
-    count: 0
-  }, {
-    id: 'processed',
-    color: 'red',
-    count: 47
-  }, {
-    id: 'export-for-lab-XYZ',
-    color: 'blue',
-    count: 50
-  }, {
-    id: 'unusable',
-    color: 'green',
-    count: 487
-  }
+    {
+      id: 'to-process',
+      color: 'magenta',
+      count: 0
+    }, {
+      id: 'processed',
+      color: 'red',
+      count: 47
+    }, {
+      id: 'export-for-lab-XYZ',
+      color: 'blue',
+      count: 50
+    }, {
+      id: 'unusable',
+      color: 'green',
+      count: 487
+    }
   ]
+
+  if (loading) return <p>Loading...</p>
+  if (!library) return <p>Cannot find library with id: {libraryName}</p>
 
   return (
     <Grid>
@@ -57,8 +86,8 @@ const LibraryPage = () => {
             </BreadcrumbItem>
 
           </Breadcrumb>
-          <h1>Human Cells</h1>
-          <p>This is a description of the human cells page. You can put whatever kind of description you would like here and it will show up underneath the title of the library.</p>
+          <h1>{library.friendlyName}</h1>
+          <p>{library.description}</p>
         </Column>
 
       </Row>
