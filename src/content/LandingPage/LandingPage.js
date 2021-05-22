@@ -20,18 +20,6 @@ const LandingPage = () => {
 
   if (!libraries) return <p>Loading...</p>
 
-  const oldLibraries = [
-    {
-      name: 'Human Cells',
-      description: 'Description',
-      lastUpdated: '2 days ago'
-    },
-    {
-      name: 'STEM Cells',
-      description: 'Description again',
-      lastUpdated: '3 weeks ago'
-    }
-  ]
 
   return (
     <Grid>
@@ -52,34 +40,10 @@ const LandingPage = () => {
       </Row>
       <Row condensed>
 
-        {oldLibraries.map((item) =>
-          <Column sm={2} md={4} lg={4} max={3}>
-
-            <ClickableTile href={'/library'}>
-              <AspectRatio ratio="4x3">
-                <h4>
-                  <strong>
-                    {item.name}
-                  </strong>
-                </h4>
-                <br />
-                <p>{item.description}</p>
-                <p>Last updated: {item.lastUpdated}</p>
-                <div className="landing-page__table-icon">
-
-                  <Table32 />
-                </div>
-              </AspectRatio>
-            </ClickableTile>
-          </Column>
-        )}
-      </Row>
-      <Row condensed>
-
         {libraries.map((item) =>
           <Column sm={2} md={4} lg={4} max={3}>
 
-            <ClickableTile href={`/library/${item.name}`}>
+            <ClickableTile handleClick={() => history.push(`/library/${item.name}`)}>
               <AspectRatio ratio="4x3">
                 <h4>
                   <strong>

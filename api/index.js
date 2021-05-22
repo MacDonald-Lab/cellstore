@@ -225,15 +225,22 @@ app.all('/addItemToLibrary', async (req, res) => {
 
   console.log(`adding item to library ${name}`)
 
-  const { key, data, options } = await model.Library.findByPk(name)
+  const { key, schema } = await models.Library.findByPk(name)
 
   // reconstruct data type object from string representation
-  for (const property in data) {
-    data[property]['type'] = DataTypes[data[property]['type']]
+  for (const property in schema) {
+    console.log(schema[property]['type'])
+    schema[property]['type'] = DataTypes[schema[property]['type']]
+
   }
 
+  // TODO fix create library schema data type
+
   // define library object and create if not created
-  const newLibrary = sequelize.define(key, data, options)
+  const newLibrary = sequelize.define(key, schema, {
+    freezeTableName: true,
+    tableName: name
+  })
   await newLibrary.sync()
 
   // add item to library
