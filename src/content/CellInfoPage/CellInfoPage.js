@@ -73,7 +73,7 @@ const CellInfoPage = () => {
               <>Libraries</>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <Link to="/library">Human Cells</Link>
+              <Link to={`/library/${library.name}`}>{library.friendlyName}</Link>
             </BreadcrumbItem>
 
           </Breadcrumb>
@@ -124,7 +124,7 @@ const CellInfoPage = () => {
               <h6>CELL INFORMATION</h6>
               <br />
               {library.fields.map(field => <p>
-                <strong>{field.friendlyName}</strong> : <FieldItemView field={field} cell={cell} />
+                <strong>{field.friendlyName}</strong> : <FieldItemView field={field} value={cell[field.name]} />
               </p>)}
             </AspectRatio>
           </Tile>
