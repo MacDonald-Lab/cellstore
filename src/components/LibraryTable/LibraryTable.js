@@ -34,6 +34,7 @@ import ModalStateManager from '../ModalStateManager'
 import ExportCellModal from '../ExportCellModal';
 import ExportCellsModal from '../ExportCellsModal';
 import DeleteCellsModal from '../DeleteCellsModal';
+import FieldItemView from '../FieldItemView';
 
 const getHeaderData = (library) => library.viewingTableColumns.map(columnId => ({
   header: library.fields.find(field => field.name === columnId).friendlyName,
@@ -141,7 +142,8 @@ const LibraryTable = ({library, libraryData}) => {
             <TableBody>
               {rows.filter((element, i) => min <= i && i <= max).map(row => <TableRow {...getRowProps({ row })}>
                 <TableSelectRow {...getSelectionProps({ row })} />
-                {row.cells.map((cell) => (<TableCell key={cell.id}>{cell.value}</TableCell>))}
+                {row.cells.map((cell, i) => (<TableCell key={cell.id}> <FieldItemView field={library.fields.find(field => field.name === library.viewingTableColumns[i])} value={cell.value} /></TableCell>))}
+                {console.log(row)}
                 <TableCell className="bx--table-column-menu">
 
                   <ModalStateManager renderLauncher={({ setOpen }) =>
