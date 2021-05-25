@@ -111,7 +111,7 @@ const LibraryPage = () => {
               <LibraryTable library={library} libraryData={libraryData}/>
             </Tab>
             <Tab id="advanced-search" label="Advanced search">
-              <Filters />
+              <Filters library={library} />
 
             </Tab>
           </Tabs>

@@ -1,61 +1,129 @@
 import { Search16, Erase16 } from '@carbon/icons-react';
-import { Button, ButtonSet, Checkbox } from 'carbon-components-react';
+import { Button, ButtonSet, Checkbox, Tile, TextInput, Dropdown } from 'carbon-components-react';
 import { React, useState } from 'react';
 
-const Filters = () => {
-    const [filters, setFilters] = useState({})
+const Filters = ({ library }) => {
 
-    const filterDefinitions = [
-        {
-            name: 'Sex',
-            id: 'sex',
-            type: 'checkbox',
-            options: [
-                { name: 'Male', id: 'male' },
-                { name: 'Female', id: 'female' }
-            ]
-        },
-        {
-            name: 'Diabetes Status',
-            id: 'diabetes',
-            type: 'checkbox',
-            options: [
-                { name: 'None', id: 'none' },
-                { name: 'Pre-diabetes', id: 'pre' },
-                { name: 'Type 1', id: 't1d' },
-                { name: 'Type 2', id: 't2d' }
-            ]
-        }
-    ]
+    const FILTER_OPTIONS = {
+        string: [
+            {
+                text: 'Equals',
+                value: 'eq'
+            },
+            {
+                text: 'Does not equal',
+                value: 'ne'
+            },
+            {
+                text: 'Like (SQL operator)',
+                value: 'like'
+            },
+            {
+                text: 'Not Like (SQL operator)',
+                value: 'notLike'
+            },
+            {
+                text: 'Starts with',
+                value: 'startsWith'
+            },
+            {
+                text: 'Ends with',
+                value: 'endsWith'
+            },
+            {
+                text: 'Contains (substring)',
+                value: 'substring'
+            },
+            {
+                text: 'Equals',
+                value: 'eq'
+            },
+            {
+                text: 'Regex',
+                value: 'regexp'
+            },
+            {
+                text: 'Not regex',
+                value: 'notRegexp'
+            },
 
-    const handleCheckbox = (value, id, event) => {
-        // const filter_id = event.nativeEvent.path[2].id // FIXME messy way to do this
-        const tempFilters = { ...filters }
-        tempFilters[id] = value
-        setFilters(tempFilters)
+        ],
+
+        int: [
+            {
+                text: 'Equals',
+                value: 'eq'
+            },
+            {
+                text: 'Does not equal',
+                value: 'ne'
+            },
+            {
+                text: 'Greater than',
+                value: 'gt'
+            },
+            {
+                text: 'Greater than or equal to',
+                value: 'gte'
+            },
+            {
+                text: 'Less than',
+                value: 'lt'
+            },
+            {
+                text: 'Less than or equal to',
+                value: 'lte'
+            },
+
+        ]
     }
 
-    // TODO refer to other DB filtering options and implement with text fields
-    return (
-        <>
-            <h4>Filters</h4>
+    const defaultFilter = library.fields.map(({ name, dataType }) => ({
+        name: name,
+        dataType: dataType,
+        filter: null
+    }))
 
-            <h5>General Information</h5>
-            {filterDefinitions.map((item, i) =>
-            <div key={i}>
-                    <h6>{item.name}</h6>
-                    <div id={item.id}>
-                        {item.options.map((filterItem) => <Checkbox labelText={filterItem.name} id={item.id + '-' + filterItem.id} key={item.id + '-' + filterItem.id} onChange={handleCheckbox} />)}
-                    </div>
-                </div>
-            )}
+    const [filters, setFilters] = useState(defaultFilter)
+
+
+    return (
+        <Tile className="filters__main-tile">
+
+            <h3>Filters</h3>
+
+            <br />
+            <br />
+
+            {library['fields'].map((item, i) => {
+
+                const { dataType, friendlyName } = item
+                const header = <><h6>{friendlyName}</h6><br /></>
+
+                if (dataType === 'int' || dataType === 'string') return <>
+                    {header}
+                    <Dropdown light id={i} titleText={friendlyName + ' operator'} label={'Select a value'} items={FILTER_OPTIONS[dataType]} itemToString={item => (item ? item['text'] : '')} />
+                    <TextInput labelText={friendlyName + ' value'} id={i} light />
+                    <br />
+                </>
+                if (dataType === 'multiselect') return <>
+                    {header}
+                    {item.multiselectOptions.map(({ friendlyName: optionName }, j) =>
+                        <Checkbox labelText={optionName} id={`${i}-${j}`} key={`${i}-${j}`} />
+                    )}
+                    <br />
+                </>
+
+
+                return <h6>{friendlyName}: Unknown Type</h6>
+            })}
 
             <ButtonSet>
-                <Button kind="secondary" onClick={() => setFilters({})} renderIcon={Erase16}>Clear Filters</Button>
+                <Button kind="secondary" onClick={() => setFilters(defaultFilter)} renderIcon={Erase16}>Clear Filters</Button>
                 <Button renderIcon={Search16}>Search</Button>
             </ButtonSet>
 
-        </>
+        </Tile>
     )
 }
 
