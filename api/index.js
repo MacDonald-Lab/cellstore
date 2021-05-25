@@ -254,17 +254,21 @@ app.all('/getFilteredCells', async (req, res) => {
   const libraryName = req.body['libraryName']
   const filters = req.body['filters']
 
+  console.log(filters)
+
   var where = {}
 
   // transform filters into usable versions
 
   for (const filter of filters) {
-    if ((filter.dataType) === 'multiselect') {
+    if (filter.dataType === 'multiselect') {
       where[filter.name] = {[Op.or]: filter.filter}
     }
-  }
 
-  console.log(where)
+    if (filter.dataType === 'int' || filter.dataType === 'string') {
+      where[filter.name] = {[Op[filter.filter.operator.value]]: filter.filter.value}
+    }
+  }
   
   const library = await models.Library.findByPk(libraryName)
 
