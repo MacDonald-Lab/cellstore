@@ -88,7 +88,7 @@ const Filters = ({ library }) => {
         
         var filterValue = null
 
-        if (dataType === 'multiselect') filterValue = new Set()
+        if (dataType === 'multiselect') filterValue = []
         
         return {
             name: name,
@@ -101,20 +101,22 @@ const Filters = ({ library }) => {
     const forceUpdate = useForceUpdate()
     const [filters, setFilters] = useState(defaultFilter)
 
-    const handleCheckbox = (value, id, event) => {
+    const handleCheckbox = (value, id) => {
         const fieldId = parseInt(id.split('-')[0])
         const optionId = parseInt(id.split('-')[1])
 
         if (value) {
-            filters[fieldId]['filter'].add(library.fields[fieldId]['multiselectOptions'][optionId]['storedAs'])
+            filters[fieldId]['filter'].push(library.fields[fieldId]['multiselectOptions'][optionId]['storedAs'])
         } else {
-            filters[fieldId]['filter'].delete(library.fields[fieldId]['multiselectOptions'][optionId]['storedAs'])
+            filters[fieldId]['filter'] = filters[fieldId]['filter'].filter(item => item !== library.fields[fieldId]['multiselectOptions'][optionId]['storedAs'])
         }
 
-        console.log(filters[fieldId]['filter'].has())
-        console.log(filters)
         setFilters(filters)
         forceUpdate()
+    }
+
+    const handleTextField = () => {
+
     }
 
     return (
@@ -141,7 +143,7 @@ const Filters = ({ library }) => {
                     {item.multiselectOptions.map(({ friendlyName: optionName, storedAs }, j) =>
 
                     
-                        <Checkbox labelText={optionName} id={`${i}-${j}`} key={`${i}-${j}`} checked={filters[i]['filter'].has(storedAs)} onChange={handleCheckbox} />
+                        <Checkbox labelText={optionName} id={`${i}-${j}`} key={`${i}-${j}`} checked={filters[i]['filter'].includes(storedAs)} onChange={handleCheckbox} />
                     )}
                     <br />
                 </>
