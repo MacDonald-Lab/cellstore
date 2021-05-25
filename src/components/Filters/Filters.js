@@ -106,6 +106,7 @@ const Filters = ({ library }) => {
 
     const forceUpdate = useForceUpdate()
     const [filters, setFilters] = useState(defaultFilter)
+    const [results, setResults] = useState(null)
 
     const handleCheckbox = (value, id) => {
         const fieldId = parseInt(id.split('-')[0])
@@ -134,6 +135,26 @@ const Filters = ({ library }) => {
 
     }
 
+    const handleSubmit = async () => {
+
+        // cleanup of filter state object
+        const submitArray = filters
+            .filter(item => item.dataType !== 'multiselect' || item.filter.length > 0) // get rid of empty multiselect arrays
+            .filter(item => (item.dataType !== 'int' && item.dataType !== 'string') || (item.filter.operator.value !== null && item.filter.value !== null)) // get rid of inputs where operator selector  is null
+
+            console.log(submitArray)
+        // FIXME display error if int is not int
+        const response = await fetch('http://localhost:5001/getFilteredCells', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ libraryName: library.name, filters: submitArray })
+        })
+
+        setResults(await response.json())
+
+
+
+    }
 
 
     return (
@@ -175,7 +196,7 @@ const Filters = ({ library }) => {
 
             <ButtonSet>
                 <Button kind="secondary" onClick={() => setFilters(defaultFilter)} renderIcon={Erase16}>Clear Filters</Button>
-                <Button renderIcon={Search16}>Search</Button>
+                <Button renderIcon={Search16} onClick={handleSubmit}>Search</Button>
             </ButtonSet>
 
         </Tile>

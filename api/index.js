@@ -3,7 +3,7 @@ dotenv.config()
 
 import express from 'express';
 import seq from 'sequelize';
-const { Sequelize, DataTypes } = seq;
+const { Sequelize, DataTypes, Op } = seq;
 import cors from 'cors';
 
 import libraryModel from './models/library.js'
@@ -248,6 +248,35 @@ app.all('/addItemToLibrary', async (req, res) => {
 
   res.status(200).send()
 
+})
+
+app.all('/getFilteredCells', async (req, res) => {
+  const libraryName = req.body['libraryName']
+  const filters = req.body['filters']
+
+  var where = {}
+
+  // transform filters into usable versions
+
+  for (const filter of filters) {
+    if ((filter.dataType) === 'multiselect') {
+      where[filter.name] = {[Op.or]: filter.filter}
+    }
+  }
+
+  console.log(where)
+  
+  const library = await models.Library.findByPk(libraryName)
+
+  const newLibrary = sequelize.define(libraryName, library['schema'], {
+    freezeTableName: true,
+    tableName: libraryName
+  }
+)
+
+  const data = await newLibrary.findAll({where: where})
+
+  res.status(200).send(data)
 })
 
 // hello world request
