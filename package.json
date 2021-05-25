@@ -23,6 +23,7 @@
     "core-js": "^3.11.1",
     "cors": "^2.8.5",
     "d3": "5.x",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "graphql": "^15.5.0",
@@ -47,7 +48,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "backend": "nodemon api/index.js"
+    "backend": "nodemon api/index.js",
+    "authStart": "nodemon auth.js"
   },
   "eslintConfig": {
     "extends": [
