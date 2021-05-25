@@ -7,33 +7,37 @@ import ModalStateManager from '../../components/ModalStateManager';
 const GeneralSettings = () => {
 
     const [settings, setSettings] = useState(null)
-    useEffect(async () => {
-        const response = await fetch('http://localhost:5001/getSettings')
-        setSettings(await response.json())
+    useEffect(() => {
+
+        const fetchData = async () => {
+            const response = await fetch('http://localhost:5001/getSettings')
+            setSettings(await response.json())
+        }
+        fetchData()
     }, [])
 
     if (!settings) return <p>Loading...</p>
 
-    return <> 
-    {Object.keys(settings).map((item, i) => 
-        <TextInput key={i} value={settings[item]} labelText={item} onChange={(e) => {
-            const tempSettings = {...settings}
-            tempSettings[item] = e.target.value
-            setSettings(tempSettings)
-          }}/>
-    )}
-    <Button onClick={async () => {
-        await fetch('http://localhost:5001/setSettings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify({payload: settings})
-        })
+    return <>
+        {Object.keys(settings).map((item, i) =>
+            <TextInput key={i} value={settings[item]} labelText={item} onChange={(e) => {
+                const tempSettings = { ...settings }
+                tempSettings[item] = e.target.value
+                setSettings(tempSettings)
+            }} />
+        )}
+        <Button onClick={async () => {
+            await fetch('http://localhost:5001/setSettings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ payload: settings })
+            })
 
-        window.location.reload()
+            window.location.reload()
 
-    }}>Submit</Button>
+        }}>Submit</Button>
     </>
-    
+
 }
 
 

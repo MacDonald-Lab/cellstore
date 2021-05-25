@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag, DataTableSkeleton } from 'carbon-components-react'
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import LibraryTable from '../../components/LibraryTable';
 import Filters from '../../components/Filters';
@@ -46,7 +46,7 @@ const LibraryPage = () => {
 
     fetchData()
 
-  }, [])
+  }, [libraryName])
 
   // TODO: transform to state and/or db query
   const favourites = [{

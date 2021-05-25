@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button, Tag } from 'carbon-components-react';
+import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button } from 'carbon-components-react';
 import { Link, useParams } from 'react-router-dom';
 
 import ModalStateManager from '../../components/ModalStateManager'
@@ -9,7 +9,7 @@ import { Loading, Tile } from 'carbon-components-react';
 import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
 import DeleteCellModal from '../../components/DeleteCellModal';
 import FieldItemView from '../../components/FieldItemView';
-import DataTypes from '../../dataTypes'
+// import DataTypes from '../../dataTypes'
 
 
 
@@ -52,7 +52,7 @@ const CellInfoPage = () => {
 
     fetchData()
 
-  }, [])
+  }, [cellId, libraryName])
 
   if (loading) return (<Loading />)
   if (!library || !cell) return <p>Error</p>

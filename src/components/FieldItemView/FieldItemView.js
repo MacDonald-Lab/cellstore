@@ -1,4 +1,4 @@
-import {Tag} from 'carbon-components-react'
+import { Tag } from 'carbon-components-react'
 
 
 const FieldItemView = ({ field, value }) => {
@@ -14,7 +14,7 @@ const FieldItemView = ({ field, value }) => {
       newValue = option['friendlyName']
       color = option['color']
     }
-    
+
     console.log(color)
     if (field.multiselectTags) return <Tag type={color}>{newValue}</Tag>
     else return <>{newValue}</>
