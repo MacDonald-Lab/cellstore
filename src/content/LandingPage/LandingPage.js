@@ -1,12 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useHistory } from 'react-router-dom'
-import { Button, Grid, Row, Column, ClickableTile, AspectRatio } from 'carbon-components-react';
-import { Add16, Table32 } from '@carbon/icons-react';
+import { Grid, Row, Column, ClickableTile, AspectRatio } from 'carbon-components-react';
+import { Table32, Add32 } from '@carbon/icons-react';
 
 
 const LandingPage = () => {
-  
+
   const history = useHistory()
   const [libraries, setLibraries] = useState(null)
   useEffect(() => {
@@ -44,7 +44,7 @@ const LandingPage = () => {
           <Column sm={2} md={4} lg={4} max={3}>
 
             <ClickableTile handleClick={() => history.push(`/library/${item.name}`)}>
-              <AspectRatio ratio="4x3">
+              <AspectRatio ratio="1x1">
                 <h4>
                   <strong>
                     {item['friendlyName']}
@@ -60,12 +60,25 @@ const LandingPage = () => {
             </ClickableTile>
           </Column>
         )}
-      </Row>
-      <Row>
-        <Column>
-          <Button onClick={() => history.push('/settings/create')} renderIcon={Add16} kind='tertiary'>Create library</Button>
+        <Column sm={2} md={4} lg={4} max={3}>
+
+          <ClickableTile handleClick={() => history.push(`/settings/create`)}>
+            <AspectRatio ratio="1x1">
+              <div className="landing-page__create-items">
+
+                <h4>
+                  Create a new library
+                </h4>
+                <br />
+                <Add32 />
+
+              </div>
+
+            </AspectRatio>
+          </ClickableTile>
         </Column>
       </Row>
+
       <Row>
         <Column>
           <h1>Computation Centre</h1>
