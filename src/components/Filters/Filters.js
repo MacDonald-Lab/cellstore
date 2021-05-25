@@ -1,6 +1,7 @@
 import { Search16, Erase16 } from '@carbon/icons-react';
 import { Button, ButtonSet, Checkbox, Tile, TextInput, Dropdown } from 'carbon-components-react';
 import { React, useState } from 'react';
+import LibraryTable from '../../components/LibraryTable'
 
 function useForceUpdate() {
     // eslint-disable-next-line
@@ -157,7 +158,7 @@ const Filters = ({ library }) => {
     }
 
 
-    return (
+    return (<>
         <Tile className="filters__main-tile">
 
             <h3>Filters</h3>
@@ -200,6 +201,9 @@ const Filters = ({ library }) => {
             </ButtonSet>
 
         </Tile>
+
+        {results && <LibraryTable library={library} libraryData={results}/>}
+        </>
     )
 }
 
