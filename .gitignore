@@ -13,6 +13,8 @@
 
 # misc
 *.http
+*.dat
+/public/pyodide
 .DS_Store
 .env
 .env.local
