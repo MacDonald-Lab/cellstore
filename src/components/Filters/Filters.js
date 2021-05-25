@@ -85,17 +85,23 @@ const Filters = ({ library }) => {
     }
 
     const defaultFilter = library.fields.map(({ name, dataType }) => {
-        
+
         var filterValue = null
 
         if (dataType === 'multiselect') filterValue = []
-        
+        if (dataType === 'int' || dataType === 'string') filterValue = {
+            value: '',
+            operator: {
+                text: 'Select a value',
+                value: null
+            },
+        }
+
         return {
             name: name,
             dataType: dataType,
             filter: filterValue
         }
-
     })
 
     const forceUpdate = useForceUpdate()
@@ -115,9 +121,20 @@ const Filters = ({ library }) => {
         forceUpdate()
     }
 
-    const handleTextField = () => {
+    const handleTextField = (e) => {
+
+        const id = parseInt(e.target.id)
+        var value = e.target.value
+
+        if (value === '') value = null
+        filters[id]['filter']['value'] = value
+
+        setFilters(filters)
+        forceUpdate()
 
     }
+
+
 
     return (
         <Tile className="filters__main-tile">
@@ -134,15 +151,19 @@ const Filters = ({ library }) => {
 
                 if (dataType === 'int' || dataType === 'string') return <>
                     {header}
-                    <Dropdown light id={i} titleText={friendlyName + ' operator'} label={'Select a value'} items={FILTER_OPTIONS[dataType]} itemToString={item => (item ? item['text'] : '')} />
-                    <TextInput labelText={friendlyName + ' value'} id={i} light />
+                    <Dropdown light id={i} titleText={friendlyName + ' operator'} label={'Select a value'} items={FILTER_OPTIONS[dataType]} itemToString={item => (item ? item['text'] : '')} selectedItem={filters[i].filter.operator} onChange={(item) => {
+                        filters[i]['filter']['operator'] = item['selectedItem']
+                        setFilters(filters)
+                        forceUpdate()
+                    }} />
+                    <TextInput labelText={friendlyName + ' value'} id={i} light onChange={handleTextField} value={filters[i]['filter']['value']} />
                     <br />
                 </>
                 if (dataType === 'multiselect') return <>
                     {header}
                     {item.multiselectOptions.map(({ friendlyName: optionName, storedAs }, j) =>
 
-                    
+
                         <Checkbox labelText={optionName} id={`${i}-${j}`} key={`${i}-${j}`} checked={filters[i]['filter'].includes(storedAs)} onChange={handleCheckbox} />
                     )}
                     <br />
