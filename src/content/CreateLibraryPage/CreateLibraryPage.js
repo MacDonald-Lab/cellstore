@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, SelectableTile, AspectRatio, ButtonSet, Tile } from 'carbon-components-react';
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { Add16, ArrowDown16, ArrowUp16, Download16, TrashCan16 } from '@carbon/icons-react';
 import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
 import ModalStateManager from '../../components/ModalStateManager';
@@ -101,8 +101,27 @@ const CreateLibraryPage = () => {
 
   const [page, setPage] = useState(0)
 
-  const handleSubmit = () => {
-    console.log(library)
+  const history = useHistory()
+
+  const handleSubmit = async () => {
+
+    // cleanup library submit
+    for (const i of library.fields.keys()) {
+      library.fields[i].dataType = library.fields[i].dataType.value
+    }
+
+    for (const i of library.viewingTableColumns.keys()) {
+      library.viewingTableColumns[i] = library.viewingTableColumns[i].name
+    }
+
+    await fetch('http://localhost:5001/createLibrary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(library)
+    })
+
+    history.push('/')
+
   }
 
   const Page1 = () => {
@@ -354,21 +373,21 @@ const CreateLibraryPage = () => {
       width: 250
     });
 
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
+    // a little function to help us with reordering the result
+    const reorder = (list, startIndex, endIndex) => {
+      const result = Array.from(list);
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
 
-  return result;
-};
+      return result;
+    };
 
-    const handleDragEnd = ({source, destination}) => {
+    const handleDragEnd = ({ source, destination }) => {
       const newReordered = reorder(libraryColumns, source.index, destination.index)
       setLibraryColumns(newReordered)
       library.viewingTableColumns = [
-       library.fields[0],
-       ...newReordered 
+        library.fields[0],
+        ...newReordered
       ]
       setLibrary(library)
       // forcePageUpdate()
@@ -404,7 +423,7 @@ const reorder = (list, startIndex, endIndex) => {
                             <h5>{item.friendlyName}</h5>
                             <p>{item.name}</p>
                             <p>{item.dataType.text}</p>
-                            </Tile>
+                          </Tile>
                         </div>
                       }
 
