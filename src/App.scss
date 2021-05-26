@@ -1,23 +1,21 @@
-@import 'carbon-components/scss/globals/scss/vendor/@carbon/type/scss/font-family.scss';
-@import 'carbon-components/scss/globals/scss/vendor/@carbon/layout/scss/breakpoint.scss';
-@import 'carbon-components/scss/globals/scss/typography.scss';
-@import 'carbon-components/scss/globals/scss/vars.scss';
+@import "carbon-components/scss/globals/scss/vendor/@carbon/type/scss/font-family.scss";
+@import "carbon-components/scss/globals/scss/vendor/@carbon/layout/scss/breakpoint.scss";
+@import "carbon-components/scss/globals/scss/typography.scss";
+@import "carbon-components/scss/globals/scss/vars.scss";
 @import "@carbon/charts/styles/styles.scss";
 
+@import "./components/UIShell/ui-shell.scss";
+@import "./components/Filters/filters.scss";
 
-@import './components/UIShell/ui-shell.scss';
-@import './components/Filters/filters.scss';
-
-@import './content/LandingPage/landing-page.scss';
-@import './content/LibraryPage/library-page.scss';
-@import './content/CellInfoPage/cell-info-page.scss';
-@import './content/UploadPage/upload-page.scss';
-@import './content/CreateLibraryPage/create-library-page.scss';
-@import './content/SettingsPage/settings-page.scss';
-
+@import "./content/LandingPage/landing-page.scss";
+@import "./content/LibraryPage/library-page.scss";
+@import "./content/CellInfoPage/cell-info-page.scss";
+@import "./content/UploadPage/upload-page.scss";
+@import "./content/CreateLibraryPage/create-library-page.scss";
+@import "./content/SettingsPage/settings-page.scss";
 
 .loading__container {
-  -webkit-app-region:drag;
+  -webkit-app-region: drag;
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -27,7 +25,6 @@
 
 .loading__elements {
   text-align: center;
-
 }
 
 .loading__indicator {
@@ -36,16 +33,17 @@
   width: 100%;
 }
 
-
 .bx--content {
-    // min-height: calc(100vh - 3rem);
-    background-color: $layer;
-    padding-left: 0;
-    padding-right: 0;
-    overflow: -moz-scrollbars-vertical; 
-    overflow-y: scroll;
+  // min-height: calc(100vh - 3rem);
+  background-color: $layer;
+  padding-left: 0;
+  padding-right: 0;
 }
 
+html {
+  overflow: -moz-scrollbars-vertical;
+  overflow-y: scroll;
+}
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -53,21 +51,21 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888; 
+  background: #888;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }
 
 // Draggable for Electron
 .bx--header__global {
-      -webkit-app-region: drag;
-      padding-right: 3em;
+  -webkit-app-region: drag;
+  padding-right: 3em;
 }
