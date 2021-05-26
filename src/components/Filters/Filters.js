@@ -143,7 +143,6 @@ const Filters = ({ library }) => {
             .filter(item => item.dataType !== 'multiselect' || item.filter.length > 0) // get rid of empty multiselect arrays
             .filter(item => (item.dataType !== 'int' && item.dataType !== 'string') || (item.filter.operator.value !== null && item.filter.value !== null)) // get rid of inputs where operator selector  is null
 
-            console.log(submitArray)
         // FIXME display error if int is not int
         const response = await fetch('http://localhost:5001/getFilteredCells', {
             method: 'POST',
@@ -152,9 +151,6 @@ const Filters = ({ library }) => {
         })
 
         setResults(await response.json())
-
-
-
     }
 
 
@@ -202,8 +198,8 @@ const Filters = ({ library }) => {
 
         </Tile>
 
-        {results && <LibraryTable library={library} libraryData={results}/>}
-        </>
+        {results && <LibraryTable library={library} libraryData={results} />}
+    </>
     )
 }
 
