@@ -22,113 +22,12 @@ const FormProgress = (props) => (
 
 )
 
-const Field = ({ library, setLibrary, primary, i }) => {
-
-  const DATA_TYPES = [
-    {
-      text: 'Integer',
-      value: 'int'
-    },
-    {
-      text: 'Text',
-      value: 'string'
-    },
-    {
-      text: 'Multi-select',
-      value: 'multiselect'
-    },
-  ]
-
-  const forceUpdate = useForceUpdate()
-
-  return <Row className='create-library-page__field-row'>
-    <Column>
-      <TextInput id={i.toString() + '-input'} value={library.fields[i].friendlyName} labelText={'Field name'} onChange={(e) => {
-        library.fields[i].friendlyName = e.target.value
-        setLibrary(setLibrary)
-        forceUpdate()
-      }} />
-    </Column>
-    <Column>
-      <Dropdown id={i.toString() + '-typeSelector'} titleText='Field type' onChange={(e) => {
-        library.fields[i].dataType = e.selectedItem
-        setLibrary(setLibrary)
-        forceUpdate()
-      }}
-
-        selectedItem={library.fields[i].dataType}
-        items={DATA_TYPES}
-
-        itemToString={(dropdownItem) => (dropdownItem ? dropdownItem.text : '')}
-      />
-    </Column>
-
-    <Column className='create-library-page__field-actions'>
-      <Button
-        hasIconOnly
-        disabled={i === 1}
-        renderIcon={ArrowUp16}
-        tooltipAlignment="center"
-        tooltipPosition="bottom"
-        iconDescription="Move up"
-        kind='ghost' size='field'
-        onClick={() => {
-          const temp = library.fields[i]
-          library.fields[i] = library.fields[i - 1]
-          library.fields[i - 1] = temp
-
-          setLibrary(setLibrary)
-          forceUpdate()
-        }}
-      />
-      <Button
-        hasIconOnly
-        disabled={i === library.fields.length - 1}
-        renderIcon={ArrowDown16}
-        tooltipAlignment="center"
-        tooltipPosition="bottom"
-        iconDescription="Move down"
-
-        kind='ghost' size='field'
-
-        onClick={() => {
-          const temp = library.fields[i]
-          library.fields[i] = library.fields[i - 1]
-          library.fields[i - 1] = temp
-
-          setLibrary(setLibrary)
-          forceUpdate()
-        }}
-      />
-
-
-      <Button
-        hasIconOnly
-        renderIcon={TrashCan16}
-        tooltipAlignment="center"
-        tooltipPosition="bottom"
-        iconDescription="Delete field"
-        kind='danger' size='field'
-        onClick={() => {
-          library.fields.splice(i, 1)
-          setLibrary(setLibrary)
-          forceUpdate()
-        }}
-      />
-
-    </Column>
-  </Row>
-
-
-}
-
 const typeDescriptions = DataTypes.initDescriptions()
-
 // const oldCellDataTypes = [
-//   {
-//     name: "Genes",
-//     types: [
-//       {
+  //   {
+    //     name: "Genes",
+    //     types: [
+      //       {
 //         name: "Full Genome",
 //         description: "This is a description about full genome.",
 //         icon: WatsonHealthDna32
@@ -158,78 +57,7 @@ const typeDescriptions = DataTypes.initDescriptions()
 // ]
 // pages
 
-const Page1 = ({ library, setLibrary, setPage }) => {
 
-  const forceUpdate = useForceUpdate()
-
-  const handleTextField = (e) => {
-    const id = e.target.id
-    var value = e.target.value
-    
-    const tempLibrary = {...library}
-    tempLibrary[id] = value
-
-    setLibrary(tempLibrary)
-    // forceUpdate()
-  }
-
-  return <>
-    <Row>
-      <Column>
-        <h3>General</h3>
-        <br />
-      </Column>
-    </Row>
-
-    <Row>
-      <Column lg={8}>
-        <TextInput id={'friendlyName'} labelText={'Library name'} inline value={library.friendlyName} onChange={handleTextField} />
-      </Column>
-      <Column lg={8}>
-        <TextInput id={'description'} labelText={'Library description'} inline value={library.description} onChange={handleTextField} />
-      </Column>
-    </Row>
-
-    <Row>
-      <Column>
-        <br />
-        <h3>Primary field</h3>
-        <p>The primary field is the main identifier for items in this library.</p>
-        <br />
-      </Column>
-    </Row>
-
-    <Row>
-      <Column>
-        <br />
-        <h3>Fields</h3>
-        <br />
-      </Column>
-    </Row>
-
-    {library.fields.map((item, i) => { if (i !== 0) return <Field library={library} setLibrary={setLibrary} item={item} i={i} /> })}
-
-    <Row>
-      <Column>
-        {/* <Button renderIcon={Add16} onClick={handleAddField}>Add field</Button> */}
-        {/* <ModalStateManager renderLauncher={({ setOpen }) =>
-          <Button onClick={() => setOpen(true)} renderIcon={Download16}>Import fields from file</Button>
-        }>
-          {(modalProps) => <ImportColumnNamesModal {...modalProps} fieldState={fields} fieldSetState={setFields} />}
-        </ModalStateManager> */}
-      </Column>
-    </Row>
-
-    <Row>
-      <Column>
-        <br />
-        <ButtonSet>
-          <Button onClick={() => setPage(1)}>Continue to data types</Button>
-        </ButtonSet>
-      </Column>
-    </Row>
-  </>
-}
 const Page2 = ({ setPage }) => <>
   <Row>
     <Column>
@@ -280,7 +108,6 @@ const Page3 = ({setPage}) => <>
 
 const CreateLibraryPage = () => {
 
-  const forceUpdate = useForceUpdate()
 
   // states
 
@@ -307,9 +134,193 @@ const CreateLibraryPage = () => {
 
   })
 
-
-
   const [page, setPage] = useState(0)
+
+
+const Page1 = () => {
+
+  const forcePageUpdate = useForceUpdate()
+
+  const handleTextField = (e) => {
+    const id = e.target.id
+    var value = e.target.value
+    
+    library[id] = value
+
+    setLibrary(library)
+    forcePageUpdate()
+  }
+
+const Field = ({ primary, i }) => {
+
+  const DATA_TYPES = [
+    {
+      text: 'Integer',
+      value: 'int'
+    },
+    {
+      text: 'Text',
+      value: 'string'
+    },
+    {
+      text: 'Multi-select',
+      value: 'multiselect'
+    },
+  ]
+
+  const forceUpdate = useForceUpdate()
+
+  return <Row className='create-library-page__field-row'>
+    <Column>
+      <TextInput id={i.toString() + '-input'} value={library.fields[i].friendlyName} labelText={'Field name'} onChange={(e) => {
+        library.fields[i].friendlyName = e.target.value
+        setLibrary(setLibrary)
+        forceUpdate()
+      }} />
+    </Column>
+    <Column>
+      <Dropdown id={i.toString() + '-typeSelector'} titleText='Field type' onChange={(e) => {
+        library.fields[i].dataType = e.selectedItem
+        setLibrary(setLibrary)
+        forceUpdate()
+      }}
+
+        selectedItem={library.fields[i].dataType}
+        items={DATA_TYPES}
+
+        itemToString={(dropdownItem) => (dropdownItem ? dropdownItem.text : '')}
+      />
+    </Column>
+
+    <Column className='create-library-page__field-actions'>
+      <Button
+        hasIconOnly
+        disabled={i === 1}
+        renderIcon={ArrowUp16}
+        tooltipAlignment="center"
+        tooltipPosition="bottom"
+         iconDescription="Move up"
+        kind='ghost' size='field'
+        onClick={() => {
+          const temp = library.fields[i]
+          library.fields[i] = library.fields[i - 1]
+          library.fields[i - 1] = temp
+
+          setLibrary(setLibrary)
+          forcePageUpdate()
+        }}
+      />
+      <Button
+        hasIconOnly
+        disabled={i === library.fields.length - 1}
+        renderIcon={ArrowDown16}
+        tooltipAlignment="center"
+        tooltipPosition="bottom"
+        iconDescription="Move down"
+
+        kind='ghost' size='field'
+
+        onClick={() => {
+          const temp = library.fields[i]
+          library.fields[i] = library.fields[i + 1]
+          library.fields[i + 1] = temp
+
+          setLibrary(setLibrary)
+          forcePageUpdate()
+        }}
+      />
+
+
+      <Button
+        hasIconOnly
+        renderIcon={TrashCan16}
+        tooltipAlignment="center"
+        tooltipPosition="bottom"
+        iconDescription="Delete field"
+        kind='danger' size='field'
+        onClick={() => {
+          library.fields.splice(i, 1)
+          setLibrary(setLibrary)
+          forcePageUpdate()
+        }}
+      />
+
+    </Column>
+  </Row>
+
+
+}
+
+
+  return <>
+    <Row>
+      <Column>
+        <h3>General</h3>
+        <br />
+      </Column>
+    </Row>
+
+    <Row>
+      <Column lg={8}>
+        <TextInput id={'friendlyName'} labelText={'Library name'} inline value={library.friendlyName} onChange={handleTextField} />
+      </Column>
+      <Column lg={8}>
+        <TextInput id={'description'} labelText={'Library description'} inline value={library.description} onChange={handleTextField} />
+      </Column>
+    </Row>
+
+    <Row>
+      <Column>
+        <br />
+        <h3>Primary field</h3>
+        <p>The primary field is the main identifier for items in this library.</p>
+        <br />
+      </Column>
+    </Row>
+
+    <Row>
+      <Column>
+        <br />
+        <h3>Fields</h3>
+        <br />
+      </Column>
+    </Row>
+
+    {library.fields.map((item, i) => { if (i !== 0) return <Field library={library} setLibrary={setLibrary} i={i} /> })}
+
+    <Row>
+      <Column>
+        <Button renderIcon={Add16} onClick={() => {
+          library.fields.push({
+            name: "",
+            friendlyName: "",
+            dataType: null,
+            restrictions: null,
+            primaryKey: false
+          })
+
+          setLibrary(library)
+          forcePageUpdate()
+        }}>Add field</Button>
+        {/* <ModalStateManager renderLauncher={({ setOpen }) =>
+          <Button onClick={() => setOpen(true)} renderIcon={Download16}>Import fields from file</Button>
+        }>
+          {(modalProps) => <ImportColumnNamesModal {...modalProps} fieldState={fields} fieldSetState={setFields} />}
+        </ModalStateManager> */}
+      </Column>
+    </Row>
+
+    <Row>
+      <Column>
+        <br />
+        <ButtonSet>
+          <Button onClick={() => setPage(1)}>Continue to data types</Button>
+        </ButtonSet>
+      </Column>
+    </Row>
+  </>
+}
+
 
   // page renderer
   const PageRenderer = () => {
