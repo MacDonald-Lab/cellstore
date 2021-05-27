@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, SelectableTile, AspectRatio, ButtonSet, Tile } from 'carbon-components-react';
+import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, SelectableTile, AspectRatio, ButtonSet, Tile, Checkbox } from 'carbon-components-react';
 import { Link, useHistory } from 'react-router-dom'
-import { Add16, ArrowDown16, ArrowUp16, Download16, TrashCan16 } from '@carbon/icons-react';
+import { Add16, ArrowDown16, ArrowUp16, TrashCan16 } from '@carbon/icons-react';
 import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
 import ModalStateManager from '../../components/ModalStateManager';
 import DataTypes from '../../dataTypes'
@@ -39,46 +39,10 @@ const FormProgress = (props) => (
 )
 
 const typeDescriptions = DataTypes.initDescriptions()
-// const oldCellDataTypes = [
-//   {
-//     name: "Genes",
-//     types: [
-//       {
-//         name: "Full Genome",
-//         description: "This is a description about full genome.",
-//         icon: WatsonHealthDna32
-//       },
-//       {
-//         name: "Gene Expression",
-//         description: "This is a description about gene expression.",
-//         icon: DataConnected32
-//       }
-//     ]
-//   },
-//   {
-//     name: "Electrophysiological Data",
-//     types: [
-//       {
-//         name: "HEKA Binary Data (raw)",
-//         description: "This is a description about HEKA binary data.",
-//         icon: ChartArea32
-//       },
-//       {
-//         name: "Calculated Results",
-//         description: "This is a description about calculated results.",
-//         icon: ChartCustom32
-//       }
-//     ]
-//   },
-// ]
-// pages
-
 
 const CreateLibraryPage = () => {
 
-
   // states
-
   // FIXME potential for issue with primary key in general fields, move out to own
 
   const [library, setLibrary] = useState({
@@ -96,7 +60,6 @@ const CreateLibraryPage = () => {
     ],
     dataTypes: [],
     viewingTableColumns: [],
-
   })
 
   const [page, setPage] = useState(0)
@@ -106,8 +69,26 @@ const CreateLibraryPage = () => {
   const handleSubmit = async () => {
 
     // cleanup library submit
-    for (const i of library.fields.keys()) {
-      library.fields[i].dataType = library.fields[i].dataType.value
+    for (var field of library.fields) {
+      if (field.dataType.value === 'multiselect') {
+
+        for (const option of field.dataType.options.multiselectOptions) {
+          if (field.dataType.options.multiselectTags) {
+            option.color = option.color.value
+          }
+          option.storedAs = parseInt(option.storedAs)
+        }
+
+        const tempData = field.dataType.options
+        console.log(tempData)
+        field.dataType = 'multiselect'
+
+        Object.assign(field, tempData)
+      }
+
+      else {
+        field.dataType = field.dataType.value
+      }
     }
 
     for (const i of library.viewingTableColumns.keys()) {
@@ -141,6 +122,63 @@ const CreateLibraryPage = () => {
 
     const Field = ({ editable, i }) => {
 
+      const TAG_COLORS = [
+        {
+          text: 'Red',
+          value: 'red'
+        },
+        {
+          text: 'Magenta',
+          value: 'magenta'
+        },
+        {
+          text: 'Purple',
+          value: 'purple'
+        },
+        {
+          text: 'Blue',
+          value: 'blue'
+        },
+        {
+          text: 'Cyan',
+          value: 'cyan'
+        },
+        {
+          text: 'Teal',
+          value: 'teal'
+        },
+        {
+          text: 'Green',
+          value: 'green'
+        },
+        {
+          text: 'Gray',
+          value: 'gray'
+        },
+        {
+          text: 'Cool Gray',
+          value: 'cool-gray'
+        },
+        {
+          text: 'Warm Gray',
+          value: 'warm-gray'
+        },
+        {
+          text: 'High Contrast',
+          value: 'high-contrast'
+        },
+      ]
+
+      const PRIMARY_DATA_TYPES = [
+        {
+          text: 'Integer',
+          value: 'int'
+        },
+        {
+          text: 'Text',
+          value: 'string'
+        },
+      ]
       const DATA_TYPES = [
         {
           text: 'Integer',
@@ -152,13 +190,18 @@ const CreateLibraryPage = () => {
         },
         {
           text: 'Multi-select',
-          value: 'multiselect'
+          value: 'multiselect',
+          options: {
+            multiselectStoredAs: "int",
+            multiselectTags: false,
+            multiselectOptions: []
+          }
         },
       ]
 
       const forceFieldUpdate = useForceUpdate()
 
-      return <Row className='create-library-page__field-row'>
+      return <><Row className='create-library-page__field-row'>
         <Column>
           <TextInput id={i.toString() + '-input'} value={library.fields[i].friendlyName} labelText={'Field name'} onChange={(e) => {
             library.fields[i].friendlyName = e.target.value
@@ -175,10 +218,12 @@ const CreateLibraryPage = () => {
           }}
 
             selectedItem={library.fields[i].dataType}
-            items={DATA_TYPES}
+            items={editable ? DATA_TYPES : PRIMARY_DATA_TYPES}
 
             itemToString={(dropdownItem) => (dropdownItem ? dropdownItem.text : '')}
           />
+        </Column>
+        <Column>
         </Column>
         {editable &&
           <Column className='create-library-page__field-actions'>
@@ -238,6 +283,86 @@ const CreateLibraryPage = () => {
         }
       </Row>
 
+        {(library.fields[i].dataType && library.fields[i].dataType.value === 'multiselect') && <> <Row>
+          <Column>
+
+            <h4>Multi-select options</h4>
+            <Checkbox key={i + '-multiselect'} id={i + '-multiselect'} labelText={'Store as tags'} onChange={(value) => {
+              library.fields[i].dataType.options.multiselectTags = value
+              setLibrary(library)
+              forceFieldUpdate()
+            }
+            } checked={library.fields[i].dataType.options.multiselectTags} />
+
+            <Button onClick={() => {
+              library.fields[i].dataType.options.multiselectOptions.push({
+                friendlyName: '',
+                storedAs: '',
+                color: null
+              })
+              forceFieldUpdate()
+            }}>Add option</Button>
+
+          </Column>
+        </Row>
+
+          {library.fields[i].dataType.options.multiselectOptions.map((item, j) => <>
+            <Row>
+              <Column>
+                <TextInput key={i + '-' + j} id={i + '-' + j} value={item.friendlyName} labelText='Option name' onChange={e => {
+                  item.friendlyName = e.target.value
+                  setLibrary(library)
+                  forceFieldUpdate()
+                }} />
+
+              </Column>
+              <Column>
+                <TextInput key={i + '-' + j + '-store'} id={i + '-' + j + '-store'} labelText='Option stored as' value={item.storedAs} onChange={e => {
+                  item.storedAs = e.target.value
+                  setLibrary(library)
+                  forceFieldUpdate()
+                }} />
+
+              </Column>
+
+              {library.fields[i].dataType.options.multiselectTags && <Column>
+                <Dropdown id={i.toString() + '-typeSelector'} titleText='Tag color' onChange={(e) => {
+                  item.color = e.selectedItem
+                  setLibrary(setLibrary)
+                  forceFieldUpdate()
+                }}
+
+                  selectedItem={item.color}
+                  items={TAG_COLORS}
+
+                  itemToString={(dropdownItem) => (dropdownItem ? dropdownItem.text : '')}
+                />
+
+              </Column>}
+
+              <Column>
+                <Button
+                  hasIconOnly
+                  renderIcon={TrashCan16}
+                  tooltipAlignment="center"
+                  tooltipPosition="bottom"
+                  iconDescription="Delete option"
+                  kind='danger' size='field'
+                  onClick={() => {
+                    library.fields[i].dataType.options.multiselectOptions.splice(j, 1)
+                    setLibrary(setLibrary)
+                    forcePageUpdate()
+                  }}
+                />
+              </Column>
+
+            </Row>
+
+          </>)}
+        </>}
+
+      </>
+
 
     }
 
@@ -245,6 +370,7 @@ const CreateLibraryPage = () => {
       <Row>
         <Column>
           <h3>General</h3>
+          <p>A library is a collection of similar cells with the same identifiers, similar to a spreadsheet with column names. General information is used to identify library content.</p>
           <br />
         </Column>
       </Row>
@@ -461,33 +587,25 @@ const CreateLibraryPage = () => {
     return <p>Error</p>
   }
 
+  return <Grid>
+    <Row className="create-library-page__banner">
+      <Column>
 
-  // button handlers
+        <Breadcrumb>
+          <BreadcrumbItem>
+            <Link to="/settings">Settings</Link>
+          </BreadcrumbItem>
+        </Breadcrumb>
 
+        <h1>Create a library</h1>
+        <FormProgress step={page} />
 
-  return (
-    <Grid>
+      </Column>
+    </Row>
 
-      <Row className="create-library-page__banner">
-        <Column>
+    <PageRenderer />
 
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <Link to="/settings">Settings</Link>
-            </BreadcrumbItem>
-          </Breadcrumb>
-
-          <h1>Create a library</h1>
-          <FormProgress step={page} />
-
-        </Column>
-      </Row>
-
-      <PageRenderer />
-
-    </Grid>
-
-  )
+  </Grid>
 }
 
 export default CreateLibraryPage;
