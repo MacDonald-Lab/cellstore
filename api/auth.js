@@ -14,7 +14,9 @@ import methodOverride from 'method-override'
 //import connectMultiparty from 'connect-multiparty'
 //import User from './user.js'
 
-const initializePassport = require('./passport-config')
+//!!!WILL NOT IMPORT!!!
+import initializePassport from '../passport-config.js'
+///???
 initializePassport(
   passport,
   email => users.find(user => user.email === email),
@@ -47,6 +49,7 @@ app.set('view-engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
 app.use(flash())
 app.use(session({
+  //we'll want to change this passcode in order to make it safer 
   secret: 'super_secret_passcode',
   resave: false,
   saveUninitialized: false
