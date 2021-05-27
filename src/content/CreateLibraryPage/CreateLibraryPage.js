@@ -2,7 +2,7 @@ import { React, useState, useEffect, useRef } from 'react';
 import {createPortal} from 'react-dom'
 import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, SelectableTile, AspectRatio, ButtonSet, Tile, Checkbox } from 'carbon-components-react';
 import { Link, useHistory } from 'react-router-dom'
-import { Add16, ArrowDown16, ArrowUp16, TrashCan16 } from '@carbon/icons-react';
+import { Add16, DragVertical24, TrashCan16 } from '@carbon/icons-react';
 import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
 import ModalStateManager from '../../components/ModalStateManager';
 import DataTypes from '../../dataTypes'
@@ -292,8 +292,10 @@ const CreateLibraryPage = () => {
               // ref={provided.innerRef}
               //   {...provided.draggableProps}
               {...provided.dragHandleProps}
+
+              className='create-library-page__drag-handle'
             >
-              Drag me!
+              <DragVertical24 />
             </div>
 
 
