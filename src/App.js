@@ -45,9 +45,16 @@ const App = () => {
 
   const [settings, setSettings] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [libraries, setLibraries] = useState(null)
 
   useEffect(() => {
-    API.getSettings(setSettings, {}, setLoading)
+    const get = async() => {
+      await API.getSettings(setSettings)
+      await API.getLibraries(setLibraries)
+      setLoading(false)
+
+    }
+    get()
   }, [])
 
 
@@ -56,7 +63,7 @@ const App = () => {
 
   return <Router>
 
-    <UIShell organizationName={settings ? settings['organizationName'] : ""} />
+    <UIShell libraries={libraries} organizationName={settings ? settings['organizationName'] : ""} />
 
     <Content >
 
