@@ -15,7 +15,6 @@ const FieldItemView = ({ field, value }) => {
       color = option['color']
     }
 
-    console.log(color)
     if (field.multiselectTags) return <Tag type={color}>{newValue}</Tag>
     else return <>{newValue}</>
 

@@ -143,7 +143,6 @@ const LibraryTable = ({library, libraryData}) => {
               {rows.filter((element, i) => min <= i && i <= max).map(row => <TableRow {...getRowProps({ row })}>
                 <TableSelectRow {...getSelectionProps({ row })} />
                 {row.cells.map((cell, i) => (<TableCell key={cell.id}> <FieldItemView field={library.fields.find(field => field.name === library.viewingTableColumns[i])} value={cell.value} /></TableCell>))}
-                {console.log(row)}
                 <TableCell className="bx--table-column-menu">
 
                   <ModalStateManager renderLauncher={({ setOpen }) =>

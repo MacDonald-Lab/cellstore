@@ -3,6 +3,7 @@ import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContaine
 import { Link, useParams } from 'react-router-dom'
 import papa from 'papaparse'
 import { Close16 } from '@carbon/icons-react'
+import { flattenDiagnosticMessageText } from 'typescript';
 
 
 function useForceUpdate() {
@@ -145,9 +146,33 @@ const UploadPage = () => {
     setUploading(true)
     papa.parse(uploadedFile, {
       header: true,
-      worker: true, // Don't bog down the main thread if its a big file
-      step: (result) => {
+      worker: false,
+      step: async (result, parser) => {
+
+        parser.pause()
+
+        var newResult = {}
+        for (const column of columnMappings) {
+          const value = result.data[column.selectedItem.nameFromFile]
+          if (column.dataType === 'int' || column.dataType === 'multiselect') {
+            newResult[column.name] = parseInt(value)
+          } else {
+            newResult[column.name] = value
+          }
+        }
+
+        await fetch('http://localhost:5001/addItemToLibrary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ libraryName: libraryName, libraryItem: newResult })
+        })
+
+
         count++;
+        console.log('done a cell')
+        parser.resume()
+
+
       },
       complete: function (results, file) {
         setUploading(false)
@@ -186,14 +211,14 @@ const UploadPage = () => {
         <Column>
 
           <Form>
-
+            {/* 
             <FormGroup legendText="Select Data Types">
               <Checkbox labelText="Donor Information" />
               <Checkbox labelText="Electrophysiological Data" />
               <Checkbox labelText="Gene Expression" />
 
             </FormGroup>
-
+ */}
 
             <FormGroup legendText="Upload .csv Donor Information">
               {
@@ -227,14 +252,15 @@ const UploadPage = () => {
       <Row>
 
         {fileHeaders && columnMappings.map((item, i) => (
-          <Column sm={4} md={4} lg={4} className="upload-page__label">
+          <Column sm={4} md={4} lg={4} key={i} className="upload-page__label">
             <Tile>
               <AspectRatio ratio="2x1">
                 <p>{item.friendlyName}</p>
 
                 <Dropdown
-                  id={i}
+                  id={`${i}`}
                   titleText={item.name}
+                  label={'Select a value'}
                   items={fileHeaders}
                   warn={duplicates.includes(item.selectedItem)}
                   warnText='Warning: this item has been selected more than once'
