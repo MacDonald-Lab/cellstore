@@ -5,6 +5,7 @@ import papa from 'papaparse'
 import { Close16 } from '@carbon/icons-react'
 import { useForceUpdate } from '../../components/Hooks'
 
+import API from '../../components/API'
 
 const FormProgress = (props) => (
   <ProgressIndicator className="upload-page__progress" currentIndex={props.step}>
@@ -56,32 +57,14 @@ const UploadPage = () => {
 
   useEffect(() => {
 
-    const fetchData = async () => {
-      const response = await fetch('http://localhost:5001/getLibrary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          libraryName: libraryName
-        })
-      })
-
-      if (response.status !== 404) {
-        const parsed = await response.json()
-        setLibrary(parsed)
-        setColumnMappings(parsed.fields.map(item => ({
-          name: item.name,
-          friendlyName: item.friendlyName,
-          dataType: item.dataType,
-          selectedItem: null
-        })))
-      }
-
-      setLoading(false)
-    }
-
-    fetchData()
+    API.getLibrary(setLibrary, { libraryName: libraryName }, setLoading, (parsed) => {
+      setColumnMappings(parsed.fields.map(item => ({
+        name: item.name,
+        friendlyName: item.friendlyName,
+        dataType: item.dataType,
+        selectedItem: null
+      })))
+    })
 
   }, [libraryName])
 
@@ -154,11 +137,8 @@ const UploadPage = () => {
           }
         }
 
-        await fetch('http://localhost:5001/addItemToLibrary', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ libraryName: libraryName, libraryItem: newResult })
-        })
+        await API.addItemToLibrary(null, { libraryName: libraryName, libraryItem: newResult })
+
 
         count++;
         parser.resume()
@@ -167,7 +147,7 @@ const UploadPage = () => {
       complete: function (results, file) {
         setUploading(false)
         console.log(`finished with ${count} rows`)
-        history.push('/library/'+ libraryName)
+        history.push('/library/' + libraryName)
 
       }
     })

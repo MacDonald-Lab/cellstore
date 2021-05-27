@@ -8,6 +8,7 @@ import DataTypes from '../../dataTypes'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import Field from '../../components/LibraryField'
 import { useDraggableInPortal, useForceUpdate, randId, slugify } from '../../components/Hooks'
+import API from '../../components/API'
 
 // HOOKS and FUNCTIONS
 
@@ -107,11 +108,7 @@ const CreateLibraryPage = () => {
       library.viewingTableColumns[i] = library.viewingTableColumns[i].name
     }
 
-    await fetch('http://localhost:5001/createLibrary', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(library)
-    })
+    await API.createLibrary(library)
 
     history.push('/')
 

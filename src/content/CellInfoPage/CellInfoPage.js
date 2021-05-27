@@ -9,6 +9,9 @@ import { Loading, Tile } from 'carbon-components-react';
 import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
 import DeleteCellModal from '../../components/DeleteCellModal';
 import FieldItemView from '../../components/FieldItemView';
+
+import API from '../../components/API'
+
 // import DataTypes from '../../dataTypes'
 
 
@@ -22,35 +25,13 @@ const CellInfoPage = () => {
   const [loading, setLoading] = useState(true)
   useEffect(() => {
 
-    const fetchData = async () => {
-      const response = await fetch('http://localhost:5001/getLibrary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          libraryName: libraryName
-        })
-      })
-
-      if (response.status !== 404) setLibrary(await response.json())
-
-      const response2 = await fetch('http://localhost:5001/getCell', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          libraryName: libraryName,
-          cellId: cellId
-        })
-      })
-
-      if (response.status !== 404) setCell(await response2.json())
+    const get = async () => {
+      API.getLibrary(setLibrary, { libraryName: libraryName })
+      API.getCell(setCell, { libraryName: libraryName, cellId: cellId })
       setLoading(false)
     }
 
-    fetchData()
+    get()
 
   }, [cellId, libraryName])
 

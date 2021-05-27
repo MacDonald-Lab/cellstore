@@ -4,16 +4,13 @@ import { React, useState, useEffect } from 'react';
 import ExportLibraryModal from '../../components/ExportLibraryModal';
 import ModalStateManager from '../../components/ModalStateManager';
 
+import API from '../../components/API';
+
 const GeneralSettings = () => {
 
     const [settings, setSettings] = useState(null)
     useEffect(() => {
-
-        const fetchData = async () => {
-            const response = await fetch('http://localhost:5001/getSettings')
-            setSettings(await response.json())
-        }
-        fetchData()
+        API.getSettings(setSettings)
     }, [])
 
     if (!settings) return <p>Loading...</p>
@@ -27,14 +24,8 @@ const GeneralSettings = () => {
             }} />
         )}
         <Button onClick={async () => {
-            await fetch('http://localhost:5001/setSettings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ payload: settings })
-            })
-
+            await API.setSettings(null, {payload: settings})
             window.location.reload()
-
         }}>Submit</Button>
     </>
 

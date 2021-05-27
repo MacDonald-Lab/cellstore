@@ -1,6 +1,7 @@
 import {useState} from 'react' 
 
 import { Grid, Row, Column, TextInput, Button } from 'carbon-components-react'
+import API from '../../components/API'
 
 const InitialSetupPage = () => {
     const [settings, setSettings] = useState({
@@ -31,12 +32,7 @@ const InitialSetupPage = () => {
                 )}
 
                 <Button onClick={async () => {
-                    await fetch('http://localhost:5001/setSettings', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ payload: settings })
-                    })
-
+                    await API.setSettings(null, {payload: settings}) 
                     window.location.reload()
 
                 }}>Submit</Button>

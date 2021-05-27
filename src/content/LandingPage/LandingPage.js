@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom'
 import { Grid, Row, Column, ClickableTile, AspectRatio } from 'carbon-components-react';
 import { Table32, Add32 } from '@carbon/icons-react';
 
+import API from '../../components/API'
 
 const LandingPage = () => {
 
@@ -11,11 +12,7 @@ const LandingPage = () => {
   const [libraries, setLibraries] = useState(null)
   useEffect(() => {
 
-    const getData = async () => {
-      const response = await fetch('http://localhost:5001/getLibraries')
-      setLibraries(await response.json())
-    }
-    getData()
+    API.getLibraries(setLibraries)
   }, [])
 
   if (!libraries) return <p>Loading...</p>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag, DataTableSkeleton } from 'carbon-components-react'
 import { useParams } from 'react-router-dom';
 
@@ -6,6 +6,9 @@ import LibraryTable from '../../components/LibraryTable';
 import Filters from '../../components/Filters';
 import { useHistory } from 'react-router-dom';
 import { Tag16 } from '@carbon/icons-react';
+
+import API from '../../components/API';
+
 
 const LibraryPage = () => {
 
@@ -17,34 +20,15 @@ const LibraryPage = () => {
   const [loading, setLoading] = useState(true)
   useEffect(() => {
 
-    const fetchData = async () => {
-      const response = await fetch('http://localhost:5001/getLibrary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          libraryName: libraryName
-        })
-      })
+    const get = async () => {
 
-      if (response.status !== 404) setLibrary(await response.json())
-
-      const response2 = await fetch('http://localhost:5001/getLibraryData', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          libraryName: libraryName
-        })
-      })
-
-      if (response.status !== 404) setLibraryData(await response2.json())
+      await API.getLibrary(setLibrary, { libraryName: libraryName })
+      await API.getLibraryData(setLibraryData, { libraryName: libraryName })
       setLoading(false)
+
     }
 
-    fetchData()
+    get()
 
   }, [libraryName])
 
@@ -108,7 +92,7 @@ const LibraryPage = () => {
         <Column lg={12} md={12} sm={16}>
           <Tabs type="container">
             <Tab id="all-cells" label="All cells">
-              <LibraryTable library={library} libraryData={libraryData}/>
+              <LibraryTable library={library} libraryData={libraryData} />
             </Tab>
             <Tab id="advanced-search" label="Advanced search">
               <Filters library={library} />

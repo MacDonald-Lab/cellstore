@@ -4,6 +4,7 @@ import { React, useState } from 'react';
 import LibraryTable from '../../components/LibraryTable'
 
 import { useForceUpdate } from '../../components/Hooks'
+import API from '../../components/API'
 
 const Filters = ({ library }) => {
 
@@ -140,13 +141,7 @@ const Filters = ({ library }) => {
             .filter(item => (item.dataType !== 'int' && item.dataType !== 'string') || (item.filter.operator.value !== null && item.filter.value !== null)) // get rid of inputs where operator selector  is null
 
         // FIXME display error if int is not int
-        const response = await fetch('http://localhost:5001/getFilteredCells', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ libraryName: library.name, filters: submitArray })
-        })
-
-        setResults(await response.json())
+        await API.getFilteredCells(setResults, { libraryName: library.name, filters: submitArray })
     }
 
 

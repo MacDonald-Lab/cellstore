@@ -17,6 +17,7 @@ import ImageClassificationTestPage from './content/ImageClassificationTestPage';
 import LoginPage from './content/LoginPage';
 
 import InitialSetupPage from './content/InitialSetupPage'
+import API from './components/API'
 
 const LoadingScreen = () => <div className="loading__container">
   <div className="loading__elements">
@@ -44,17 +45,9 @@ const App = () => {
 
   const [settings, setSettings] = useState(null)
   const [loading, setLoading] = useState(true)
+
   useEffect(() => {
-
-    const fetchData = async () => {
-      const response = await fetch('http://localhost:5001/getSettings', {
-      })
-      if (response.status !== 520) setSettings(await response.json())
-      setLoading(false)
-    }
-
-    fetchData()
-
+    API.getSettings(setSettings, {}, setLoading)
   }, [])
 
 
