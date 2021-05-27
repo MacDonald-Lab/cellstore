@@ -1,48 +1,9 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, Dropdown, ButtonSet } from 'carbon-components-react';
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import papa from 'papaparse'
-import { useMutation, gql } from '@apollo/client';
-import {Close16} from '@carbon/icons-react'
+import { Close16 } from '@carbon/icons-react'
 
-const ADD_CELL = gql`
-  mutation AddCell(
-      $joan_cell_id: String!,
-      $diabetes_status: Int!,
-      $years_with_t2d: Int,
-      $age: Int!,
-      $sex: Int!,
-      $donor_id: String!,
-    ) {
-    createRawDna( input: {
-      rawDna: { 
-        joanCellId: $joan_cell_id,
-        diabetesStatus: $diabetes_status,
-        yearsWithT2D: $years_with_t2d,
-        age: $age,
-        sex: $sex,
-        donorId: $donor_id
-      }
-    }
-      ) {
-      rawDna {
-        joanCellId
-      }
-    }
-  }
-`;
-
-
-const ADD_EXPRESSION = gql`
-mutation ADD_EXPRESSION($expression: JSON!, $foreignId: String!){
-  createHumanCellsGeneExpression(
-    input: {humanCellsGeneExpression: {expression: $expression, foreignId: $foreignId}, clientMutationId: "add-mutation"}
-  ) {
-    clientMutationId
-  }
-}
-
-`
 
 function useForceUpdate() {
   // eslint-disable-next-line
@@ -60,7 +21,7 @@ const FormProgress = (props) => (
 
 )
 
-const UploadPage = (props) => {
+const UploadPage = () => {
 
 
   const findDuplicates = (arr) => {
@@ -88,62 +49,47 @@ const UploadPage = (props) => {
   const [uploadedFile, setUploadedFile] = useState(null)
 
   // eslint-disable-next-line
-  const [uploadedFileExprssions, setUploadedFileExpression] = useState(null)
-  const [loading, setLoading] = useState(false)
   const [fileHeaders, setFileHeaders] = useState(null)
   const [duplicates, setDuplicates] = useState([])
 
-  const [columns, setColumns] = useState([{
-    name: 'a',
-    friendlyName: 'Column A',
-    selectedItem: null
-  }, {
-    name: 'b',
-    friendlyName: 'Column B',
-    selectedItem: null
-  }, {
-    name: 'c',
-    friendlyName: 'Column C',
-    selectedItem: null
-  }, {
-    name: 'd',
-    friendlyName: 'Column D',
-    selectedItem: null
-  },
 
-  ]
-  )
+  const { libraryName } = useParams()
 
-  // -- DB Mutation
+  const [library, setLibrary] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [columnMappings, setColumnMappings] = useState(null)
 
-  const [addCell, { errorMutation }] = useMutation(ADD_CELL, {
-    update(cache, { data: { addCell } }) {
-      cache.modify({
-        fields: {
-          todos(existingCells = []) {
-            const newCellRef = cache.writeFragment({
-              data: addCell,
-              fragment: gql`
-                fragment NewCell on Cell {
-                  joanCellId
-                  diabetesStatus
-                  yearsWithT2D
-                  age
-                  sex
-                  donorId
-                }
-              `
-            });
-            return [...existingCells, newCellRef];
-          }
-        }
-      });
+  useEffect(() => {
+
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:5001/getLibrary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          libraryName: libraryName
+        })
+      })
+
+      if (response.status !== 404) {
+        const parsed = await response.json()
+        setLibrary(parsed)
+        setColumnMappings(parsed.fields.map(item => ({
+          name: item.name,
+          friendlyName: item.friendlyName,
+          dataType: item.dataType,
+          selectedItem: null
+        })))
+      }
+
+      setLoading(false)
     }
-  })
 
-  // eslint-disable-next-line
-  const [addExpression, { errorMutationExpression }] = useMutation(ADD_EXPRESSION)
+    fetchData()
 
+  }, [libraryName])
 
   const forceUpdate = useForceUpdate()
 
@@ -153,11 +99,15 @@ const UploadPage = (props) => {
     // setUploadedFiles(uploadedFiles.filter((item, index) => index !== parseInt(uuid)))
     setUploadedFile(null)
     setFileHeaders(null)
+    for (const column of columnMappings) {
+      column.selectedItem = null
+    }
+    setColumnMappings(columnMappings)
 
   }
 
-  const handleFileUpload = (evt, { addedFiles }) => {
-    setLoading(true)
+  const handleInitialFileUpload = (evt, { addedFiles }) => {
+    setUploading(true)
     setUploadedFile(addedFiles[0])
     papa.parse(addedFiles[0], {
       header: true,
@@ -166,53 +116,41 @@ const UploadPage = (props) => {
         setFileHeaders(Object.keys(result.data).map(key => ({
           nameFromFile: key,
         })))
-        setLoading(false)
+        setUploading(false)
         parser.abort()
       }
     })
   }
-  const handleFileUploadExpression = (evt, { addedFiles }) => {
-    setLoading(true)
-    setUploadedFileExpression(addedFiles[0])
-    papa.parse(addedFiles[0], {
-      header: true,
-      worker: true, // Don't bog down the main thread if its a big file
-      step: function (results, parser) {
+  // const handleFileUploadExpression = (evt, { addedFiles }) => {
+  //   setLoading(true)
+  //   setUploadedFileExpression(addedFiles[0])
+  //   papa.parse(addedFiles[0], {
+  //     header: true,
+  //     worker: true, // Don't bog down the main thread if its a big file
+  //     step: function (results, parser) {
 
-        const id = results.data['joan_cell_id']
-        delete results.data['joan_cell_id']          
-        addExpression({ variables: {
-          foreignId: id,
-          expression: results.data
-        }})
-        setLoading(false)
-        parser.abort()
-      }
-    })
-  }
+  //       const id = results.data['joan_cell_id']
+  //       delete results.data['joan_cell_id']          
+  //       addExpression({ variables: {
+  //         foreignId: id,
+  //         expression: results.data
+  //       }})
+  //       setLoading(false)
+  //       parser.abort()
+  //     }
+  //   })
+  // }
   const handleFileSubmit = () => {
     var count = 0; // cache the running count
-    setLoading(true)
+    setUploading(true)
     papa.parse(uploadedFile, {
       header: true,
       worker: true, // Don't bog down the main thread if its a big file
-      step: function (result) {
-        // if (count === 10) {
-        const editedResults = result.data
-        editedResults.diabetes_status = parseInt(editedResults.diabetes_status)
-        editedResults.years_with_t2d = parseInt(editedResults.years_with_t2d)
-        editedResults.age = parseInt(editedResults.age)
-        editedResults.sex = parseInt(editedResults.sex)
-        // if (editedResults.years_with_t2d === null) {
-
-        // }
-
-        addCell({ variables: editedResults })
-        // }
+      step: (result) => {
         count++;
       },
       complete: function (results, file) {
-        setLoading(false)
+        setUploading(false)
         console.log(`finished with ${count} rows`)
 
       }
@@ -220,6 +158,9 @@ const UploadPage = (props) => {
   }
 
   // Library Handlers
+  if (loading) return <p>Loading</p>
+  if (!library) return <p>Cannot find library with id: {libraryName}</p>
+
 
   return (<>
 
@@ -262,7 +203,7 @@ const UploadPage = (props) => {
                     accept={['.csv']}
                     multiple={false}
                     name="Upload images"
-                    onAddFiles={handleFileUpload}
+                    onAddFiles={handleInitialFileUpload}
                   /> : <FileUploaderItem
                     name={uploadedFile.name} key={'u-file'} uuid={'u-file'} status={"edit"} onDelete={handleItemDelete} />
 
@@ -272,14 +213,12 @@ const UploadPage = (props) => {
             </FormGroup>
 
             <Button>Continue to Label Data</Button>
-            <Button onClick={handleFileSubmit}>Test Upload</Button>
 
           </Form>
         </Column>
       </Row>
       <Row>
         <Column>
-          {errorMutation}
           <h1>Label Data Columns</h1>
           <FormProgress step={1} />
         </Column>
@@ -287,7 +226,7 @@ const UploadPage = (props) => {
       </Row>
       <Row>
 
-        {fileHeaders && columns.map((item, i) => (
+        {fileHeaders && columnMappings.map((item, i) => (
           <Column sm={4} md={4} lg={4} className="upload-page__label">
             <Tile>
               <AspectRatio ratio="2x1">
@@ -303,26 +242,27 @@ const UploadPage = (props) => {
                   itemToString={(item) => (item ? item.nameFromFile : '')}
                   onChange={({ selectedItem }) => {
 
-                    const temp = columns
-                    temp[i].selectedItem = selectedItem
-                    setColumns(temp)
-                    setDuplicates(findDuplicates(temp.map(item => item.selectedItem)))
+                    item.selectedItem = selectedItem
+                    setColumnMappings(columnMappings)
+                    setDuplicates(findDuplicates(columnMappings.map(item => item.selectedItem)))
                     forceUpdate()
 
                   }}
                 />
-                <Button 
-                hasIconOnly
-                renderIcon={Close16}
-                kind="ghost"
-                iconDescription="Clear field"
-                onClick={() => {
-                    const temp = columns
-                    temp[i].selectedItem = null
-                    setColumns(temp)
+
+                <p>{item.dataType}</p>
+                <Button
+                  hasIconOnly
+                  renderIcon={Close16}
+                  kind="ghost"
+                  iconDescription="Clear field"
+                  onClick={() => {
+                    item.selectedItem = null
+                    setColumnMappings(columnMappings)
+                    setDuplicates(findDuplicates(columnMappings.map(item => item.selectedItem)))
                     forceUpdate()
 
-                }} />
+                  }} />
               </AspectRatio>
             </Tile>
           </Column>
@@ -342,17 +282,24 @@ const UploadPage = (props) => {
         <Column>
 
           <h1>Review</h1>
-                  <FileUploaderDropContainer
+          {/* <FileUploaderDropContainer
                     labelText="Drag and drop gene expression file here or click to upload"
                     accept={['.csv']}
                     multiple={false}
                     name="Upload images"
                     onAddFiles={handleFileUploadExpression}
-                  />
+                  /> */}
 
           <FormProgress step={2} />
         </Column>
 
+      </Row>
+      <Row>
+        <Column>
+
+          <Button onClick={handleFileSubmit}>Upload data</Button>
+
+        </Column>
       </Row>
 
     </Grid>

@@ -123,7 +123,7 @@ const LibraryTable = ({library, libraryData}) => {
             </TableToolbarAction>
               </TableToolbarMenu>
               {/* <AddRNAModal /> */}
-              <Button onClick={() => history.push('/library/upload')} size="small" kind="primary" renderIcon={Upload16}>Upload to Library</Button>
+              <Button onClick={() => history.push('/library/' + library.name + '/upload')} size="small" kind="primary" renderIcon={Upload16}>Upload to Library</Button>
 
             </TableToolbarContent>
           </TableToolbar>
