@@ -1,4 +1,5 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useRef } from 'react';
+import {createPortal} from 'react-dom'
 import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, SelectableTile, AspectRatio, ButtonSet, Tile, Checkbox } from 'carbon-components-react';
 import { Link, useHistory } from 'react-router-dom'
 import { Add16, ArrowDown16, ArrowUp16, TrashCan16 } from '@carbon/icons-react';
@@ -6,6 +7,35 @@ import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
 import ModalStateManager from '../../components/ModalStateManager';
 import DataTypes from '../../dataTypes'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+
+
+// HOOKS and FUNCTIONS
+
+const useDraggableInPortal = () => {
+  const self = useRef({}).current;
+
+  useEffect(() => {
+    const div = document.createElement('div');
+    div.style.position = 'absolute';
+    div.style.pointerEvents = 'none';
+    div.style.top = '0';
+    div.style.width = '100%';
+    div.style.height = '100%';
+    self.elt = div;
+    document.body.appendChild(div);
+    return () => {
+      document.body.removeChild(div);
+    };
+  }, [self]);
+
+  return (render) => (provided, ...args) => {
+    const element = render(provided, ...args);
+    if (provided.draggableProps.style.position === 'fixed') {
+      return createPortal(element, self.elt);
+    }
+    return element;
+  };
+};
 
 function slugify(string) {
   const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
@@ -28,6 +58,10 @@ function useForceUpdate() {
   return () => setValue(value => value + 1); // update the state to force render
 }
 
+function randId() {
+  return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);
+}
+
 const FormProgress = (props) => (
   <ProgressIndicator className="create-library-page__progress" currentIndex={props.step}>
     <ProgressStep label="Descriptors" />
@@ -37,6 +71,33 @@ const FormProgress = (props) => (
   </ProgressIndicator>
 
 )
+const getItemStyle = (isDragging, draggableStyle) => ({
+  // some basic styles to make the items look a bit nicer
+  // userSelect: "none",
+  // padding: 0,
+
+  // change background colour if dragging
+  // backgroundColor: isDragging && "gray",
+  opacity: isDragging && 0.8,
+  // position: 'static',
+  // styles we need to apply on draggables
+  ...draggableStyle
+});
+
+const getListStyle = isDraggingOver => ({
+  background: isDraggingOver ? "lightblue" : "lightgrey",
+  padding: 5,
+  width: 250
+});
+
+// a little function to help us with reordering the result
+const reorder = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
 
 const typeDescriptions = DataTypes.initDescriptions()
 
@@ -52,6 +113,7 @@ const CreateLibraryPage = () => {
     fields: [
       {
         name: "",
+        key: 'primary-abcdef',
         friendlyName: "",
         dataType: null,
         restrictions: null,
@@ -120,7 +182,7 @@ const CreateLibraryPage = () => {
       forcePageUpdate()
     }
 
-    const Field = ({ editable, i }) => {
+    const Field = ({ editable, i, provided, snapshot }) => {
 
       const TAG_COLORS = [
         {
@@ -201,7 +263,7 @@ const CreateLibraryPage = () => {
 
       const forceFieldUpdate = useForceUpdate()
 
-      return <><Row className='create-library-page__field-row'>
+      return <Tile className='create-library-page__field' style={editable && getItemStyle(snapshot.isDragging, provided.draggableProps.style)}><Row className='create-library-page__field-row'>
         <Column>
           <TextInput id={i.toString() + '-input'} value={library.fields[i].friendlyName} labelText={'Field name'} onChange={(e) => {
             library.fields[i].friendlyName = e.target.value
@@ -223,46 +285,16 @@ const CreateLibraryPage = () => {
             itemToString={(dropdownItem) => (dropdownItem ? dropdownItem.text : '')}
           />
         </Column>
-        <Column>
-        </Column>
         {editable &&
-          <Column className='create-library-page__field-actions'>
-            <Button
-              hasIconOnly
-              disabled={i === 1}
-              renderIcon={ArrowUp16}
-              tooltipAlignment="center"
-              tooltipPosition="bottom"
-              iconDescription="Move up"
-              kind='ghost' size='field'
-              onClick={() => {
-                const temp = library.fields[i]
-                library.fields[i] = library.fields[i - 1]
-                library.fields[i - 1] = temp
+          <Column max={2} className='create-library-page__field-actions'>
 
-                setLibrary(setLibrary)
-                forcePageUpdate()
-              }}
-            />
-            <Button
-              hasIconOnly
-              disabled={i === library.fields.length - 1}
-              renderIcon={ArrowDown16}
-              tooltipAlignment="center"
-              tooltipPosition="bottom"
-              iconDescription="Move down"
-
-              kind='ghost' size='field'
-
-              onClick={() => {
-                const temp = library.fields[i]
-                library.fields[i] = library.fields[i + 1]
-                library.fields[i + 1] = temp
-
-                setLibrary(setLibrary)
-                forcePageUpdate()
-              }}
-            />
+            <div
+              // ref={provided.innerRef}
+              //   {...provided.draggableProps}
+              {...provided.dragHandleProps}
+            >
+              Drag me!
+            </div>
 
 
             <Button
@@ -361,10 +393,22 @@ const CreateLibraryPage = () => {
           </>)}
         </>}
 
-      </>
+      </Tile>
 
 
     }
+
+
+    const handleDragEnd = ({ source, destination }) => {
+      if (destination) {
+
+
+        library.fields = reorder(library.fields, source.index, destination.index)
+        setLibrary(library)
+      }
+    }
+
+    const renderDraggable = useDraggableInPortal()
 
     return <>
       <Row>
@@ -392,6 +436,7 @@ const CreateLibraryPage = () => {
           <br />
         </Column>
       </Row>
+      <Field library={library} setLibrary={setLibrary} i={0} />
 
       <Row>
         <Column>
@@ -401,13 +446,66 @@ const CreateLibraryPage = () => {
         </Column>
       </Row>
 
-      {library.fields.map((item, i) => <Field editable={i !== 0} library={library} setLibrary={setLibrary} i={i} />)}
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="fields">
+          {(provided, snapshot) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            // style={getListStyle(snapshot.isDraggingOver)}
+            >
+
+              {library.fields.map((item, i) => {
+                if (i > 0) return <Draggable key={item.key} draggableId={item.key} index={i} >
+                  {renderDraggable((provided, snapshot) => 
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    // {...provided.dragHandleProps}
+                    style={getItemStyle(
+                      snapshot.isDragging,
+                      provided.draggableProps.style
+                    )}>
+
+
+                    <Field editable={i !== 0} library={library} setLibrary={setLibrary} i={i} provided={provided} snapshot={snapshot} />
+
+                  </div>)}
+
+
+                </Draggable>
+              }
+
+
+
+              )}
+
+
+
+            </div>
+
+
+
+          )}
+
+
+        </Droppable>
+
+
+
+
+
+      </DragDropContext>
 
       <Row>
         <Column>
           <Button renderIcon={Add16} onClick={() => {
+
+            const id = randId()
+
             library.fields.push({
               name: "",
+              key: id,
               friendlyName: "",
               dataType: null,
               restrictions: null,
@@ -480,33 +578,7 @@ const CreateLibraryPage = () => {
       library.fields.slice(1)
     )
 
-    const getItemStyle = (isDragging, draggableStyle) => ({
-      // some basic styles to make the items look a bit nicer
-      userSelect: "none",
-      padding: 5 * 2,
-      margin: `0 0 ${5}px 0`,
 
-      // change background colour if dragging
-      background: isDragging ? "lightgreen" : "grey",
-
-      // styles we need to apply on draggables
-      ...draggableStyle
-    });
-
-    const getListStyle = isDraggingOver => ({
-      background: isDraggingOver ? "lightblue" : "lightgrey",
-      padding: 5,
-      width: 250
-    });
-
-    // a little function to help us with reordering the result
-    const reorder = (list, startIndex, endIndex) => {
-      const result = Array.from(list);
-      const [removed] = result.splice(startIndex, 1);
-      result.splice(endIndex, 0, removed);
-
-      return result;
-    };
 
     const handleDragEnd = ({ source, destination }) => {
       const newReordered = reorder(libraryColumns, source.index, destination.index)
@@ -516,7 +588,6 @@ const CreateLibraryPage = () => {
         ...newReordered
       ]
       setLibrary(library)
-      // forcePageUpdate()
     }
 
     return <>
