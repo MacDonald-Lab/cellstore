@@ -1,5 +1,6 @@
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody, FileUploaderDropContainer, FileUploaderItem, Checkbox, TextInput, ButtonSet, Button } from 'carbon-components-react';
 import { React, useState } from 'react';
+import { useForceUpdate } from '../../components/Hooks'
 
 import papa from 'papaparse'
 
@@ -27,12 +28,6 @@ const getType = (str) => {
         else if (phone.test(str)) return "phone";
         else return "string";
     }
-}
-
-function useForceUpdate() {
-    // eslint-disable-next-line
-    const [value, setValue] = useState(0); // integer state
-    return () => setValue(value => value + 1); // update the state to force render
 }
 
 const ImportColumnNamesModal = (props) => {

@@ -1,66 +1,15 @@
-import { React, useState, useEffect, useRef } from 'react';
-import {createPortal} from 'react-dom'
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, Dropdown, SelectableTile, AspectRatio, ButtonSet, Tile, Checkbox } from 'carbon-components-react';
+import { React, useState } from 'react';
+import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, SelectableTile, AspectRatio, ButtonSet, Tile } from 'carbon-components-react';
 import { Link, useHistory } from 'react-router-dom'
-import { Add16, DragVertical24, TrashCan16 } from '@carbon/icons-react';
+import { Add16 } from '@carbon/icons-react';
 import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
 import ModalStateManager from '../../components/ModalStateManager';
 import DataTypes from '../../dataTypes'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-
+import Field from '../../components/LibraryField'
+import { useDraggableInPortal, useForceUpdate, randId, slugify } from '../../components/Hooks'
 
 // HOOKS and FUNCTIONS
-
-const useDraggableInPortal = () => {
-  const self = useRef({}).current;
-
-  useEffect(() => {
-    const div = document.createElement('div');
-    div.style.position = 'absolute';
-    div.style.pointerEvents = 'none';
-    div.style.top = '0';
-    div.style.width = '100%';
-    div.style.height = '100%';
-    self.elt = div;
-    document.body.appendChild(div);
-    return () => {
-      document.body.removeChild(div);
-    };
-  }, [self]);
-
-  return (render) => (provided, ...args) => {
-    const element = render(provided, ...args);
-    if (provided.draggableProps.style.position === 'fixed') {
-      return createPortal(element, self.elt);
-    }
-    return element;
-  };
-};
-
-function slugify(string) {
-  const a = 'àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;'
-  const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------'
-  const p = new RegExp(a.split('').join('|'), 'g')
-
-  return string.toString().toLowerCase()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
-    .replace(/&/g, '-and-') // Replace & with 'and'
-    .replace(/[^\w\-]+/g, '') // Remove all non-word characters
-    .replace(/\-\-+/g, '-') // Replace multiple - with single -
-    .replace(/^-+/, '') // Trim - from start of text
-    .replace(/-+$/, '') // Trim - from end of text
-}
-
-function useForceUpdate() {
-  // eslint-disable-next-line
-  const [value, setValue] = useState(0); // integer state
-  return () => setValue(value => value + 1); // update the state to force render
-}
-
-function randId() {
-  return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10);
-}
 
 const FormProgress = (props) => (
   <ProgressIndicator className="create-library-page__progress" currentIndex={props.step}>
@@ -71,6 +20,7 @@ const FormProgress = (props) => (
   </ProgressIndicator>
 
 )
+
 const getItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   // userSelect: "none",
@@ -182,225 +132,6 @@ const CreateLibraryPage = () => {
       forcePageUpdate()
     }
 
-    const Field = ({ editable, i, provided, snapshot }) => {
-
-      const TAG_COLORS = [
-        {
-          text: 'Red',
-          value: 'red'
-        },
-        {
-          text: 'Magenta',
-          value: 'magenta'
-        },
-        {
-          text: 'Purple',
-          value: 'purple'
-        },
-        {
-          text: 'Blue',
-          value: 'blue'
-        },
-        {
-          text: 'Cyan',
-          value: 'cyan'
-        },
-        {
-          text: 'Teal',
-          value: 'teal'
-        },
-        {
-          text: 'Green',
-          value: 'green'
-        },
-        {
-          text: 'Gray',
-          value: 'gray'
-        },
-        {
-          text: 'Cool Gray',
-          value: 'cool-gray'
-        },
-        {
-          text: 'Warm Gray',
-          value: 'warm-gray'
-        },
-        {
-          text: 'High Contrast',
-          value: 'high-contrast'
-        },
-      ]
-
-      const PRIMARY_DATA_TYPES = [
-        {
-          text: 'Integer',
-          value: 'int'
-        },
-        {
-          text: 'Text',
-          value: 'string'
-        },
-      ]
-      const DATA_TYPES = [
-        {
-          text: 'Integer',
-          value: 'int'
-        },
-        {
-          text: 'Text',
-          value: 'string'
-        },
-        {
-          text: 'Multi-select',
-          value: 'multiselect',
-          options: {
-            multiselectStoredAs: "int",
-            multiselectTags: false,
-            multiselectOptions: []
-          }
-        },
-      ]
-
-      const forceFieldUpdate = useForceUpdate()
-
-      return <Tile className='create-library-page__field' style={editable && getItemStyle(snapshot.isDragging, provided.draggableProps.style)}><Row className='create-library-page__field-row'>
-        <Column>
-          <TextInput id={i.toString() + '-input'} value={library.fields[i].friendlyName} labelText={'Field name'} onChange={(e) => {
-            library.fields[i].friendlyName = e.target.value
-            library.fields[i].name = slugify(e.target.value)
-            setLibrary(setLibrary)
-            forceFieldUpdate()
-          }} />
-        </Column>
-        <Column>
-          <Dropdown id={i.toString() + '-typeSelector'} titleText='Field type' onChange={(e) => {
-            library.fields[i].dataType = e.selectedItem
-            setLibrary(setLibrary)
-            forceFieldUpdate()
-          }}
-
-            selectedItem={library.fields[i].dataType}
-            items={editable ? DATA_TYPES : PRIMARY_DATA_TYPES}
-
-            itemToString={(dropdownItem) => (dropdownItem ? dropdownItem.text : '')}
-          />
-        </Column>
-        {editable &&
-          <Column max={2} className='create-library-page__field-actions'>
-
-            <div
-              // ref={provided.innerRef}
-              //   {...provided.draggableProps}
-              {...provided.dragHandleProps}
-
-              className='create-library-page__drag-handle'
-            >
-              <DragVertical24 />
-            </div>
-
-
-            <Button
-              hasIconOnly
-              renderIcon={TrashCan16}
-              tooltipAlignment="center"
-              tooltipPosition="bottom"
-              iconDescription="Delete field"
-              kind='danger' size='field'
-              onClick={() => {
-                library.fields.splice(i, 1)
-                setLibrary(setLibrary)
-                forcePageUpdate()
-              }}
-            />
-
-          </Column>
-        }
-      </Row>
-
-        {(library.fields[i].dataType && library.fields[i].dataType.value === 'multiselect') && <> <Row>
-          <Column>
-
-            <h4>Multi-select options</h4>
-            <Checkbox key={i + '-multiselect'} id={i + '-multiselect'} labelText={'Store as tags'} onChange={(value) => {
-              library.fields[i].dataType.options.multiselectTags = value
-              setLibrary(library)
-              forceFieldUpdate()
-            }
-            } checked={library.fields[i].dataType.options.multiselectTags} />
-
-            <Button onClick={() => {
-              library.fields[i].dataType.options.multiselectOptions.push({
-                friendlyName: '',
-                storedAs: '',
-                color: null
-              })
-              forceFieldUpdate()
-            }}>Add option</Button>
-
-          </Column>
-        </Row>
-
-          {library.fields[i].dataType.options.multiselectOptions.map((item, j) => <>
-            <Row>
-              <Column>
-                <TextInput key={i + '-' + j} id={i + '-' + j} value={item.friendlyName} labelText='Option name' onChange={e => {
-                  item.friendlyName = e.target.value
-                  setLibrary(library)
-                  forceFieldUpdate()
-                }} />
-
-              </Column>
-              <Column>
-                <TextInput key={i + '-' + j + '-store'} id={i + '-' + j + '-store'} labelText='Option stored as' value={item.storedAs} onChange={e => {
-                  item.storedAs = e.target.value
-                  setLibrary(library)
-                  forceFieldUpdate()
-                }} />
-
-              </Column>
-
-              {library.fields[i].dataType.options.multiselectTags && <Column>
-                <Dropdown id={i.toString() + '-typeSelector'} titleText='Tag color' onChange={(e) => {
-                  item.color = e.selectedItem
-                  setLibrary(setLibrary)
-                  forceFieldUpdate()
-                }}
-
-                  selectedItem={item.color}
-                  items={TAG_COLORS}
-
-                  itemToString={(dropdownItem) => (dropdownItem ? dropdownItem.text : '')}
-                />
-
-              </Column>}
-
-              <Column>
-                <Button
-                  hasIconOnly
-                  renderIcon={TrashCan16}
-                  tooltipAlignment="center"
-                  tooltipPosition="bottom"
-                  iconDescription="Delete option"
-                  kind='danger' size='field'
-                  onClick={() => {
-                    library.fields[i].dataType.options.multiselectOptions.splice(j, 1)
-                    setLibrary(setLibrary)
-                    forcePageUpdate()
-                  }}
-                />
-              </Column>
-
-            </Row>
-
-          </>)}
-        </>}
-
-      </Tile>
-
-
-    }
-
-
     const handleDragEnd = ({ source, destination }) => {
       if (destination) {
 
@@ -438,7 +169,7 @@ const CreateLibraryPage = () => {
           <br />
         </Column>
       </Row>
-      <Field library={library} setLibrary={setLibrary} i={0} />
+      <Field forcePageUpdate={forcePageUpdate} library={library} setLibrary={setLibrary} i={0} />
 
       <Row>
         <Column>
@@ -459,20 +190,20 @@ const CreateLibraryPage = () => {
 
               {library.fields.map((item, i) => {
                 if (i > 0) return <Draggable key={item.key} draggableId={item.key} index={i} >
-                  {renderDraggable((provided, snapshot) => 
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    // {...provided.dragHandleProps}
-                    style={getItemStyle(
-                      snapshot.isDragging,
-                      provided.draggableProps.style
-                    )}>
+                  {renderDraggable((provided, snapshot) =>
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      // {...provided.dragHandleProps}
+                      style={getItemStyle(
+                        snapshot.isDragging,
+                        provided.draggableProps.style
+                      )}>
 
 
-                    <Field editable={i !== 0} library={library} setLibrary={setLibrary} i={i} provided={provided} snapshot={snapshot} />
+                      <Field editable={i !== 0} library={library} setLibrary={setLibrary} i={i} forcePageUpdate={forcePageUpdate} provided={provided} />
 
-                  </div>)}
+                    </div>)}
 
 
                 </Draggable>

@@ -1,16 +1,10 @@
 import { React, useState, useEffect } from 'react';
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, Checkbox, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, Dropdown, ButtonSet } from 'carbon-components-react';
-import { Link, useParams } from 'react-router-dom'
+import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, Dropdown, ButtonSet } from 'carbon-components-react';
+import { Link, useParams, useHistory } from 'react-router-dom'
 import papa from 'papaparse'
 import { Close16 } from '@carbon/icons-react'
-import { flattenDiagnosticMessageText } from 'typescript';
+import { useForceUpdate } from '../../components/Hooks'
 
-
-function useForceUpdate() {
-  // eslint-disable-next-line
-  const [value, setValue] = useState(0); // integer state
-  return () => setValue(value => value + 1); // update the state to force render
-}
 
 const FormProgress = (props) => (
   <ProgressIndicator className="upload-page__progress" currentIndex={props.step}>
@@ -24,6 +18,7 @@ const FormProgress = (props) => (
 
 const UploadPage = () => {
 
+  const history = useHistory()
 
   const findDuplicates = (arr) => {
     const distinct = new Set(arr);        // to improve performance
@@ -42,8 +37,6 @@ const UploadPage = () => {
     return [...new Set(filtered)]
   }
 
-
-  // State counter (pages)
 
 
   // States
@@ -167,16 +160,14 @@ const UploadPage = () => {
           body: JSON.stringify({ libraryName: libraryName, libraryItem: newResult })
         })
 
-
         count++;
-        console.log('done a cell')
         parser.resume()
-
 
       },
       complete: function (results, file) {
         setUploading(false)
         console.log(`finished with ${count} rows`)
+        history.push('/library/'+ libraryName)
 
       }
     })

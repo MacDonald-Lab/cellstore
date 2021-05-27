@@ -3,11 +3,7 @@ import { Button, ButtonSet, Checkbox, Tile, TextInput, Dropdown } from 'carbon-c
 import { React, useState } from 'react';
 import LibraryTable from '../../components/LibraryTable'
 
-function useForceUpdate() {
-    // eslint-disable-next-line
-    const [value, setValue] = useState(0); // integer state
-    return () => setValue(value => value + 1); // update the state to force render
-}
+import { useForceUpdate } from '../../components/Hooks'
 
 const Filters = ({ library }) => {
 
