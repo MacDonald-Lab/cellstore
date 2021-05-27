@@ -108,6 +108,12 @@ const DATA_TYPE_MAPS = {
   multiselect: DataTypes.INTEGER
 }
 
+const DATA_TYPE_STRING_MAPS = {
+  string: "STRING",
+  int: "INTEGER",
+  multiselect: "INTEGER"
+}
+
 app.all('/createLibrary', async (req, res) => {
 
   const { name, fields } = req.body
@@ -135,8 +141,15 @@ app.all('/createLibrary', async (req, res) => {
   // TODO create tables for data types
 
   // store info in database
-
-  await models.Library.create({ key: name, definition: libraryDefinition, schema: schema })
+  const dbSchema = Object.fromEntries(fields.map(field => {
+    const def = {
+      type: DATA_TYPE_STRING_MAPS[field.dataType],
+      primaryKey: field.primaryKey
+    }
+    return [field['name'], def]
+  }))
+  
+  await models.Library.create({ key: name, definition: libraryDefinition, schema: dbSchema })
 
   res.status(200).send()
 
