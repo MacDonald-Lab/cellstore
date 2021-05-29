@@ -9,6 +9,10 @@ import cors from 'cors';
 import libraryModel from './models/library.js'
 import settingsModel from './models/settings.js'
 
+
+import Computations from '../src/computations/index.js'
+
+
 const port = process.env.BACKEND_PORT
 const dbName = 'cellstore_db_test'
 const dbUsername = 'postgres'
@@ -294,6 +298,18 @@ app.all('/getFilteredCells', async (req, res) => {
   const data = await newLibrary.findAll({where: where})
 
   res.status(200).send(data)
+})
+
+
+app.all('/getComputations', async (req, res) => {
+
+  // get from code
+  const definitions = Computations.initDefinitions()
+
+  // get from DB
+
+  res.status(200).send(definitions)
+  
 })
 
 // hello world request

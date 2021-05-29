@@ -1,4 +1,4 @@
-import average2Values from './average2Values'
+import average2Values from './average2Values/index.js'
 
 const computations = [
     average2Values

@@ -38,7 +38,8 @@ const GET_REQUESTS = [
     'getCell',
     'createLibrary',
     'addItemToLibrary',
-    'getFilteredCells'
+    'getFilteredCells',
+    'getComputations'
 
 ]
 
