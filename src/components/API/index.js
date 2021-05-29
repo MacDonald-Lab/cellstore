@@ -37,7 +37,8 @@ const GET_REQUESTS = [
     'getLibraryData',
     'getCell',
     'createLibrary',
-    'addItemToLibrary'
+    'addItemToLibrary',
+    'getFilteredCells'
 
 ]
 
