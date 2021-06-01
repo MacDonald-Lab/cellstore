@@ -35,7 +35,8 @@ const definition = {
 }
 
 const averageValue = ({ valueA, valueB }) => {
-    return (valueA + valueB)/2
+    return {average: (parseFloat(valueA) + parseFloat(valueB))/2}
+
 }
 
 const exportObject = {

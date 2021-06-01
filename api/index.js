@@ -331,6 +331,20 @@ app.all('/', (req, res) => {
   res.send('hello world')
 })
 
+app.post('/runComputation', async (req, res) => {
+
+  const computationName = req.body['computationName']
+  const computationParams = req.body['computationParams']
+
+  try {
+    const output = await Computations.run(computationName, computationParams)
+    res.status(200).send(output)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+
+})
+
 
 //This chunk creates a table, only if it doesn't already exist
 app.post('/createTable', (req, res) => {

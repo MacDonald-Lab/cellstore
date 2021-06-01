@@ -76,7 +76,7 @@ const App = () => {
         <Route exact path='/settings' component={SettingsPage} />
         <Route exact path='/settings/create' component={CreateLibraryPage} />
         <Route exact path='/computations' component={ComputationPage} />
-        <Route exact path='/computation/:compuationName' component={ComputationInfoPage} />
+        <Route exact path='/computation/:computationName' component={ComputationInfoPage} />
         <Route exact path='/computations/image-test' component={ImageClassificationTestPage} />
         <Route exact path='/login' component={LoginPage} />
       </Switch>

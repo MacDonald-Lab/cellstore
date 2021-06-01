@@ -40,7 +40,8 @@ const GET_REQUESTS = [
     'addItemToLibrary',
     'getFilteredCells',
     'getComputations',
-    'getComputation'
+    'getComputation',
+    'runComputation',
 
 ]
 
