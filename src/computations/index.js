@@ -6,9 +6,12 @@ const computations = [
 
 const initDefinitions = () => computations.map(computation => computation.definition)
 
+const initDefinition = (name) => computations.find(computation => computation.name === name)
+
 
 const moduleExports = {
     initDefinitions,
+    initDefinition,
     ...computations
 }
 

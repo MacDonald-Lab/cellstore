@@ -306,12 +306,25 @@ app.all('/getComputations', async (req, res) => {
   // get from code
   const definitions = Computations.initDefinitions()
 
-  // get from DB
+  // TODO get from DB
 
   res.status(200).send(definitions)
   
 })
 
+app.all('/getComputation', async (req, res) => {
+
+  const computationName = req.body['computationName']
+
+  // get from code
+  const definition = Computations.initDefinition(computationName)
+
+  // TODO get from DB
+
+  if (!definition) res.status(404).send()
+  else res.status(200).send(definition)
+  
+})
 // hello world request
 app.all('/', (req, res) => {
   console.log('Request received')

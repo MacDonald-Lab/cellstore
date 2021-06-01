@@ -15,6 +15,7 @@ import SettingsPage from './content/SettingsPage';
 import ComputationPage from './content/ComputationPage';
 import ImageClassificationTestPage from './content/ImageClassificationTestPage';
 import LoginPage from './content/LoginPage';
+import ComputationInfoPage from './content/ComputationInfoPage';
 
 import InitialSetupPage from './content/InitialSetupPage'
 import API from './components/API'
@@ -75,6 +76,7 @@ const App = () => {
         <Route exact path='/settings' component={SettingsPage} />
         <Route exact path='/settings/create' component={CreateLibraryPage} />
         <Route exact path='/computations' component={ComputationPage} />
+        <Route exact path='/computation/:compuationName' component={ComputationInfoPage} />
         <Route exact path='/computations/image-test' component={ImageClassificationTestPage} />
         <Route exact path='/login' component={LoginPage} />
       </Switch>
