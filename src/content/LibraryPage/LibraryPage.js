@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag, DataTableSkeleton } from 'carbon-components-react'
+import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag, DataTableSkeleton, Button } from 'carbon-components-react'
 import { useParams } from 'react-router-dom';
 
 import LibraryTable from '../../components/LibraryTable';
@@ -8,6 +8,8 @@ import { useHistory } from 'react-router-dom';
 import { Tag16 } from '@carbon/icons-react';
 
 import API from '../../components/API';
+import ModalStateManager from '../../components/ModalStateManager';
+import RunComputationModal from '../../components/RunComputationModal';
 
 
 const LibraryPage = () => {
@@ -104,6 +106,18 @@ const LibraryPage = () => {
         <Column>
 
           <br />
+          <br />
+          <br />
+
+          <h3>Computations</h3>
+          <br />
+          <ModalStateManager renderLauncher={({ setOpen }) =>
+            <Button onClick={() => setOpen(true)}>Run computation on library</Button>
+          }>
+            {modalProps => <RunComputationModal {...modalProps} library={library} />}
+          </ModalStateManager>
+
+
           <br />
           <br />
 
