@@ -9,9 +9,10 @@ import cors from 'cors';
 import libraryModel from './models/library.js'
 import settingsModel from './models/settings.js'
 
-
 import Computations from '../src/computations/index.js'
-import library from './models/library.js';
+
+
+// GET DATABASE PROPERTIES
 
 
 const port = process.env.BACKEND_PORT
@@ -24,12 +25,16 @@ const dbHost = 'localhost'
 
 // ESTABLISH DATABASE CONNECTION
 
+
 // create database if not exist
+
+// connect to default database
 const baseSequelize = new Sequelize('postgres', dbUsername, dbPassword, {
   host: dbHost,
   dialect: 'postgres'
 })
 
+// query to create a table if not exist
 await baseSequelize.query(`CREATE DATABASE ${dbName}`).catch(() => { console.log('Database already exists, skipping creation') })
 baseSequelize.close()
 
@@ -52,51 +57,55 @@ const models = {
   Library: libraryModel(sequelize, DataTypes),
   Settings: settingsModel(sequelize, DataTypes)
 }
-
 sequelize.sync()
 
 // this is the query library
 const queryInterface = sequelize.getQueryInterface();
 
 
-
 // SETUP WEB SERVER
+
 
 const app = express();
 app.use(express.json())
 app.use(cors())
 
-// DEFINE REQUESTS
 
-// helper function : return library model/definition
+// DEFINE REST REQUESTS
+
+
+// helper function : get the library Sequelize object from library name and
+// reference to item in library (settings) table
 const getLibrary = async (libraryName) => {
 
+  // find model in the library (settings) table
   const model = await models.Library.findByPk(libraryName)
   const { key, schema } = model
 
-  // reconstruct data type object from string representation
+  // reconstruct sequelize data type object from string representation
+  // stored in database
   for (const property in schema) {
     schema[property]['type'] = DataTypes[schema[property]['type']]
-
   }
 
-  // TODO fix create library schema data type
-
-  // define library object and create if not created
+  // define library object and create table if not created
   const library = sequelize.define(key, schema, {
     freezeTableName: true,
     tableName: libraryName
   })
+  await library.sync()
 
   return { library, model }
 
 }
+
+// TODO streamline error codes
+
 app.all('/getSettings', async (req, res) => {
 
   console.log('requesting settings or null if do not exist yet')
 
   const settings = await models.Settings.findByPk('settings')
-
 
   if (settings) res.status(200).send(settings['data'])
 
@@ -124,7 +133,6 @@ app.all('/setSettings', async (req, res) => {
   res.status(200).send()
 
 })
-
 
 const DATA_TYPE_MAPS = {
   string: DataTypes.STRING,
@@ -205,16 +213,11 @@ app.all('/getCell', async (req, res) => {
   const libraryName = req.body['libraryName']
   const cellId = req.body['cellId']
 
-  const library = await models.Library.findByPk(libraryName)
+  const { library } = await getLibrary(libraryName)
 
-  const newLibrary = sequelize.define(libraryName, library['schema'], {
-    freezeTableName: true,
-    tableName: libraryName
-  }
-  )
-  const data = await newLibrary.findByPk(cellId)
+  const data = await library.findByPk(cellId)
 
-  if (!newLibrary) res.status(404).send()
+  if (!library) res.status(404).send()
   else res.status(200).send(data)
 })
 
@@ -222,66 +225,25 @@ app.all('/getLibraryData', async (req, res) => {
 
   const libraryName = req.body['libraryName']
 
-  const library = await models.Library.findByPk(libraryName)
+  const { library } = await getLibrary(libraryName)
 
-  const newLibrary = sequelize.define(libraryName, library['schema'], {
-    freezeTableName: true,
-    tableName: libraryName
-  }
-  )
-  const data = await newLibrary.findAll()
+  const data = await library.findAll()
 
-  if (!newLibrary) res.status(404).send()
+  if (!library) res.status(404).send()
   else res.status(200).send(data)
 
 })
 
-app.all('/createLibraryDB', async (req, res) => {
-
-  const key = req.body['libraryName']
-  const data = req.body['libraryColumns']
-  const options = req.body['libraryOptions']
-
-  console.log(`creating library database ${key}`)
-
-  // add entry to library 'cache' table
-  await models.Library.create({ key: key, data: data, options: options })
-
-  // create table for library
-  const newLibrary = sequelize.define(key, data, options)
-  await newLibrary.sync()
-
-  res.status(200).send()
-
-})
 
 app.all('/addItemToLibrary', async (req, res) => {
 
-  const name = req.body['libraryName']
-  const item = req.body['libraryItem']
+  const libraryName = req.body['libraryName']
+  const libraryItem = req.body['libraryItem']
 
-  console.log(`adding item to library ${name}`)
-
-  const { key, schema } = await models.Library.findByPk(name)
-
-  // reconstruct data type object from string representation
-  for (const property in schema) {
-    console.log(schema[property]['type'])
-    schema[property]['type'] = DataTypes[schema[property]['type']]
-
-  }
-
-  // TODO fix create library schema data type
-
-  // define library object and create if not created
-  const newLibrary = sequelize.define(key, schema, {
-    freezeTableName: true,
-    tableName: name
-  })
-  await newLibrary.sync()
+  const { library } = await getLibrary(libraryName)
 
   // add item to library
-  await newLibrary.create(item)
+  await library.create(libraryItem)
 
   res.status(200).send()
 
@@ -291,12 +253,10 @@ app.all('/getFilteredCells', async (req, res) => {
   const libraryName = req.body['libraryName']
   const filters = req.body['filters']
 
-  console.log(filters)
 
   var where = {}
 
   // transform filters into usable versions
-
   for (const filter of filters) {
     if (filter.dataType === 'multiselect') {
       where[filter.name] = { [Op.or]: filter.filter }
@@ -307,15 +267,8 @@ app.all('/getFilteredCells', async (req, res) => {
     }
   }
 
-  const library = await models.Library.findByPk(libraryName)
-
-  const newLibrary = sequelize.define(libraryName, library['schema'], {
-    freezeTableName: true,
-    tableName: libraryName
-  }
-  )
-
-  const data = await newLibrary.findAll({ where: where })
+  const { library } = getLibrary(libraryName)
+  const data = await library.findAll({ where })
 
   res.status(200).send(data)
 })
@@ -344,11 +297,6 @@ app.all('/getComputation', async (req, res) => {
   if (!definition) res.status(404).send()
   else res.status(200).send(definition)
 
-})
-// hello world request
-app.all('/', (req, res) => {
-  console.log('Request received')
-  res.send('hello world')
 })
 
 app.post('/runComputation', async (req, res) => {
@@ -395,35 +343,19 @@ app.post('/runComputationOnLibrary', async (req, res) => {
   const computationName = req.body['computationName']
   const computationMaps = req.body['computationMaps']
 
-  const { key, schema } = await models.Library.findByPk(libraryName)
-
-  // reconstruct data type object from string representation
-  for (const property in schema) {
-    schema[property]['type'] = DataTypes[schema[property]['type']]
-
-  }
-
-  // TODO fix create library schema data type
-
-  // define library object and create if not created
-  const newLibrary = sequelize.define(key, schema, {
-    freezeTableName: true,
-    tableName: libraryName
-  })
-
-  await newLibrary.sync()
+  const { library } = await getLibrary(libraryName)
 
   // figure out column names from computation maps
   const attributes = Object.keys(computationMaps).map(key => [computationMaps[key], key])
 
   // get values from library
-  const libraryResults = await newLibrary.findAll({
+  const libraryResults = await library.findAll({
     attributes: attributes
   })
 
   var final = []
 
-  await libraryResults.forEach(async ({ dataValues }) => {
+  libraryResults.forEach(async ({ dataValues }) => {
     // run computation
     const output = await Computations.run(computationName, dataValues)
 
