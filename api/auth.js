@@ -1,48 +1,27 @@
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 dotenv.config()
 
 import express from 'express'
-const app = express();
+const app = express()
+
 
 import bcrypt from 'bcrypt'
 import passport from 'passport'
 import flash from 'express-flash'
 import session from 'express-session'
 import methodOverride from 'method-override'
-//import cookieParser from 'cookie-parser'
-//import session from 'express-session'
-//import connectMultiparty from 'connect-multiparty'
-//import User from './user.js'
+import passportLocal from 'passport-local'
 
-//!!!WILL NOT IMPORT!!!
-import initializePassport from '../passport-config.js'
-///???
-initializePassport(
+const LocalStrategy = passportLocal.Strategy
+
+initialize(
   passport,
   email => users.find(user => user.email === email),
   id => users.find(user => user.id === id)
 )
-//only in memory, so we'll want to put this into a database
+
+//only in memory, so we'll want to put this into our database
 const users = []
-
-
-// app.use(express.urlencoded({ extended: true }));
-// app.use(connectMultiparty());
-// app.use(cookieParser());
-// app.use(session({
-//     secret: 'super-secret',
-//     resave: true,
-//     saveUninitialized: true
-// }));
-
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-// passport.use(User.createStrategy());
-
-// passport.serializeUser(User.serializeUser());
-// passport.deserializeUser(User.deserializeUser());
-
 
 
 app.set('view-engine', 'ejs')
@@ -110,5 +89,32 @@ function checkNotAuthenticated(req, res, next) {
   }
   next()
 }
+
+//This is the configuration function
+function initialize(passport, getUserByEmail, getUserById) {
+  const authenticateUser = async (email, password, done) => {
+    const user = getUserByEmail(email)
+    if (user == null) {
+      return done(null, false, { message: 'No user with that email' })
+    }
+
+    try {
+      if (await bcrypt.compare(password, user.password)) {
+        return done(null, user)
+      } else {
+        return done(null, false, { message: 'Password incorrect' })
+      }
+    } catch (e) {
+      return done(e)
+    }
+  }
+
+  passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser))
+  passport.serializeUser((user, done) => done(null, user.id))
+  passport.deserializeUser((id, done) => {
+    return done(null, getUserById(id))
+  })
+}
+
 
 app.listen(4000)
