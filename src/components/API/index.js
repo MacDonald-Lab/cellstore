@@ -1,5 +1,5 @@
 
-const API_URL = 'http://localhost:5001/'
+const API_URL = '/api/v1/'
 
 // default get/set
 

@@ -19,6 +19,7 @@
     "carbon-components": "^10.34.0",
     "carbon-components-react": "^7.34.0",
     "carbon-icons": "^7.0.7",
+    "concurrently": "^6.2.0",
     "connect-multiparty": "^2.2.0",
     "cookie-parser": "^1.4.5",
     "core-js": "^3.11.1",
@@ -49,12 +50,14 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "dev": "concurrently --kill-others --names \"REACT,API\" \"npm run start\" \"npm run backend\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "backend": "nodemon api/index.js",
     "authStart": "nodemon api/auth.js"
   },
+  "proxy": "http://localhost:5000",
   "eslintConfig": {
     "extends": [
       "react-app",

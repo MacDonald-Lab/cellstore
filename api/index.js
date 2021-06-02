@@ -15,7 +15,7 @@ import Computations from '../src/computations/index.js'
 // GET DATABASE PROPERTIES
 
 
-const port = process.env.BACKEND_PORT
+const port = 5000
 const dbName = 'cellstore_db_test'
 const dbUsername = 'postgres'
 const dbPassword = '123'
@@ -70,6 +70,7 @@ const app = express();
 app.use(express.json())
 app.use(cors())
 
+const router = express.Router()
 
 // DEFINE REST REQUESTS
 
@@ -101,7 +102,7 @@ const getLibrary = async (libraryName) => {
 
 // TODO streamline error codes
 
-app.all('/getSettings', async (req, res) => {
+router.all('/getSettings', async (req, res) => {
 
   console.log('requesting settings or null if do not exist yet')
 
@@ -113,7 +114,7 @@ app.all('/getSettings', async (req, res) => {
 
 })
 
-app.all('/setSettings', async (req, res) => {
+router.all('/setSettings', async (req, res) => {
 
   const payload = req.body['payload']
 
@@ -146,7 +147,7 @@ const DATA_TYPE_STRING_MAPS = {
   multiselect: "INTEGER"
 }
 
-app.all('/createLibrary', async (req, res) => {
+router.all('/createLibrary', async (req, res) => {
 
   const { name, fields } = req.body
   const libraryDefinition = req.body
@@ -187,7 +188,7 @@ app.all('/createLibrary', async (req, res) => {
 
 })
 
-app.all('/getLibraries', async (req, res) => {
+router.all('/getLibraries', async (req, res) => {
 
   const libraries = await models.Library.findAll({
     attributes: ['definition']
@@ -197,7 +198,7 @@ app.all('/getLibraries', async (req, res) => {
 
 })
 
-app.all('/getLibrary', async (req, res) => {
+router.all('/getLibrary', async (req, res) => {
 
   const libraryName = req.body['libraryName']
 
@@ -208,7 +209,7 @@ app.all('/getLibrary', async (req, res) => {
 
 })
 
-app.all('/getCell', async (req, res) => {
+router.all('/getCell', async (req, res) => {
 
   const libraryName = req.body['libraryName']
   const cellId = req.body['cellId']
@@ -221,7 +222,7 @@ app.all('/getCell', async (req, res) => {
   else res.status(200).send(data)
 })
 
-app.all('/getLibraryData', async (req, res) => {
+router.all('/getLibraryData', async (req, res) => {
 
   const libraryName = req.body['libraryName']
 
@@ -235,7 +236,7 @@ app.all('/getLibraryData', async (req, res) => {
 })
 
 
-app.all('/addItemToLibrary', async (req, res) => {
+router.all('/addItemToLibrary', async (req, res) => {
 
   const libraryName = req.body['libraryName']
   const libraryItem = req.body['libraryItem']
@@ -249,7 +250,7 @@ app.all('/addItemToLibrary', async (req, res) => {
 
 })
 
-app.all('/getFilteredCells', async (req, res) => {
+router.all('/getFilteredCells', async (req, res) => {
   const libraryName = req.body['libraryName']
   const filters = req.body['filters']
 
@@ -274,7 +275,7 @@ app.all('/getFilteredCells', async (req, res) => {
 })
 
 
-app.all('/getComputations', async (req, res) => {
+router.all('/getComputations', async (req, res) => {
 
   // get from code
   const definitions = Computations.initDefinitions()
@@ -285,7 +286,7 @@ app.all('/getComputations', async (req, res) => {
 
 })
 
-app.all('/getComputation', async (req, res) => {
+router.all('/getComputation', async (req, res) => {
 
   const computationName = req.body['computationName']
 
@@ -299,7 +300,7 @@ app.all('/getComputation', async (req, res) => {
 
 })
 
-app.post('/runComputation', async (req, res) => {
+router.post('/runComputation', async (req, res) => {
 
   const computationName = req.body['computationName']
   const computationParams = req.body['computationParams']
@@ -313,7 +314,7 @@ app.post('/runComputation', async (req, res) => {
 
 })
 
-app.post('/deleteLibrary', async (req, res) => {
+router.post('/deleteLibrary', async (req, res) => {
   const libraryName = req.body['libraryName']
 
   const { model, library } = await getLibrary(libraryName)
@@ -324,7 +325,7 @@ app.post('/deleteLibrary', async (req, res) => {
 
 })
 
-app.post('/deleteCell', async (req, res) => {
+router.post('/deleteCell', async (req, res) => {
   const libraryName = req.body['libraryName']
   const cellId = req.body['cellId']
 
@@ -337,7 +338,7 @@ app.post('/deleteCell', async (req, res) => {
 
 })
 
-app.post('/runComputationOnLibrary', async (req, res) => {
+router.post('/runComputationOnLibrary', async (req, res) => {
 
   const libraryName = req.body['libraryName']
   const computationName = req.body['computationName']
@@ -371,7 +372,7 @@ app.post('/runComputationOnLibrary', async (req, res) => {
 
 
 //This chunk creates a table, only if it doesn't already exist
-app.post('/createTable', (req, res) => {
+router.post('/createTable', (req, res) => {
 
   console.log(`Request recieved to create table ${req.body.tableName}`)
   queryInterface.createTable(req.body.tableName, {
@@ -583,6 +584,8 @@ const allFunctions = () => {
 
 // START SERVER
 
+app.use('/api/v1', router)
+
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+  console.log(`Development API listening on port ${port}`)
 })
