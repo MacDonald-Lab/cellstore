@@ -42,6 +42,7 @@ const GET_REQUESTS = [
     'getComputations',
     'getComputation',
     'runComputation',
+    'runComputationOnLibrary'
 
 ]
 

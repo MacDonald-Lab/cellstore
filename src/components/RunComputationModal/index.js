@@ -20,11 +20,13 @@ const RunComputationModal = ({ open, setOpen, library }) => {
     if (!computations) return <p>Error</p>
 
     const handleSubmit = async () => {
-        await API.runComputationOnLibrary(null, {
+        const response = await API.runComputationOnLibrary(null, {
             libraryName: library.name,
             computationName: computation.name,
             computationMaps: computationMaps
         })
+
+        console.log(await response.json())
     }
 
     const checkSubmit = () => {

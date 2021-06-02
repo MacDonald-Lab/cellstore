@@ -11,6 +11,7 @@ import settingsModel from './models/settings.js'
 
 
 import Computations from '../src/computations/index.js'
+import library from './models/library.js';
 
 
 const port = process.env.BACKEND_PORT
@@ -342,6 +343,55 @@ app.post('/runComputation', async (req, res) => {
   } catch (e) {
     res.status(500).send(e.message)
   }
+
+})
+
+app.post('/runComputationOnLibrary', async (req, res) => {
+
+  const libraryName = req.body['libraryName']
+  const computationName = req.body['computationName']
+  const computationMaps = req.body['computationMaps']
+
+  const { key, schema } = await models.Library.findByPk(libraryName)
+
+  // reconstruct data type object from string representation
+  for (const property in schema) {
+    console.log(schema[property]['type'])
+    schema[property]['type'] = DataTypes[schema[property]['type']]
+
+  }
+
+  // TODO fix create library schema data type
+
+  // define library object and create if not created
+  const newLibrary = sequelize.define(key, schema, {
+    freezeTableName: true,
+    tableName: libraryName
+  })
+
+  await newLibrary.sync()
+
+  // figure out column names from computation maps
+  const attributes = Object.keys(computationMaps).map(key => [computationMaps[key], key])
+  
+  // get values from library
+  const libraryResults = await newLibrary.findAll({
+    attributes: attributes
+  })
+
+  var final = []
+
+  await libraryResults.forEach(async ({dataValues}) => {
+    // run computation
+    const output = await Computations.run(computationName, dataValues)
+
+    // add result back to temporary object
+    final.push({input: dataValues, output: output})
+  
+  })
+  
+  // return results
+  res.status(200).send(final)
 
 })
 
