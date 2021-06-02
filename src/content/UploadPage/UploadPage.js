@@ -166,7 +166,10 @@ const UploadPage = () => {
         <Column>
           <Breadcrumb>
             <BreadcrumbItem>
-              <Link to="/library">Cell Library</Link>
+              <Link to="/">Libraries</Link>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <Link to={"/library/" + libraryName }>{library.friendlyName}</Link>
             </BreadcrumbItem>
 
           </Breadcrumb>
