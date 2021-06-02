@@ -16,11 +16,11 @@ const getFromAPIFunc = (request) => {
             })
 
         if (setter && response.status !== 404 && response.status !== 520) {
-            
+
             const parsedResponse = await response.json()
             setter(parsedResponse)
             if (callback) callback(parsedResponse)
-        
+
         }
         if (loading) loading(false)
         return response
@@ -43,8 +43,14 @@ const GET_REQUESTS = [
     'getComputation',
     'runComputation',
     'runComputationOnLibrary',
-    'deleteLibrary'
-
+    'deleteLibrary',
+    'deleteCell',
+    // TO IMPLEMENT
+    // 'deleteCells',
+    // 'editCell',
+    // 'editLibrary',
+    // 'runComputationOnCell',
+    // 'runComputationOnCells'
 ]
 
 var calls = {}

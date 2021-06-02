@@ -91,7 +91,7 @@ const CellInfoPage = () => {
               onClick={() => setOpen(true)}
             />
           }>
-            {(modalProps) => <DeleteCellModal {...modalProps} id={'placeholder'} redirect />}
+            {(modalProps) => <DeleteCellModal {...modalProps} id={cellId} redirect library={library}/>}
           </ModalStateManager>
         </Column>
 
