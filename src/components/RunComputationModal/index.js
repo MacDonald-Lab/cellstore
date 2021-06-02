@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react'
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody, Dropdown } from 'carbon-components-react'
 
-import { useForceUpdate } from '../../components/Hooks'
 import API from '../../components/API'
 
 const RunComputationModal = ({ open, setOpen, library }) => {
-
-    const forceModalUpdate = useForceUpdate()
 
     const [computations, setComputations] = useState(null)
     const [loading, setLoading] = useState(true)

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag, DataTableSkeleton, Button } from 'carbon-components-react'
+import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag, DataTableSkeleton, Button, ButtonSet } from 'carbon-components-react'
 import { useParams } from 'react-router-dom';
 
 import LibraryTable from '../../components/LibraryTable';
@@ -10,7 +10,7 @@ import { Tag16 } from '@carbon/icons-react';
 import API from '../../components/API';
 import ModalStateManager from '../../components/ModalStateManager';
 import RunComputationModal from '../../components/RunComputationModal';
-
+import DeleteLibraryModal from '../../components/DeleteLibraryModal';
 
 const LibraryPage = () => {
 
@@ -144,6 +144,27 @@ const LibraryPage = () => {
           }
         </Column>
 
+      </Row>
+      <Row>
+        <Column>
+          <h3>Library options</h3>
+        </Column>
+      </Row>
+      <Row>
+        <Column>
+
+          <ButtonSet>
+            <Button>Edit settings</Button>
+            <Button>Export library</Button>
+            <ModalStateManager renderLauncher={({ setOpen }) =>
+            <Button onClick={() => setOpen(true)}>Delete library</Button>
+            }>
+              {modalProps => 
+              <DeleteLibraryModal {...modalProps} library={library} />
+              }
+            </ModalStateManager>
+          </ButtonSet>
+        </Column>
       </Row>
 
     </Grid>
