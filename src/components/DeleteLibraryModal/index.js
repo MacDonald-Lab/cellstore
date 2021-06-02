@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody, TextInput } from 'carbon-components-react'
+import { useHistory } from 'react-router-dom'
 
 import API from '../../components/API'
 
 const DeleteLibraryModal = ({ open, setOpen, library }) => {
+    const history = useHistory()
 
     const [submit, setSubmit] = useState(true)
     const [value, setValue] = useState('')
 
-     const handleSubmit = async () => {
-
+    const handleSubmit = async () => {
+        await API.deleteLibrary(null, {libraryName: library.name})
+        history.push('/')
     }
 
     return <ComposedModal open={open} onClose={() => {

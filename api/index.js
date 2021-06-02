@@ -153,7 +153,7 @@ app.all('/createLibrary', async (req, res) => {
     }
     return [field['name'], def]
   }))
-  
+
   await models.Library.create({ key: name, definition: libraryDefinition, schema: dbSchema })
 
   res.status(200).send()
@@ -161,7 +161,7 @@ app.all('/createLibrary', async (req, res) => {
 })
 
 app.all('/getLibraries', async (req, res) => {
-  
+
   const libraries = await models.Library.findAll({
     attributes: ['definition']
   })
@@ -173,7 +173,7 @@ app.all('/getLibraries', async (req, res) => {
 app.all('/getLibrary', async (req, res) => {
 
   const libraryName = req.body['libraryName']
-  
+
   const library = await models.Library.findByPk(libraryName)
 
   if (!library) res.status(404).send()
@@ -185,14 +185,14 @@ app.all('/getCell', async (req, res) => {
 
   const libraryName = req.body['libraryName']
   const cellId = req.body['cellId']
-  
+
   const library = await models.Library.findByPk(libraryName)
 
   const newLibrary = sequelize.define(libraryName, library['schema'], {
     freezeTableName: true,
     tableName: libraryName
   }
-)
+  )
   const data = await newLibrary.findByPk(cellId)
 
   if (!newLibrary) res.status(404).send()
@@ -202,14 +202,14 @@ app.all('/getCell', async (req, res) => {
 app.all('/getLibraryData', async (req, res) => {
 
   const libraryName = req.body['libraryName']
-  
+
   const library = await models.Library.findByPk(libraryName)
 
   const newLibrary = sequelize.define(libraryName, library['schema'], {
     freezeTableName: true,
     tableName: libraryName
   }
-)
+  )
   const data = await newLibrary.findAll()
 
   if (!newLibrary) res.status(404).send()
@@ -280,23 +280,23 @@ app.all('/getFilteredCells', async (req, res) => {
 
   for (const filter of filters) {
     if (filter.dataType === 'multiselect') {
-      where[filter.name] = {[Op.or]: filter.filter}
+      where[filter.name] = { [Op.or]: filter.filter }
     }
 
     if (filter.dataType === 'int' || filter.dataType === 'string') {
-      where[filter.name] = {[Op[filter.filter.operator.value]]: filter.filter.value}
+      where[filter.name] = { [Op[filter.filter.operator.value]]: filter.filter.value }
     }
   }
-  
+
   const library = await models.Library.findByPk(libraryName)
 
   const newLibrary = sequelize.define(libraryName, library['schema'], {
     freezeTableName: true,
     tableName: libraryName
   }
-)
+  )
 
-  const data = await newLibrary.findAll({where: where})
+  const data = await newLibrary.findAll({ where: where })
 
   res.status(200).send(data)
 })
@@ -310,7 +310,7 @@ app.all('/getComputations', async (req, res) => {
   // TODO get from DB
 
   res.status(200).send(definitions)
-  
+
 })
 
 app.all('/getComputation', async (req, res) => {
@@ -324,7 +324,7 @@ app.all('/getComputation', async (req, res) => {
 
   if (!definition) res.status(404).send()
   else res.status(200).send(definition)
-  
+
 })
 // hello world request
 app.all('/', (req, res) => {
@@ -346,6 +346,33 @@ app.post('/runComputation', async (req, res) => {
 
 })
 
+app.post('/deleteLibrary', async (req, res) => {
+  const libraryName = req.body['libraryName']
+
+  const model = await models.Library.findByPk(libraryName)
+  const { key, schema } = model
+
+  // reconstruct data type object from string representation
+  for (const property in schema) {
+    schema[property]['type'] = DataTypes[schema[property]['type']]
+
+  }
+
+  // TODO fix create library schema data type
+
+  // define library object and create if not created
+  const newLibrary = sequelize.define(key, schema, {
+    freezeTableName: true,
+    tableName: libraryName
+  })
+
+  await newLibrary.drop()
+  await model.destroy()
+
+  res.status(200).send()
+
+})
+
 app.post('/runComputationOnLibrary', async (req, res) => {
 
   const libraryName = req.body['libraryName']
@@ -356,7 +383,6 @@ app.post('/runComputationOnLibrary', async (req, res) => {
 
   // reconstruct data type object from string representation
   for (const property in schema) {
-    console.log(schema[property]['type'])
     schema[property]['type'] = DataTypes[schema[property]['type']]
 
   }
@@ -373,7 +399,7 @@ app.post('/runComputationOnLibrary', async (req, res) => {
 
   // figure out column names from computation maps
   const attributes = Object.keys(computationMaps).map(key => [computationMaps[key], key])
-  
+
   // get values from library
   const libraryResults = await newLibrary.findAll({
     attributes: attributes
@@ -381,15 +407,15 @@ app.post('/runComputationOnLibrary', async (req, res) => {
 
   var final = []
 
-  await libraryResults.forEach(async ({dataValues}) => {
+  await libraryResults.forEach(async ({ dataValues }) => {
     // run computation
     const output = await Computations.run(computationName, dataValues)
 
     // add result back to temporary object
-    final.push({input: dataValues, output: output})
-  
+    final.push({ input: dataValues, output: output })
+
   })
-  
+
   // return results
   res.status(200).send(final)
 
