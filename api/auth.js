@@ -4,6 +4,7 @@ dotenv.config()
 import express from 'express'
 const app = express()
 
+
 import bcrypt from 'bcrypt'
 import passport from 'passport'
 import flash from 'express-flash'
@@ -12,10 +13,6 @@ import methodOverride from 'method-override'
 import passportLocal from 'passport-local'
 
 const LocalStrategy = passportLocal.Strategy
-//import cookieParser from 'cookie-parser'
-//import session from 'express-session'
-//import connectMultiparty from 'connect-multiparty'
-//import User from './user.js'
 
 initialize(
   passport,
@@ -25,25 +22,6 @@ initialize(
 
 //only in memory, so we'll want to put this into our database
 const users = []
-
-
-// app.use(express.urlencoded({ extended: true }));
-// app.use(connectMultiparty());
-// app.use(cookieParser());
-// app.use(session({
-//     secret: 'super-secret',
-//     resave: true,
-//     saveUninitialized: true
-// }));
-
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-// passport.use(User.createStrategy());
-
-// passport.serializeUser(User.serializeUser());
-// passport.deserializeUser(User.deserializeUser());
-
 
 
 app.set('view-engine', 'ejs')
