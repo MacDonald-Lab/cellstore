@@ -68,10 +68,29 @@ app.use(cors())
 
 // DEFINE REQUESTS
 
-// I don't thing this will be exposed in the end, 
-// just can be used as a private function with definitions stored
-// in JS files
+// helper function : return library model/definition
+const getLibrary = async (libraryName) => {
 
+  const model = await models.Library.findByPk(libraryName)
+  const { key, schema } = model
+
+  // reconstruct data type object from string representation
+  for (const property in schema) {
+    schema[property]['type'] = DataTypes[schema[property]['type']]
+
+  }
+
+  // TODO fix create library schema data type
+
+  // define library object and create if not created
+  const library = sequelize.define(key, schema, {
+    freezeTableName: true,
+    tableName: libraryName
+  })
+
+  return { library, model }
+
+}
 app.all('/getSettings', async (req, res) => {
 
   console.log('requesting settings or null if do not exist yet')
@@ -349,25 +368,22 @@ app.post('/runComputation', async (req, res) => {
 app.post('/deleteLibrary', async (req, res) => {
   const libraryName = req.body['libraryName']
 
-  const model = await models.Library.findByPk(libraryName)
-  const { key, schema } = model
-
-  // reconstruct data type object from string representation
-  for (const property in schema) {
-    schema[property]['type'] = DataTypes[schema[property]['type']]
-
-  }
-
-  // TODO fix create library schema data type
-
-  // define library object and create if not created
-  const newLibrary = sequelize.define(key, schema, {
-    freezeTableName: true,
-    tableName: libraryName
-  })
-
-  await newLibrary.drop()
+  const { model, library } = await getLibrary(libraryName)
+  await library.drop()
   await model.destroy()
+
+  res.status(200).send()
+
+})
+
+app.post('/deleteCell', async (req, res) => {
+  const libraryName = req.body['libraryName']
+  const cellId = req.body['cellId']
+
+  const { library } = await getLibrary(libraryName)
+
+  const cell = await library.findByPk(cellId)
+  await cell.destroy()
 
   res.status(200).send()
 
