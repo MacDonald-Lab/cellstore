@@ -11,7 +11,6 @@ const definition = {
             description: "The first value",
             dataTypes: ["int", "float"],
             required: true
-
         },
         {
             name: "value-b",

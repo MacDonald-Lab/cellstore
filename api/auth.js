@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import express from 'express'
-const app = express()
+const router = express.Router()
 
 
 import bcrypt from 'bcrypt'
@@ -24,38 +24,38 @@ initialize(
 const users = []
 
 
-app.set('view-engine', 'ejs')
-app.use(express.urlencoded({ extended: false }))
-app.use(flash())
-app.use(session({
+// router.set('view-engine', 'ejs')
+router.use(express.urlencoded({ extended: false }))
+router.use(flash())
+router.use(session({
   //we'll want to change this passcode in order to make it safer 
   secret: 'super_secret_passcode',
   resave: false,
   saveUninitialized: false
 }))
-app.use(passport.initialize())
-app.use(passport.session())
-app.use(methodOverride('_method'))
+router.use(passport.initialize())
+router.use(passport.session())
+router.use(methodOverride('_method'))
 
-app.get('/', checkAuthenticated, (req, res) => {
+router.get('/', checkAuthenticated, (req, res) => {
   res.render('authIndex.ejs', { name: req.user.name })
 })
 
-app.get('/login', checkNotAuthenticated, (req, res) => {
+router.get('/login', checkNotAuthenticated, (req, res) => {
   res.render('login.ejs')
 })
 
-app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+router.post('/login', checkNotAuthenticated, passport.authenticate('local', {
   successRedirect: '/',
   failureRedirect: '/login',
   failureFlash: true
 }))
 
-app.get('/register', checkNotAuthenticated, (req, res) => {
+router.get('/register', checkNotAuthenticated, (req, res) => {
   res.render('register.ejs')
 })
 
-app.post('/register', checkNotAuthenticated, async (req, res) => {
+router.post('/register', checkNotAuthenticated, async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10)
     users.push({
@@ -70,7 +70,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
   }
 })
 
-app.delete('/logout', (req, res) => {
+router.delete('/logout', (req, res) => {
   req.logOut()
   res.redirect('/login')
 })
@@ -117,4 +117,4 @@ function initialize(passport, getUserByEmail, getUserById) {
 }
 
 
-app.listen(4000)
+export default router

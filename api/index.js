@@ -10,7 +10,7 @@ import libraryModel from './models/library.js'
 import settingsModel from './models/settings.js'
 
 import Computations from '../src/computations/index.js'
-
+import Auth from './auth.js'
 
 // GET DATABASE PROPERTIES
 
@@ -69,6 +69,7 @@ const queryInterface = sequelize.getQueryInterface();
 const app = express();
 app.use(express.json())
 app.use(cors())
+app.set('view engine', 'ejs')
 
 const router = express.Router()
 
@@ -585,6 +586,7 @@ const allFunctions = () => {
 // START SERVER
 
 app.use('/api/v1', router)
+app.use('/api/auth', Auth)
 
 app.listen(port, () => {
   console.log(`Development API listening on port ${port}`)
