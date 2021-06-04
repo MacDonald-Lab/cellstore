@@ -3,7 +3,7 @@ dotenv.config()
 
 import express from 'express';
 import seq from 'sequelize';
-const { Sequelize, DataTypes } = seq;
+const { DataTypes } = seq;
 import cors from 'cors';
 import cookieSession from 'cookie-session';
 
@@ -35,6 +35,7 @@ const dbProperties = {
 const sequelize = await database(dbProperties)
 
 // create default tables if not exist
+// TODO move to db file
 const models = {
   Library: libraryModel(sequelize, DataTypes),
   Settings: settingsModel(sequelize, DataTypes)
@@ -59,8 +60,8 @@ app.use(cookieSession({
 // START SERVER
 
 
+app.use('/api/auth', authRoutes(sequelize, app))
 app.use('/api/v1', apiRoutes(sequelize, models))
-app.use('/api/auth', authRoutes(sequelize))
 
 app.listen(port, () => {
   console.log(`Development API listening on port ${port}`)

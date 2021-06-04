@@ -5,7 +5,7 @@ import passportLocalSequelize from 'passport-local-sequelize'
 
 import checkLogin from './checkLogin.js'
 
-const authRoutes = (sequelize) => {
+const authRoutes = (sequelize, app) => {
 
   // create router function
   const router = express.Router()
@@ -16,8 +16,8 @@ const authRoutes = (sequelize) => {
   sequelize.sync()
 
   // initialize passport
-  router.use(passport.initialize())
-  router.use(passport.session())
+  app.use(passport.initialize())
+  app.use(passport.session())
 
   // setup passport local strategy
   passport.use(User.createStrategy())
@@ -28,11 +28,11 @@ const authRoutes = (sequelize) => {
   // login route
   router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
-      if (err) return res.status(406).send(err)
-      if (info) return res.status(406).send(info)
+      if (err) return res.status(406).send({message: err})
+      if (info) return res.status(406).send({message: info})
 
       req.login(user, err => {
-        if (err) return res.status(406).send(err)
+        if (err) return res.status(406).send({message: err})
         else return res.status(200).send()
       })
     })(req, res, next)
