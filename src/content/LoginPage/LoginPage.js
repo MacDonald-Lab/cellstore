@@ -11,45 +11,41 @@ const LoginPage = () => {
   const [password, setPassword] = useState('')
   const [usernameReg, setUsernameReg] = useState('')
   const [passwordReg, setPasswordReg] = useState('')
-  const [nameReg, setNameReg] = useState('')
+  const [message, setMessage] = useState(undefined)
 
   const handleLogin = async () => {
 
-    var formData = new FormData()
-    formData.append('email', username)
-    formData.append('password', password)
 
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json'
       },
-      body: formData
+      body: JSON.stringify({username: username, password: password})
     })
 
     if (response.status === 200) {
-      history.push('/login')
+      history.push('/')
+    } else {
+      setMessage(await response.json())
     }
   }
 
 
   const handleRegister = async () => {
 
-    var formData = new URLSearchParams()
-    formData.append('name', nameReg)
-    formData.append('email', usernameReg)
-    formData.append('password', passwordReg)
-
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json'
       },
-      body: formData
+      body: JSON.stringify({username: usernameReg, password: passwordReg})
     })
 
     if (response.status === 200) {
       history.push('/login')
+    } else {
+      setMessage(await response.json())
     }
   }
   const handleTextInput = (e, setter) => setter(e.target.value)
@@ -97,12 +93,6 @@ const LoginPage = () => {
       <Row>
         <Column>
           <TextInput
-            labelText="Name"
-            type="text"
-            value={nameReg}
-            onChange={(e) => handleTextInput(e, setNameReg)}
-          />
-          <TextInput
             labelText="Username"
             type="email"
             value={usernameReg}
@@ -122,6 +112,7 @@ const LoginPage = () => {
       <Row>
         <Column>
           <Button onClick={handleRegister}>Register</Button>
+          {message && message.message}
         </Column>
       </Row>
     </Grid>
