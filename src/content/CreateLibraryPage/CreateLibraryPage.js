@@ -7,7 +7,7 @@ import ModalStateManager from '../../components/ModalStateManager';
 import DataTypes from '../../dataTypes'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import Field from '../../components/LibraryField'
-import { useDraggableInPortal, useForceUpdate, randId, slugify } from '../../components/Hooks'
+import { useForceUpdate, randId, slugify } from '../../components/Hooks.tsx'
 import API from '../../components/API'
 
 // HOOKS and FUNCTIONS
@@ -138,7 +138,7 @@ const CreateLibraryPage = () => {
       }
     }
 
-    const renderDraggable = useDraggableInPortal()
+    // const renderDraggable = useDraggableInPortal()
 
     return <>
       <Row>
@@ -187,7 +187,7 @@ const CreateLibraryPage = () => {
 
               {library.fields.map((item, i) => {
                 if (i > 0) return <Draggable key={item.key} draggableId={item.key} index={i} >
-                  {renderDraggable((provided, snapshot) =>
+                  {((provided, snapshot) =>
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}

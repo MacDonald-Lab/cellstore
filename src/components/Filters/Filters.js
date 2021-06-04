@@ -3,7 +3,7 @@ import { Button, ButtonSet, Checkbox, Tile, TextInput, Dropdown } from 'carbon-c
 import { React, useState } from 'react';
 import LibraryTable from '../../components/LibraryTable'
 
-import { useForceUpdate } from '../../components/Hooks'
+import { useForceUpdate } from '../../components/Hooks.tsx'
 import API from '../../components/API'
 
 const Filters = ({ library }) => {

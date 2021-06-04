@@ -11,8 +11,7 @@ const LandingPage = () => {
   const history = useHistory()
   const [libraries, setLibraries] = useState(null)
   useEffect(() => {
-
-    API.getLibraries(setLibraries)
+    API.getLibraries(setLibraries).catch(() => history.push('/login') )
   }, [])
 
   if (!libraries) return <p>Loading...</p>

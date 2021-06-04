@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 import ModalStateManager from '../../components/ModalStateManager'
 import ExportCellModal from '../../components/ExportCellModal'
 
-import { useForceUpdate } from '../../components/Hooks'
+import { useForceUpdate } from '../../components/Hooks.tsx'
 
 import { Loading, Tile } from 'carbon-components-react';
 import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';

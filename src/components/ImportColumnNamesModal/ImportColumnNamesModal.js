@@ -1,6 +1,6 @@
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody, FileUploaderDropContainer, FileUploaderItem, Checkbox, TextInput, ButtonSet, Button } from 'carbon-components-react';
 import { React, useState } from 'react';
-import { useForceUpdate } from '../../components/Hooks'
+import { useForceUpdate } from '../../components/Hooks.tsx'
 
 import papa from 'papaparse'
 

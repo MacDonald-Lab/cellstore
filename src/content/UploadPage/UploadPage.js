@@ -3,7 +3,7 @@ import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContaine
 import { Link, useParams, useHistory } from 'react-router-dom'
 import papa from 'papaparse'
 import { Close16 } from '@carbon/icons-react'
-import { useForceUpdate } from '../../components/Hooks'
+import { useForceUpdate } from '../../components/Hooks.tsx'
 
 import API from '../../components/API'
 

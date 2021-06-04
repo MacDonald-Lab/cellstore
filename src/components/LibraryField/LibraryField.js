@@ -1,7 +1,7 @@
 import { Row, Column, Button, TextInput, Dropdown, Tile, Checkbox } from 'carbon-components-react';
 import { DragVertical24, TrashCan16 } from '@carbon/icons-react';
 
-import { useForceUpdate, slugify } from '../../components/Hooks'
+import { useForceUpdate, slugify } from '../../components/Hooks.tsx'
 
 const TAG_COLORS = [
     {
