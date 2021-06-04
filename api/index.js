@@ -8,6 +8,7 @@ import cors from 'cors';
 
 import libraryModel from './models/library.js'
 import settingsModel from './models/settings.js'
+import userModel from './models/user.js'
 
 import Computations from '../src/computations/index.js'
 import Auth from './auth.js'
@@ -20,7 +21,7 @@ const dbName = 'cellstore_db_test'
 const dbUsername = 'postgres'
 const dbPassword = '123'
 const dbHost = 'localhost'
-// const dbPort = 5432
+// const dbPort = 5432-
 
 
 // ESTABLISH DATABASE CONNECTION
@@ -55,9 +56,12 @@ try {
 // create default tables if not exist
 const models = {
   Library: libraryModel(sequelize, DataTypes),
-  Settings: settingsModel(sequelize, DataTypes)
+  Settings: settingsModel(sequelize, DataTypes),
+  User: userModel(sequelize, DataTypes)
 }
 sequelize.sync()
+
+//TODO create tables for users
 
 // this is the query library
 const queryInterface = sequelize.getQueryInterface();
@@ -586,7 +590,7 @@ const allFunctions = () => {
 // START SERVER
 
 app.use('/api/v1', router)
-app.use('/api/auth', Auth)
+app.use('/api/auth', Auth(sequelize))
 
 app.listen(port, () => {
   console.log(`Development API listening on port ${port}`)
