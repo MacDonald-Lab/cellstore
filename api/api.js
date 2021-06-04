@@ -2,6 +2,7 @@ import express from 'express';
 import seq from 'sequelize'
 const { DataTypes, Op } = seq
 import Computations from '../src/computations/index.js'
+import checkLogin from './checkLogin.js'
 
 const apiRoutes = (sequelize, models) => {
 
@@ -34,7 +35,7 @@ const apiRoutes = (sequelize, models) => {
 
     // TODO streamline error codes
 
-    router.all('/getSettings', async (req, res) => {
+    router.all('/getSettings', checkLogin, async (req, res) => {
 
         console.log('requesting settings or null if do not exist yet')
 
@@ -46,7 +47,7 @@ const apiRoutes = (sequelize, models) => {
 
     })
 
-    router.all('/setSettings', async (req, res) => {
+    router.all('/setSettings', checkLogin, async (req, res) => {
 
         const payload = req.body['payload']
 
@@ -120,7 +121,7 @@ const apiRoutes = (sequelize, models) => {
 
     })
 
-    router.all('/getLibraries', async (req, res) => {
+    router.all('/getLibraries', checkLogin, async (req, res) => {
 
         const libraries = await models.Library.findAll({
             attributes: ['definition']
