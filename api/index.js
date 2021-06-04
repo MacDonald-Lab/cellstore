@@ -7,6 +7,8 @@ const { Sequelize, DataTypes } = seq;
 import cors from 'cors';
 import cookieSession from 'cookie-session';
 
+import database from './database.js'
+
 import libraryModel from './models/library.js'
 import settingsModel from './models/settings.js'
 
@@ -18,42 +20,19 @@ import apiRoutes from './api.js'
 
 
 const port = 5000
-const dbName = 'cellstore_db_test'
-const dbUsername = 'postgres'
-const dbPassword = '123'
-const dbHost = 'localhost'
-// const dbPort = 5432
+const dbProperties = {
+  dbName: 'cellstore_db_test',
+  dbUsername: 'postgres',
+  dbPassword: '123',
+  dbHost: 'localhost',
+  dbPort: 5432
+}
 
 
 // ESTABLISH DATABASE CONNECTION
 
 
-// create database if not exist
-
-// connect to default database
-const baseSequelize = new Sequelize('postgres', dbUsername, dbPassword, {
-  host: dbHost,
-  dialect: 'postgres'
-})
-
-// query to create a table if not exist
-await baseSequelize.query(`CREATE DATABASE ${dbName}`).catch(() => { console.log('Database already exists, skipping creation') })
-baseSequelize.close()
-
-// connect to actual database
-const sequelize = new Sequelize(dbName, dbUsername, dbPassword, {
-  host: dbHost,
-  dialect: 'postgres',
-})
-
-// test connection
-// TODO get rid of?
-try {
-  await sequelize.authenticate();
-  console.log('Connection has been established successfully.');
-} catch (error) {
-  console.error('Unable to connect to the database:', error);
-}
+const sequelize = await database(dbProperties)
 
 // create default tables if not exist
 const models = {
