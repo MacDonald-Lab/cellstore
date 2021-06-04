@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import './App.scss';
 import { Loading } from 'carbon-components-react'
+
+import { useFetch } from './components/Hooks.tsx'
 
 import { Content } from 'carbon-components-react';
 import UIShell from './components/UIShell';
@@ -18,7 +20,6 @@ import LoginPage from './content/LoginPage';
 import ComputationInfoPage from './content/ComputationInfoPage';
 
 import InitialSetupPage from './content/InitialSetupPage'
-import API from './components/API'
 
 const LoadingScreen = () => <div className="loading__container">
   <div className="loading__elements">
@@ -42,29 +43,10 @@ const LoadingScreen = () => <div className="loading__container">
 
 // Route Definitions
 
-const App = () => {
-
-  const [settings, setSettings] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [libraries, setLibraries] = useState(null)
-
-  useEffect(() => {
-    const get = async() => {
-      await API.getSettings(setSettings)
-      await API.getLibraries(setLibraries)
-      setLoading(false)
-
-    }
-    get()
-  }, [])
-
-
-  if (loading) return <LoadingScreen />
+const AuthRoutes = ({settings, libraries}) => {
+  
   if (!settings) return <InitialSetupPage />
-
-  return <Router>
-
-    <UIShell libraries={libraries} organizationName={settings ? settings['organizationName'] : ""} />
+    else return <><UIShell libraries={libraries} organizationName={settings ? settings['organizationName'] : ""} />
 
     <Content >
 
@@ -78,12 +60,35 @@ const App = () => {
         <Route exact path='/computations' component={ComputationPage} />
         <Route exact path='/computation/:computationName' component={ComputationInfoPage} />
         <Route exact path='/computations/image-test' component={ImageClassificationTestPage} />
-        <Route exact path='/login' component={LoginPage} />
       </Switch>
 
-    </Content>
+    </Content></>
+}
 
-  </Router>
+const App = () => {
+
+  const { loading, data } = useFetch([
+    { url: 'getSettings' },
+    { url: 'getLibraries' }
+  ], [])
+
+  const settings = data['getSettings']
+  const libraries = data['getLibraries']
+
+
+  if (loading) return <LoadingScreen />
+
+  return <>
+
+    <Switch>
+      <Route exact path='/login' component={LoginPage} />
+      <AuthRoutes settings={settings} libraries={libraries}/>
+
+    </Switch>
+
+
+
+  </>
 }
 
 export default App;
