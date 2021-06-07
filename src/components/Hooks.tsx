@@ -28,12 +28,36 @@ import { useHistory } from 'react-router-dom'
 //   };
 // };
 
-export const useFetch = (requests: {url: string, params: JSON}[], updater: number) => {
+type request = { url: string, params?: {[key: string]: any} }
+
+const callAPI = async (request: request) => {
+  return await fetch('/api/v1/' + request.url,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request.params ? request.params : {})
+    })
+
+}
+
+export const API = async (request: request, setter?: (value: {[key: string]: any}) => void) => {
+  const response = await callAPI(request)
+  if (response.status === 200) {
+    const toJson = await response.json()
+    if (setter) setter(toJson)
+  }
+  else return
+}
+
+
+export const useFetch = (requests: request[], callback?: (data: { [url: string]: { [key: string]: any } }) => void) => {
 
   const history = useHistory()
 
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<{[key: string]: string}>({})
+  const [data, setData] = useState<{ [url: string]: { [key: string]: any } }>({})
 
   useEffect(() => {
     if (!requests) return
@@ -43,30 +67,25 @@ export const useFetch = (requests: {url: string, params: JSON}[], updater: numbe
 
       for (const request of requests) {
 
-        const response = await fetch('/api/v1/' + request.url,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(request.params ? request.params : {})
-          })
+        const response = await callAPI(request)
 
         if (response.status === 401) {
           history.push('/login')
           setLoading(false)
           return
         } else {
-          const parsed = await response.json()
-          data[request.url] = parsed
+
+          data[request.url] = await response.json()
 
         }
       }
       setData(data)
+      if (callback) callback(data)        
       setLoading(false)
     }
     fetchData()
-  }, [history])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return { loading, data }
 }
 
