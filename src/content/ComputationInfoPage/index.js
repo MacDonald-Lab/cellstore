@@ -12,7 +12,7 @@ import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
 import DeleteCellModal from '../../components/DeleteCellModal';
 import FieldItemView from '../../components/FieldItemView';
 
-import API from '../../components/API'
+import API from '../../components/API.tsx'
 
 
 const ComputationInfoPage = () => {

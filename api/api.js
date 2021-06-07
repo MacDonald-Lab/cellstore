@@ -1,7 +1,7 @@
 import express from 'express';
 import seq from 'sequelize'
 const { DataTypes, Op } = seq
-import Computations from '../src/computations/index.js'
+import Computations from '../src/computations'
 import checkLogin from './checkLogin.js'
 
 const apiRoutes = (sequelize, models) => {
