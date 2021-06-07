@@ -7,7 +7,7 @@ import Filters from '../../components/Filters';
 import { useHistory } from 'react-router-dom';
 import { Tag16 } from '@carbon/icons-react';
 
-import API from '../../components/API';
+import API from '../../components/API.tsx';
 import ModalStateManager from '../../components/ModalStateManager';
 import RunComputationModal from '../../components/RunComputationModal';
 import DeleteLibraryModal from '../../components/DeleteLibraryModal';

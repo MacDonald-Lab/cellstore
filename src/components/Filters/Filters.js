@@ -4,7 +4,7 @@ import { React, useState } from 'react';
 import LibraryTable from '../../components/LibraryTable'
 
 import { useForceUpdate } from '../../components/Hooks.tsx'
-import API from '../../components/API'
+import API from '../API.tsx'
 
 const Filters = ({ library }) => {
 

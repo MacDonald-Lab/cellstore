@@ -8,7 +8,7 @@ import DataTypes from '../../dataTypes'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import Field from '../../components/LibraryField'
 import { useForceUpdate, randId, slugify } from '../../components/Hooks.tsx'
-import API from '../../components/API'
+import API from '../../components/API.tsx'
 
 // HOOKS and FUNCTIONS
 

@@ -2,7 +2,7 @@ import { Button, Column, Grid, Row, ClickableTile, AspectRatio } from 'carbon-co
 import { React, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import API from '../../components/API'
+import API from '../../components/API.tsx'
 // import HEKAReaderPy from './HEKAReaderPy'
 
 // const handlePython = async () => {

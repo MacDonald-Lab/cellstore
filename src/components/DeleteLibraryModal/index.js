@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody, TextInput } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 
-import API from '../../components/API'
+import API from '../API.tsx'
 
 const DeleteLibraryModal = ({ open, setOpen, library }) => {
     const history = useHistory()

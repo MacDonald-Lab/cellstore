@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import { Grid, Row, Column, ClickableTile, AspectRatio } from 'carbon-components-react';
 import { Table32, Add32 } from '@carbon/icons-react';
 
-import API from '../../components/API'
+import API from '../../components/API.tsx'
 
 const LandingPage = () => {
 

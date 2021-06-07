@@ -1,7 +1,7 @@
 import {useState} from 'react' 
 
 import { Grid, Row, Column, TextInput, Button } from 'carbon-components-react'
-import API from '../../components/API'
+import API from '../../components/API.tsx'
 
 const InitialSetupPage = () => {
     const [settings, setSettings] = useState({

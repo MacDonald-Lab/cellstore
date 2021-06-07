@@ -1,2 +1,2 @@
-import SettingsPage from './SettingsPage';
+import SettingsPage from './SettingsPage.tsx';
 export default SettingsPage

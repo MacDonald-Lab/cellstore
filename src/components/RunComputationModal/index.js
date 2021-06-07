@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody, Dropdown } from 'carbon-components-react'
 
-import API from '../../components/API'
+import API from '../API.tsx'
 
 const RunComputationModal = ({ open, setOpen, library }) => {
 
