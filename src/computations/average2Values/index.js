@@ -1,4 +1,4 @@
-const definition: ComputationDefinition = {
+const definition = {
     name: "average-2-values",
     friendlyName: "Average 2 Values",
     description: "Determine the mean (average) of 2 values in 2 columns",
@@ -33,11 +33,11 @@ const definition: ComputationDefinition = {
     ]
 }
 
-const averageValue = ({ valueA, valueB }: ComputationInput) => {
-    return {average: (parseFloat(valueA) + parseFloat(valueB))/2}
+const averageValue = ({ valueA, valueB }) => {
+    return { average: (parseFloat(valueA) + parseFloat(valueB)) / 2 }
 }
 
-const exportObject: Computation = {
+const exportObject = {
     definition: definition,
     function: averageValue
 }
