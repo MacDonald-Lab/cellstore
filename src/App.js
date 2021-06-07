@@ -43,10 +43,21 @@ const LoadingScreen = () => <div className="loading__container">
 
 // Route Definitions
 
-const AuthRoutes = ({settings, libraries}) => {
-  
+const AuthRoutes = () => {
+
+  const { loading, data } = useFetch([
+    { url: 'getSettings' },
+    { url: 'getLibraries' }
+  ])
+
+  const settings = data['getSettings']
+  const libraries = data['getLibraries']
+
+  if (loading) return <LoadingScreen />
   if (!settings) return <InitialSetupPage />
-    else return <><UIShell libraries={libraries} organizationName={settings ? settings['organizationName'] : ""} />
+  else return <>
+
+    <UIShell libraries={libraries} organizationName={settings ? settings['organizationName'] : ""} />
 
     <Content >
 
@@ -62,33 +73,14 @@ const AuthRoutes = ({settings, libraries}) => {
         <Route exact path='/computations/image-test' component={ImageClassificationTestPage} />
       </Switch>
 
-    </Content></>
+    </Content>
+    
+    </>
 }
 
-const App = () => {
-
-  const { loading, data } = useFetch([
-    { url: 'getSettings' },
-    { url: 'getLibraries' }
-  ], [])
-
-  const settings = data['getSettings']
-  const libraries = data['getLibraries']
-
-
-  if (loading) return <LoadingScreen />
-
-  return <>
-
-    <Switch>
-      <Route exact path='/login' component={LoginPage} />
-      <AuthRoutes settings={settings} libraries={libraries}/>
-
-    </Switch>
-
-
-
-  </>
-}
+const App = () => <Switch>
+  <Route exact path='/login' component={LoginPage} />
+  <AuthRoutes />
+</Switch>
 
 export default App;
