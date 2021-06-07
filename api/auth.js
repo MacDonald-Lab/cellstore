@@ -53,6 +53,11 @@ const authRoutes = (sequelize, app) => {
     })
   })
 
+  router.post('/user', async (req, res) => {
+    if (user) return res.send(user)
+    else return res.status(404).send()
+  })
+
   return router
 }
 
