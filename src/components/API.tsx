@@ -3,9 +3,9 @@ const API_URL = '/api/v1/'
 
 // default get/set
 
-const getFromAPIFunc = (request) => {
+const getFromAPIFunc = (request: string) => {
 
-    const getCall = async (setter = null, parameters = {}, loading = null, callback = null) => {
+    const getCall = async (setter?: Function, parameters = {}, loading?: Function, callback?: Function) => {
         const response = await fetch(`${API_URL}${request}`,
             {
                 method: 'POST',
@@ -53,7 +53,7 @@ const GET_REQUESTS = [
     // 'runComputationOnCells'
 ]
 
-var calls = {}
+var calls: {[key: string]: Function} = {}
 
 for (const key of GET_REQUESTS) {
     calls[key] = getFromAPIFunc(key)

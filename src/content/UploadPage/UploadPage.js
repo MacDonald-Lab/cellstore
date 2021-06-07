@@ -5,7 +5,7 @@ import papa from 'papaparse'
 import { Close16 } from '@carbon/icons-react'
 import { useForceUpdate } from '../../components/Hooks.tsx'
 
-import API from '../../components/API'
+import API from '../../components/API.tsx'
 
 const FormProgress = (props) => (
   <ProgressIndicator className="upload-page__progress" currentIndex={props.step}>
