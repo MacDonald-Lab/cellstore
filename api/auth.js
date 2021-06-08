@@ -28,18 +28,18 @@ const authRoutes = (sequelize, app) => {
   // login route
   router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
-      if (err) return res.status(406).send({message: err})
-      if (info) return res.status(406).send({message: info})
+      if (err) return res.status(406).send(err)
+      if (info) return res.status(406).send(info)
 
       req.login(user, err => {
-        if (err) return res.status(406).send({message: err})
+        if (err) return res.status(406).send(err)
         else return res.status(200).send()
       })
     })(req, res, next)
   })
 
   // logout route
-  router.post('/logout', checkLogin, (req, res) => {
+  router.get('/logout', checkLogin, (req, res) => {
     req.logOut()
     res.status(200).send()
   })
@@ -53,8 +53,8 @@ const authRoutes = (sequelize, app) => {
     })
   })
 
-  router.post('/user', async (req, res) => {
-    if (user) return res.send(user)
+  router.get('/user', checkLogin, async (req, res) => {
+    if (req.user) return res.send(req.user)
     else return res.status(404).send()
   })
 
