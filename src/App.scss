@@ -65,7 +65,7 @@ html {
 }
 
 // Draggable for Electron
-.bx--header__global {
+.bx--header__draggable {
   -webkit-app-region: drag;
-  padding-right: 3em;
+  
 }

@@ -1,4 +1,6 @@
-import React from 'react';
+import { useContext } from 'react';
+import UserContext from '../../contexts/UserProvider'
+// import Electron from 'electron'
 
 import {
   Header,
@@ -32,14 +34,15 @@ const UIShell = ({ organizationName, libraries }) => {
   const location = useLocation()
   const history = useHistory()
 
-
+  const user = useContext(UserContext.context)
+var userAgent = navigator.userAgent.toLowerCase()
 
   const MenuItems = (props) => <>
     <HeaderMenu aria-label="Link 4" menuLinkName="Libraries" isCurrentPage={location.pathname === '/library'}>
-      {libraries.map(item => 
-        
-      <HeaderMenuItem element={Link} to={"/library/" + item.name} onClick={props.onClick}>{item.friendlyName}</HeaderMenuItem>
-        )}
+      {libraries.map(item =>
+
+        <HeaderMenuItem element={Link} to={"/library/" + item.name} onClick={props.onClick}>{item.friendlyName}</HeaderMenuItem>
+      )}
       <HeaderMenuItem element={Link} to="/settings/create" onClick={props.onClick}><Add16 />Create library</HeaderMenuItem>
     </HeaderMenu>
     <HeaderMenuItem isCurrentPage={location.pathname === '/computations'} element={Link} to="/computations" onClick={props.onClick}>Computations</HeaderMenuItem>
@@ -67,10 +70,26 @@ const UIShell = ({ organizationName, libraries }) => {
               </HeaderSideNavItems>
             </SideNavItems>
           </SideNav>
+          {userAgent.indexOf(' electron/') > -1 &&
 
+            <div style={{ backgroundColor: 'red', width: '50%', height: '100%', margin: 'auto' }}
+              className='bx--header__draggable' >
+            </div>
+          }
 
 
           <HeaderGlobalBar>
+            <HeaderGlobalAction
+              style={{ width: 'auto', paddingRight: 10, paddingLeft: 10 }}
+              onClick={() => {
+                fetch('/api/auth/logout')
+                history.push('/login')
+
+              }}
+            >
+
+              Log out of <span style={{ fontWeight: 'bold' }}>{user.username}</span>
+            </HeaderGlobalAction>
             <HeaderGlobalAction aria-label="Notifications">
               <Notification20 />
             </HeaderGlobalAction>
@@ -80,6 +99,14 @@ const UIShell = ({ organizationName, libraries }) => {
             <HeaderGlobalAction aria-label="Settings" onClick={() => history.push('/settings')}>
               <Settings20 />
             </HeaderGlobalAction>
+
+          {userAgent.indexOf(' electron/') > -1 &&
+            <HeaderGlobalAction aria-label="Minimize" onClick={() => console.log('minimize')}>
+              <Settings20 />
+            </HeaderGlobalAction>
+
+
+            }
 
           </HeaderGlobalBar>
         </Header>

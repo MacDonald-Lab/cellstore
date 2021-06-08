@@ -18,8 +18,10 @@ import ComputationPage from './content/ComputationPage';
 import ImageClassificationTestPage from './content/ImageClassificationTestPage';
 import LoginPage from './content/LoginPage';
 import ComputationInfoPage from './content/ComputationInfoPage';
+import RegisterPage from './content/RegisterPage';
 
 import InitialSetupPage from './content/InitialSetupPage'
+import UserProvider from './contexts/UserProvider';
 
 const LoadingScreen = () => <div className="loading__container">
   <div className="loading__elements">
@@ -55,11 +57,12 @@ const AuthRoutes = () => {
 
   if (loading) return <LoadingScreen />
   if (!settings) return <InitialSetupPage />
-  else return <>
+  else return <> <UserProvider>
+
 
     <UIShell libraries={libraries} organizationName={settings ? settings['organizationName'] : ""} />
 
-    <Content >
+    <Content>
 
       <Switch>
         <Route exact path="/" component={LandingPage} />
@@ -74,12 +77,14 @@ const AuthRoutes = () => {
       </Switch>
 
     </Content>
-    
-    </>
+  </UserProvider>
+
+  </>
 }
 
 const App = () => <Switch>
   <Route exact path='/login' component={LoginPage} />
+  <Route exact path='/register' component={RegisterPage} />
   <AuthRoutes />
 </Switch>
 
