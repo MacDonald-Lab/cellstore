@@ -8,6 +8,10 @@ const apiRoutes = (sequelize, models) => {
 
     const router = express.Router()
 
+    const getPkNameOfLibrary = (schema) => {
+        return Object.keys(schema).find(key => schema[key]['primaryKey'])
+    }
+
     // helper function : get the library Sequelize object from library name and
     // reference to item in library (settings) table
     const getLibrary = async (libraryName) => {
@@ -151,7 +155,7 @@ const apiRoutes = (sequelize, models) => {
 
         const data = await library.findByPk(cellId)
 
-        if (!library) res.status(404).send()
+        if (!library || !data) res.status(404).send()
         else res.status(200).send(data)
     })
 
@@ -187,7 +191,6 @@ const apiRoutes = (sequelize, models) => {
         const libraryName = req.body['libraryName']
         const filters = req.body['filters']
 
-
         var where = {}
 
         // transform filters into usable versions
@@ -201,7 +204,7 @@ const apiRoutes = (sequelize, models) => {
             }
         }
 
-        const { library } = getLibrary(libraryName)
+        const { library } = await getLibrary(libraryName)
         const data = await library.findAll({ where })
 
         res.status(200).send(data)
@@ -268,6 +271,53 @@ const apiRoutes = (sequelize, models) => {
         await cell.destroy()
 
         res.status(200).send()
+
+    })
+
+    router.post('/deleteCells', async (req, res) => {
+        const libraryName = req.body['libraryName']
+        const cellIds = req.body['cellIds']
+
+        const { library, model } = await getLibrary(libraryName)
+
+        await library.destroy({ where: { [getPkNameOfLibrary(model.schema)]: cellIds } })
+
+        res.status(200).send()
+    })
+
+    router.post('/exportCell', async (req, res) => {
+        const libraryName = req.body['libraryName']
+        const cellId = req.body['cellId']
+        const columns = req.body['columns']
+
+        const {library, model} = await getLibrary(libraryName)
+
+        const response = await library.findOne({
+            where: {
+                [getPkNameOfLibrary(model.schema)]: cellId
+            },
+            attributes: columns
+        })
+
+        res.send(response)
+
+    })
+
+    router.post('/exportCells', async (req, res) => {
+        const libraryName = req.body['libraryName']
+        const cellIds = req.body['cellIds']
+        const columns = req.body['columns']
+
+        const {library, model} = await getLibrary(libraryName)
+
+        const response = await library.findAll({
+            where: {
+                [getPkNameOfLibrary(model.schema)]: cellIds
+            },
+            attributes: columns
+        })
+
+        res.send(response)
 
     })
 
