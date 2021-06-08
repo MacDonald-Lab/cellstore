@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@apollo/client": "^3.3.16",
     "@carbon/charts": "^0.41.64",
     "@carbon/charts-react": "^0.41.64",
     "@carbon/colors": "^10.24.0",
@@ -56,6 +55,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "backend": "nodemon api/index.js",
+    "prod": "node ./api/index.js",
     "authStart": "nodemon api/auth.js"
   },
   "proxy": "http://localhost:5000",
