@@ -4,32 +4,19 @@ import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'
-
 import 'core-js/modules/es.array.includes';
 import 'core-js/modules/es.array.fill';
 import 'core-js/modules/es.string.includes';
 import 'core-js/modules/es.string.trim';
 import 'core-js/modules/es.object.values';
 import { BrowserRouter } from 'react-router-dom';
-
-// Apollo/GraphQL Database Connection
-
-const client = new ApolloClient({
-  uri: 'http://10.0.0.21:5000/graphql',
-  cache: new InMemoryCache()
-
-})
-
 ReactDOM.render(
 
-  <ApolloProvider client={client}>
     <React.StrictMode>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </React.StrictMode>
-  </ApolloProvider>,
+    </React.StrictMode>,
 
   document.getElementById('root')
 
