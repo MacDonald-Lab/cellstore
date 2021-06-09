@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
+import Papa from 'papaparse'
 // import { createPortal } from 'react-dom'
 
 // export const useDraggableInPortal = () => {
@@ -27,8 +28,40 @@ import { useHistory } from 'react-router-dom'
 //     return element;
 //   };
 // };
+export const getPkNameOfLibrary = (library: Library) => {
+  const field = library.fields.find(field => field.primaryKey)
 
-type request = { url: string, params?: {[key: string]: any} }
+  if (field) return field.name
+  return
+}
+
+export const getDateString = () => {
+
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  const hour = `${date.getHours()}`.padStart(2, '0')
+  const minute = `${date.getMinutes()}`.padStart(2, '0')
+  return `${year}${month}${day}-${hour}${minute}`
+
+}
+
+export const saveAsCSV = (data: { [key: string]: any }[], filename: string) => {
+
+  const csv = Papa.unparse(data)
+
+  const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+  const csvURL = window.URL.createObjectURL(csvData);
+
+  const tempLink = document.createElement('a')
+  tempLink.href = csvURL;
+  tempLink.setAttribute('download', filename);
+  tempLink.click();
+}
+
+type request = { url: string, params?: { [key: string]: any } }
 
 const callAPI = async (request: request) => {
   return await fetch('/api/v1/' + request.url,
@@ -42,11 +75,31 @@ const callAPI = async (request: request) => {
 
 }
 
-export const API = async (request: request, setter?: (value: {[key: string]: any}) => void) => {
+export const useAPI = (request: request) => {
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<{ [key: string]: any } | undefined>(undefined)
+
+  const callAPI = async (params?: { [key: string]: any }) => {
+    if (params) request.params = params
+    else request.params = {}
+
+    setLoading(true)
+    const response = await API(request)
+    setData(response)
+    setLoading(false)
+    return response
+  }
+
+  return [callAPI, { loading, data }]
+
+}
+
+export const API = async (request: request, setter?: (value: { [key: string]: any }) => void) => {
   const response = await callAPI(request)
-  if (response.status === 200) {
+  if (response.status === 200 && response.headers.get("content-type")) {
     const toJson = await response.json()
     if (setter) setter(toJson)
+    return toJson
   }
   else return
 }
@@ -73,14 +126,14 @@ export const useFetch = (requests: request[], callback?: (data: { [url: string]:
           history.push('/login')
           setLoading(false)
           return
-        } else {
+        } else if (response.headers.get('content-type')) {
 
           data[request.url] = await response.json()
 
         }
       }
       setData(data)
-      if (callback) callback(data)        
+      if (callback) callback(data)
       setLoading(false)
     }
     fetchData()
