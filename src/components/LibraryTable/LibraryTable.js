@@ -90,7 +90,7 @@ const LibraryTable = ({library, libraryData}) => {
                   Delete
               </TableBatchAction>
               }>
-                {(modalProps) => <DeleteCellsModal {...modalProps} id={selectedRows} />}
+                {(modalProps) => <DeleteCellsModal {...modalProps} id={selectedRows} library={library}/>}
               </ModalStateManager>
               <ModalStateManager renderLauncher={({ setOpen }) =>
                 <TableBatchAction
@@ -101,7 +101,7 @@ const LibraryTable = ({library, libraryData}) => {
                   Export to CSV
                 </TableBatchAction>
               }>
-                {(modalProps) => <ExportCellsModal {...modalProps} id={selectedRows} />}
+                {(modalProps) => <ExportCellsModal {...modalProps} id={selectedRows} library={library} />}
               </ModalStateManager>
             </TableBatchActions>
             <TableToolbarContent>
@@ -155,7 +155,7 @@ const LibraryTable = ({library, libraryData}) => {
                       <OverflowMenuItem itemText="Delete" isDelete hasDivider />
                     </OverflowMenu>
                   }>
-                    {(modalProps) => <ExportCellModal {...modalProps} id={row.id} />}
+                    {(modalProps) => <ExportCellModal {...modalProps} id={row.id} library={library}/>}
                   </ModalStateManager>
                 </TableCell>
 

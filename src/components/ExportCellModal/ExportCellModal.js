@@ -1,69 +1,26 @@
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody } from 'carbon-components-react';
-import { React } from 'react';
 
-import { useLazyQuery, gql } from '@apollo/client';
-import Papa from 'papaparse'
 import ColumnSelection from '../ColumnSelection';
+import { useAPI, getPkNameOfLibrary, saveAsCSV } from '../../components/Hooks'
 
-// Sample Props?
-// - id and library
-// - JSON object
+import { useState } from 'react'
 
-// TODO add options for columns
+const ExportCellModal = ({ open, setOpen, id, library }) => {
 
-const EXPORT_CELL_QUERY = gql`
-        query EXPORT_CELL_QUERY($id: String!) {
-            rawDnaByJoanCellId(joanCellId: $id){
-                joanCellId
-                donorId
-                yearsWithT2D
-                age
-                sex
-                diabetesStatus
-            }
-        }`;
-
-const handleExport = (data) => {
-    if (data.rawDnaByJoanCellId === null) alert('There was an error retrieving cell')
-    else {
-        const csv = Papa.unparse([data.rawDnaByJoanCellId])
-
-        const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        var csvURL = null;
-        if (navigator.msSaveBlob) {
-            csvURL = navigator.msSaveBlob(csvData, 'download.csv');
-        }
-        else {
-            csvURL = window.URL.createObjectURL(csvData);
-        }
-
-        const tempLink = document.createElement('a');
-        tempLink.href = csvURL;
-        tempLink.setAttribute('download', `humanCell_${data.rawDnaByJoanCellId.joanCellId}.csv`);
-        tempLink.click();
-    }
-}
-
-const ExportCellModal = (props) => {
-
-    const { open, setOpen, id } = props
-    const [getQuery, { loading }] = useLazyQuery(EXPORT_CELL_QUERY, {
-        onCompleted: (d) => {
-            handleExport(d)
-            setOpen(false)
-        }
-    })
+    const [callExport, { loading: loadingExportQuery }] = useAPI({ url: 'exportCell' })
+    const [columns, setColumns] = useState([])
 
     return <ComposedModal open={open} onClose={() => setOpen(false)}>
-        <ModalHeader label={'[current library name]'} title='Export cell to .csv' />
+        <ModalHeader label={library.friendlyName} title='Export cell to .csv' />
         <ModalBody>
             <p>You will be exporting the following cell: <strong>{id}</strong></p>
-            <ColumnSelection />
+            <ColumnSelection library={library} columns={columns} setColumns={setColumns} />
         </ModalBody>
-        <ModalFooter primaryButtonDisabled={loading} primaryButtonText="Download" secondaryButtonText="Cancel" onRequestSubmit={() => {
-            getQuery({ variables: { id: id } })
-        }
-        } />
+        <ModalFooter primaryButtonDisabled={loadingExportQuery} primaryButtonText="Download" secondaryButtonText="Cancel" onRequestSubmit={async () => {
+            const data = await callExport({ libraryName: library.name, cellId: id, columns })
+            saveAsCSV([data], `${library.name}_${data[getPkNameOfLibrary(library)]}.csv`)
+            setOpen(false)
+        }} />
     </ComposedModal>
 }
 

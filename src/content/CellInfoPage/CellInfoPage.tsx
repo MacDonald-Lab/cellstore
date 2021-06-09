@@ -25,7 +25,7 @@ const CellInfoPage = () => {
   ])
 
   const library = data.getLibrary as Library
-  const cell = data.cell
+  const cell = data.getCell
 
   if (loading) return (<Loading />)
   if (!library || !cell) return <p>Error</p>
@@ -66,7 +66,7 @@ const CellInfoPage = () => {
                 setOpen(true)
               }}>Export to .csv</Button>
           }>
-            {(modalProps: any) => <ExportCellModal {...modalProps} id={'placeholder'} />}
+            {(modalProps: any) => <ExportCellModal {...modalProps} id={'placeholder'} library={library}/>}
           </ModalStateManager>
 
           <Button

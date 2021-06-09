@@ -1,7 +1,6 @@
 import { Download16 } from '@carbon/icons-react';
 import { Accordion, AccordionItem, Button, Column, Grid, Row, TextInput, } from 'carbon-components-react';
 import { useState } from 'react';
-import ExportLibraryModal from '../../components/ExportLibraryModal';
 import ModalStateManager from '../../components/ModalStateManager';
 
 import { useFetch, API } from '../../components/Hooks'
@@ -46,11 +45,6 @@ const SettingsPage = () => {
                     </AccordionItem>
                     <AccordionItem title="Libraries">
                         Library settings
-                    <ModalStateManager renderLauncher={({ setOpen }: { setOpen: (value: boolean) => void }) =>
-                            <Button onClick={() => setOpen(true)} renderIcon={Download16}>Export whole library</Button>
-                        }>
-                            {(modalProps: { open: boolean, setOpen: (value: boolean) => void }) => <ExportLibraryModal {...modalProps} />}
-                        </ModalStateManager>
                     </AccordionItem>
                     <AccordionItem title="Users">
                         User account settings

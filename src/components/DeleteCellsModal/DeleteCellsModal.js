@@ -1,46 +1,26 @@
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody } from 'carbon-components-react';
 import { React } from 'react';
-
-import { gql, useMutation } from '@apollo/client';
-
-// Sample Props?
-// - id and library
-// - JSON object
-
-// TODO add options for columns
-
-const DELETE_CELLS_MUTATION = gql`
-    mutation DELETE_CELLS_MUTATION($mutationId: String!, $patch: [RawDnaPatch!]) {
-        mnDeleteRawDnaByJoanCellId(input: {
-            clientMutationId: $mutationId
-            mnRawDnaPatch: $patch  
-        }) {
-            clientMutationId
-        }
-    }`;
-
-const DeleteCellsModal = (props) => {
-
-    const { open, setOpen, id } = props
-
-    const ids = id.map(item => ({ joanCellId: item.id}))
+import { useAPI } from '../../components/Hooks'
 
 
-    const [setMutation, {loading}] = useMutation(DELETE_CELLS_MUTATION, {
-        onCompleted: () => setOpen(false),
-        onError: (e) => alert(e.message)
-    })
+const DeleteCellsModal = ({ open, setOpen, id, library }) => {
 
-    // TODO: Display number only if there are too many items
+    const [callDelete, { loading: loadingDelete }] = useAPI({ url: 'deleteCells' })
+
+    const ids = id.map(item => item.id)
 
     return <ComposedModal open={open} onClose={() => setOpen(false)}>
-        <ModalHeader label={'[current library name]'} title='Delete cells' />
+        <ModalHeader label={library.friendlyName} title='Delete cells' />
         <ModalBody>
-            <p>You will be deleting the following cells:</p>
-            {id.map((item) => <strong key={item.id}>{item.id}</strong>)}
+            <p>You will be deleting the following:</p>
+
+            {id.length <= 5 ?
+                id.map((item) => <strong key={item.id}>{item.id}</strong>) : <p>{id.length} cell(s)</p>
+            }
         </ModalBody>
-        <ModalFooter primaryButtonText="Delete" danger primaryButtonDisabled={loading} secondaryButtonText="Cancel" onRequestSubmit={() => {
-            setMutation({ variables: { patch: ids, mutationId: 'test' } })
+        <ModalFooter primaryButtonText="Delete" danger primaryButtonDisabled={loadingDelete} secondaryButtonText="Cancel" onRequestSubmit={async () => {
+            await callDelete({ libraryName: library.name, cellIds: ids })
+            setOpen(false)
         }
         } />
     </ComposedModal>
