@@ -1,5 +1,5 @@
 import { Search16, Erase16 } from '@carbon/icons-react';
-import { Button, ButtonSet, Checkbox, Tile, TextInput, Dropdown } from 'carbon-components-react';
+import { Button, ButtonSet, Checkbox, Tile, TextInput, Dropdown, Column, Row } from 'carbon-components-react';
 import { React, useState } from 'react';
 import LibraryTable from '../../components/LibraryTable'
 
@@ -156,17 +156,26 @@ const Filters = ({ library }) => {
             {library['fields'].map((item, i) => {
 
                 const { dataType, friendlyName } = item
-                const header = <><h6>{friendlyName}</h6><br /></>
+                const header = <Row><Column><h6>{friendlyName}</h6><br /></Column></Row>
 
                 if (dataType === 'int' || dataType === 'string') return <>
+
+
                     {header}
-                    <Dropdown light id={i} titleText={friendlyName + ' operator'} label={'Select a value'} items={FILTER_OPTIONS[dataType]} itemToString={item => (item ? item['text'] : '')} selectedItem={filters[i].filter.operator} onChange={(item) => {
-                        filters[i]['filter']['operator'] = item['selectedItem']
-                        setFilters(filters)
-                        forceUpdate()
-                    }} />
-                    <TextInput labelText={friendlyName + ' value'} id={i} light onChange={handleTextField} value={filters[i]['filter']['value']} />
-                    <br />
+                    <Row>
+                        <Column>
+                            <Dropdown light id={i} titleText={friendlyName + ' operator'} label={'Select a value'} items={FILTER_OPTIONS[dataType]} itemToString={item => (item ? item['text'] : '')} selectedItem={filters[i].filter.operator} onChange={(item) => {
+                                filters[i]['filter']['operator'] = item['selectedItem']
+                                setFilters(filters)
+                                forceUpdate()
+                            }} />
+                        </Column>
+                        <Column>
+                            <TextInput labelText={friendlyName + ' value'} id={i} light onChange={handleTextField} value={filters[i]['filter']['value']} />
+                        </Column>
+                        <br />
+
+                    </Row>
                 </>
                 if (dataType === 'multiselect') return <>
                     {header}
