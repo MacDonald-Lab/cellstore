@@ -4,11 +4,11 @@ import { Link, useHistory } from 'react-router-dom'
 import { Add16 } from '@carbon/icons-react';
 import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
 import ModalStateManager from '../../components/ModalStateManager';
-import DataTypes from '../../dataTypes'
+import DataTypes from '../../dataTypes/index.ts'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import Field from '../../components/LibraryField'
 import { useForceUpdate, randId, slugify } from '../../components/Hooks.tsx'
-import API from '../../components/API.tsx'
+import { useAPI } from '../../components/Hooks.tsx'
 
 // HOOKS and FUNCTIONS
 
@@ -54,9 +54,12 @@ const typeDescriptions = DataTypes.initDescriptions()
 
 const CreateLibraryPage = () => {
 
-  // states
+  // states and hooks
   // FIXME potential for issue with primary key in general fields, move out to own
 
+  const history = useHistory()
+  const [callCreate, { loading }] = useAPI({ url: 'createLibrary' })
+  const [page, setPage] = useState(0)
   const [library, setLibrary] = useState({
     name: "",
     friendlyName: "",
@@ -75,41 +78,44 @@ const CreateLibraryPage = () => {
     viewingTableColumns: [],
   })
 
-  const [page, setPage] = useState(0)
-
-  const history = useHistory()
 
   const handleSubmit = async () => {
 
     // cleanup library submit
     for (var field of library.fields) {
+
+      // if type is multiselect, add those values
       if (field.dataType.value === 'multiselect') {
 
         for (const option of field.dataType.options.multiselectOptions) {
-          if (field.dataType.options.multiselectTags) {
-            option.color = option.color.value
-          }
+
+          // move color value up if tags is selected
+          if (field.dataType.options.multiselectTags) option.color = option.color.value
+
+          // store multiselect values as int
           option.storedAs = parseInt(option.storedAs)
         }
 
+        // elevate data out of field.dataType.options
+        // so dataType can be just a string
         const tempData = field.dataType.options
-        console.log(tempData)
         field.dataType = 'multiselect'
-
         Object.assign(field, tempData)
       }
 
+      // if type is any other type, elevate value
       else {
         field.dataType = field.dataType.value
       }
     }
 
+    // elevate viewing column names
     for (const i of library.viewingTableColumns.keys()) {
       library.viewingTableColumns[i] = library.viewingTableColumns[i].name
     }
 
-    await API.createLibrary(library)
-
+    // call API to make library and redirect home
+    await callCreate(library)
     history.push('/')
 
   }
@@ -184,7 +190,6 @@ const CreateLibraryPage = () => {
               ref={provided.innerRef}
             // style={getListStyle(snapshot.isDraggingOver)}
             >
-
               {library.fields.map((item, i) => {
                 if (i > 0) return <Draggable key={item.key} draggableId={item.key} index={i} >
                   {((provided, snapshot) =>
@@ -197,34 +202,15 @@ const CreateLibraryPage = () => {
                         provided.draggableProps.style
                       )}>
 
-
                       <Field editable={i !== 0} library={library} setLibrary={setLibrary} i={i} forcePageUpdate={forcePageUpdate} provided={provided} />
 
                     </div>)}
 
-
                 </Draggable>
-              }
-
-
-
-              )}
-
-
-
+              })}
             </div>
-
-
-
           )}
-
-
         </Droppable>
-
-
-
-
-
       </DragDropContext>
 
       <Row>
@@ -274,7 +260,15 @@ const CreateLibraryPage = () => {
 
     <Row condensed>
       {typeDescriptions.map(item => <Column sm={2} md={4} lg={4}>
-        <SelectableTile id={item.id} name="tiles" key={item.id}>
+        <SelectableTile id={item.id} name="tiles" key={item.id} value={item.id} selected={library.dataTypes.includes(item.id)} onChange={() => {
+          if (library.dataTypes.includes(item.id)) {
+            library.dataTypes = library.dataTypes.filter(filter => filter !== item.id)
+          } else {
+            library.dataTypes = [...library.dataTypes, item.id]
+          }
+          setLibrary(library)
+          console.log(library)
+        }}>
           <AspectRatio ratio='2x1'>
             <p><strong>{item.name}</strong></p>
             <p>{item.description}</p>
