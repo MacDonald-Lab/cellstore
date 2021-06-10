@@ -1,3 +1,5 @@
+// import seq from 'sequelize'
+
 import GeneExpression from './GeneExpression'
 
 const types = [
@@ -15,9 +17,16 @@ const initViews = (libraryName: string, queryData: JSON) => {
     return views
 }  
 
+const getDatabaseDefinition = (typeName: string) => {
+    const type = types.find(value => value.initDescription().id = typeName)
+    if (!type) return
+    return type.getDatabaseDefinition
+}
+
 const moduleExports = {
     initViews,
     initDescriptions,
+    getDatabaseDefinition,
 
     GeneExpression
 }
