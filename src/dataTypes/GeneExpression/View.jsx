@@ -33,21 +33,21 @@ export const initView = (libraryName, queryData) => {
         return {
             id: 'GeneExpression',
             friendlyName: 'Gene expression',
-            component: () => (<>
+            component: () => <div>
 
                 {smallArrayGenes &&
                     <SimpleBarChart data={smallArrayGenes} options={chartOptions} />
                 }
 
 
-                {medArrayGenes && <>
+                {medArrayGenes && <div>
                     <h4>Top 100 Genes</h4>
                     <h6>Sorted by Count</h6>
                     <br />
                     {medArrayGenes.map(item => <Tag>{item.group} <strong>{item.value}</strong></Tag>)}
-                </>}
+                </div>}
 
-            </>)
+            </div>
         }
     }
 
