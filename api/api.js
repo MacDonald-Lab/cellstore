@@ -2,6 +2,8 @@ import express from 'express';
 import seq from 'sequelize'
 const { DataTypes, Op } = seq
 import Computations from '../src/computations/index.js'
+// import importJsx from 'import-jsx'
+import Types from '../src/dataTypes/index.ts'
 import checkLogin from './checkLogin.js'
 
 const apiRoutes = (sequelize, models) => {
@@ -86,8 +88,10 @@ const apiRoutes = (sequelize, models) => {
 
     router.all('/createLibrary', async (req, res) => {
 
-        const { name, fields } = req.body
+        const { name, fields, dataTypes } = req.body
         const libraryDefinition = req.body
+
+        let pkey
 
         // create database schema
 
@@ -96,19 +100,48 @@ const apiRoutes = (sequelize, models) => {
                 type: DATA_TYPE_MAPS[field.dataType],
                 primaryKey: field.primaryKey
             }
+
+            if (!pkey && field.primaryKey) pkey = def
+
             return [field['name'], def]
         }))
 
-        const LibraryModel = sequelize.define(name, schema, {
+        if (!pkey) return res.status(400).send({ message: 'Invalid request: missing primary key declaration' })
+
+        const Library = sequelize.define(name, schema, {
             freezeTableName: true,
             tableName: name
         })
 
-        // create table
+        // create schemas for dataTypes
+        pkey.fieldName = 'key'
 
-        await LibraryModel.sync()
+        for (const type of dataTypes) {
 
-        // TODO create tables for data types
+            console.log(pkey)
+
+            const def = Types.getDatabaseDefinition(type)(DataTypes)
+            if (!def) return res.status(400).send({ message: `Invalid data: missing definition for data type ${type}` })
+            const tableName = name + '__' + type
+
+            const tableSchema = Object.assign({ key: pkey }, def)
+
+            const Table = sequelize.define(tableName, tableSchema, {
+                freezeTableName: true,
+                tableName
+            })
+
+            // define relationship
+            Library.hasOne(Table, { as: type })
+            Table.belongsTo(Library)
+
+            // push table schema to array so it can be stored in database
+
+        }
+
+        // sync tables
+
+        await sequelize.sync()
 
         // store info in database
         const dbSchema = Object.fromEntries(fields.map(field => {
@@ -119,7 +152,7 @@ const apiRoutes = (sequelize, models) => {
             return [field['name'], def]
         }))
 
-        await models.Library.create({ key: name, definition: libraryDefinition, schema: dbSchema })
+        await models.Library.create({ key: name, definition: libraryDefinition, schema: dbSchema, tableSchemas: tableSchemas })
 
         res.status(200).send()
 
@@ -290,7 +323,7 @@ const apiRoutes = (sequelize, models) => {
         const cellId = req.body['cellId']
         const columns = req.body['columns']
 
-        const {library, model} = await getLibrary(libraryName)
+        const { library, model } = await getLibrary(libraryName)
 
         const response = await library.findOne({
             where: {
@@ -308,7 +341,7 @@ const apiRoutes = (sequelize, models) => {
         const cellIds = req.body['cellIds']
         const columns = req.body['columns']
 
-        const {library, model} = await getLibrary(libraryName)
+        const { library, model } = await getLibrary(libraryName)
 
         const response = await library.findAll({
             where: {
