@@ -4,6 +4,8 @@ const database = async ({ dbName, dbUsername, dbPassword, dbHost }) => {
 
     // create database if not exist
 
+
+    // TODO error connecting to db
     // connect to default database
     const baseSequelize = new Sequelize('postgres', dbUsername, dbPassword, {
         host: dbHost,
@@ -21,14 +23,6 @@ const database = async ({ dbName, dbUsername, dbPassword, dbHost }) => {
     })
 
     // test connection
-    // TODO get rid of?
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-
     return sequelize
 
 }

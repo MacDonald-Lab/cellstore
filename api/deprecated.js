@@ -18,8 +18,6 @@ router.post('/createTable', (req, res) => {
   res.status(200).send()
 })
 
-//TODO: turn the chunks of code into functions that can be called on the front end!
-
 const allFunctions = () => {
 
 
@@ -28,7 +26,7 @@ const allFunctions = () => {
   //_________________
 
   //*** a resolve and reject has been added into a promise in order to later add error checking ***
-  //TODO: add error checking with promises
+  //oldtodo: add error checking with promises
 
   //simple sleep functions
   function sleep(seconds) {

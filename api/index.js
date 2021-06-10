@@ -1,3 +1,5 @@
+// require = require('esm')(module)
+
 import dotenv from 'dotenv';
 dotenv.config()
 
@@ -17,64 +19,70 @@ import settingsModel from './models/settings.js'
 import authRoutes from './auth.js'
 import apiRoutes from './api.js'
 
-
-// GET DATABASE PROPERTIES
-
-
-const port = 5000
-const dbProperties = {
-  dbName: 'cellstore_db_test',
-  dbUsername: 'postgres',
-  dbPassword: '123',
-  dbHost: 'localhost',
-  dbPort: 5432
-}
+const main = async () => {
 
 
-// ESTABLISH DATABASE CONNECTION
+  // GET DATABASE PROPERTIES
 
 
-const sequelize = await database(dbProperties)
-
-// create default tables if not exist
-// TODO move to db file
-const models = {
-  Library: libraryModel(sequelize, DataTypes),
-  Settings: settingsModel(sequelize, DataTypes)
-}
-
-sequelize.sync()
+  const port = 5000
+  const dbProperties = {
+    dbName: 'cellstore_db_test',
+    dbUsername: 'postgres',
+    dbPassword: '123',
+    dbHost: 'localhost',
+    dbPort: 5432
+  }
 
 
-// SETUP WEB SERVER
+  // ESTABLISH DATABASE CONNECTION
 
 
-const app = express();
-app.use(express.json())
-app.use(cors())
-app.use(cookieSession({
-  name: 'session',
-  keys: ['my-secret-key'],
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+  const sequelize = await database(dbProperties)
+
+  // create default tables if not exist
+  // TODO move to db file
+  const models = {
+    Library: libraryModel(sequelize, DataTypes),
+    Settings: settingsModel(sequelize, DataTypes)
+  }
+
+  sequelize.sync()
 
 
-// START SERVER
+  // SETUP WEB SERVER
 
 
-app.use('/api/auth', authRoutes(sequelize, app))
-app.use('/api/v1', apiRoutes(sequelize, models))
+  const app = express();
+  app.use(express.json())
+  app.use(cors())
+  app.use(cookieSession({
+    name: 'session',
+    keys: ['my-secret-key'],
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }))
 
-if (process.env.NODE_ENV === 'production') {
 
-  const __dirname = path.resolve()
+  // START SERVER
+
+
+  app.use('/api/auth', authRoutes(sequelize, app))
+  app.use('/api/v1', apiRoutes(sequelize, models))
+
+  if (process.env.NODE_ENV === 'production') {
+
+    const __dirname = path.resolve()
     app.use(express.static(path.join(__dirname, 'build')))
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, 'build/index.html'))
     })
 
+  }
+
+  app.listen(port, () => {
+    console.log(`Development API listening on port ${port}`)
+  })
+
 }
 
-app.listen(port, () => {
-  console.log(`Development API listening on port ${port}`)
-})
+main()
