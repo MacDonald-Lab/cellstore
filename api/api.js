@@ -135,7 +135,7 @@ const apiRoutes = (sequelize, models) => {
             Library.hasOne(Table, { as: type })
             Table.belongsTo(Library)
 
-            // push table schema to array so it can be stored in database
+            // TODO push table schema to array so it can be stored in database
 
         }
 
@@ -152,7 +152,7 @@ const apiRoutes = (sequelize, models) => {
             return [field['name'], def]
         }))
 
-        await models.Library.create({ key: name, definition: libraryDefinition, schema: dbSchema, tableSchemas: tableSchemas })
+        await models.Library.create({ key: name, definition: libraryDefinition, schema: dbSchema })
 
         res.status(200).send()
 

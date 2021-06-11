@@ -1,19 +1,11 @@
 import { React, useState, useEffect } from 'react';
-import { AspectRatio, Breadcrumb, BreadcrumbItem, Grid, Row, Column, Tabs, Tab, Button, TextInput } from 'carbon-components-react';
-import { Link, useParams } from 'react-router-dom';
-
-import ModalStateManager from '../../components/ModalStateManager'
-import ExportCellModal from '../../components/ExportCellModal'
+import { Grid, Row, Column, Button, TextInput } from 'carbon-components-react';
+import {  useParams } from 'react-router-dom';
 
 import { useForceUpdate } from '../../components/Hooks.tsx'
-
-import { Loading, Tile } from 'carbon-components-react';
-import { Download16, Edit16, TrashCan16 } from '@carbon/icons-react';
-import DeleteCellModal from '../../components/DeleteCellModal';
-import FieldItemView from '../../components/FieldItemView';
+import { Loading } from 'carbon-components-react';
 
 import API from '../../components/API.tsx'
-
 
 const ComputationInfoPage = () => {
 

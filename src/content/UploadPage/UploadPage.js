@@ -175,6 +175,8 @@ const UploadPage = () => {
           </Breadcrumb>
           <h1>Upload to Cell Library</h1>
 
+          {uploading && <p>Uploading...</p>}
+
           <FormProgress step={0} />
 
         </Column>

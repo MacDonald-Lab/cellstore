@@ -9,8 +9,6 @@ const LoginPage = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [usernameReg, setUsernameReg] = useState('')
-  const [passwordReg, setPasswordReg] = useState('')
   const [message, setMessage] = useState(undefined)
 
   const handleLogin = async () => {

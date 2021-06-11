@@ -1,6 +1,6 @@
 
 import { React, useState } from 'react';
-import { Grid, Row, Column, TextInput, Button, ButtonSet } from 'carbon-components-react';
+import { Grid, Row, Column, TextInput, Button } from 'carbon-components-react';
 import { useHistory } from 'react-router-dom'
 
 
@@ -33,7 +33,7 @@ const LoginPage = () => {
   return (
 
     <Grid style={{ maxWidth: 600 }}>
-     
+
       <Row>
         <Column>
           <h2>Register for CellSTORE</h2>

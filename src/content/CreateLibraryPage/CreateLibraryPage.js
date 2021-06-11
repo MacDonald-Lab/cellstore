@@ -2,8 +2,6 @@ import { React, useState } from 'react';
 import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, SelectableTile, AspectRatio, ButtonSet, Tile } from 'carbon-components-react';
 import { Link, useHistory } from 'react-router-dom'
 import { Add16 } from '@carbon/icons-react';
-import ImportColumnNamesModal from '../../components/ImportColumnNamesModal';
-import ModalStateManager from '../../components/ModalStateManager';
 import DataTypes from '../../dataTypes/index.ts'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import Field from '../../components/LibraryField'
@@ -58,7 +56,7 @@ const CreateLibraryPage = () => {
   // FIXME potential for issue with primary key in general fields, move out to own
 
   const history = useHistory()
-  const [callCreate, { loading }] = useAPI({ url: 'createLibrary' })
+  const [callCreate] = useAPI({ url: 'createLibrary' })
   const [page, setPage] = useState(0)
   const [library, setLibrary] = useState({
     name: "",
@@ -207,6 +205,8 @@ const CreateLibraryPage = () => {
                     </div>)}
 
                 </Draggable>
+
+                return null
               })}
             </div>
           )}
@@ -295,8 +295,6 @@ const CreateLibraryPage = () => {
   </>
 
   const Page3 = () => {
-
-    const forcePageUpdate = useForceUpdate()
 
     const [libraryColumns, setLibraryColumns] = useState(
       library.fields.slice(1)

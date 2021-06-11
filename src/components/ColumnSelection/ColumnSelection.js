@@ -1,5 +1,5 @@
-import { React, useState } from 'react';
-import { Button, ButtonSet, Checkbox, InlineLoading } from 'carbon-components-react';
+import { React } from 'react';
+import { Button, ButtonSet, Checkbox } from 'carbon-components-react';
 
 
 const ColumnSelection = ({library, columns, setColumns}) => {
