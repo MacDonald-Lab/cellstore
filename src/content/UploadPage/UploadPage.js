@@ -1,11 +1,9 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState } from 'react';
 import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, FileUploaderDropContainer, Form, FormGroup, ProgressIndicator, ProgressStep, Button, InlineLoading, FileUploaderItem, Tile, AspectRatio, Dropdown, ButtonSet } from 'carbon-components-react';
 import { Link, useParams, useHistory } from 'react-router-dom'
 import papa from 'papaparse'
 import { Close16 } from '@carbon/icons-react'
-import { useForceUpdate } from '../../components/Hooks.tsx'
-
-import API from '../../components/API.tsx'
+import { useForceUpdate, useFetch, useAPI } from '../../components/Hooks.tsx'
 
 const FormProgress = (props) => (
   <ProgressIndicator className="upload-page__progress" currentIndex={props.step}>
@@ -38,8 +36,6 @@ const UploadPage = () => {
     return [...new Set(filtered)]
   }
 
-
-
   // States
   const [uploadedFile, setUploadedFile] = useState(null)
 
@@ -47,26 +43,23 @@ const UploadPage = () => {
   const [fileHeaders, setFileHeaders] = useState(null)
   const [duplicates, setDuplicates] = useState([])
 
-
   const { libraryName } = useParams()
 
-  const [library, setLibrary] = useState(null)
-  const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [columnMappings, setColumnMappings] = useState(null)
 
-  useEffect(() => {
+  const { loading, data } = useFetch([{ url: 'getLibrary', params: { libraryName } }], (data) => {
+    setColumnMappings(data.getLibrary.fields.map(item => ({
+      name: item.name,
+      friendlyName: item.friendlyName,
+      dataType: item.dataType,
+      selectedItem: null
+    })))
+  })
 
-    API.getLibrary(setLibrary, { libraryName: libraryName }, setLoading, (parsed) => {
-      setColumnMappings(parsed.fields.map(item => ({
-        name: item.name,
-        friendlyName: item.friendlyName,
-        dataType: item.dataType,
-        selectedItem: null
-      })))
-    })
+  const [addItemToLibrary] = useAPI({ url: 'addItemToLibrary' })
 
-  }, [libraryName])
+  const library = data.getLibrary
 
   const forceUpdate = useForceUpdate()
 
@@ -137,7 +130,7 @@ const UploadPage = () => {
           }
         }
 
-        await API.addItemToLibrary(null, { libraryName: libraryName, libraryItem: newResult })
+        await addItemToLibrary({ libraryName, libraryItem: newResult })
 
 
         count++;
@@ -169,7 +162,7 @@ const UploadPage = () => {
               <Link to="/">Libraries</Link>
             </BreadcrumbItem>
             <BreadcrumbItem>
-              <Link to={"/library/" + libraryName }>{library.friendlyName}</Link>
+              <Link to={"/library/" + libraryName}>{library.friendlyName}</Link>
             </BreadcrumbItem>
 
           </Breadcrumb>

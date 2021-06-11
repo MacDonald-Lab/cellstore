@@ -79,7 +79,7 @@ export const useAPI = (request: request) => {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState<{ [key: string]: any } | undefined>(undefined)
 
-  const callAPI = async (params?: { [key: string]: any }) => {
+  const callAPI = async (params?: { [key: string]: any }, setter?: (data: any) => void) => {
     if (params) request.params = params
     else request.params = {}
 

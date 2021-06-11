@@ -1,12 +1,13 @@
 import { Search16, Erase16 } from '@carbon/icons-react';
 import { Button, ButtonSet, Checkbox, Tile, TextInput, Dropdown, Column, Row } from 'carbon-components-react';
-import { React, useState } from 'react';
+import { useState } from 'react';
 import LibraryTable from '../../components/LibraryTable'
 
-import { useForceUpdate } from '../../components/Hooks.tsx'
-import API from '../API.tsx'
+import { useForceUpdate, useAPI } from '../../components/Hooks.tsx'
 
 const Filters = ({ library }) => {
+
+    const [getFilteredCells] = useAPI({url: 'getFilteredCells'})
 
     const FILTER_OPTIONS = {
         string: [
@@ -141,9 +142,10 @@ const Filters = ({ library }) => {
             .filter(item => (item.dataType !== 'int' && item.dataType !== 'string') || (item.filter.operator.value !== null && item.filter.value !== null)) // get rid of inputs where operator selector  is null
 
         // FIXME display error if int is not int
-        await API.getFilteredCells(setResults, { libraryName: library.name, filters: submitArray })
-    }
 
+        await getFilteredCells({ libraryName: library.name, filters: submitArray }, setResults)
+    
+    }
 
     return (<>
         <Tile className="filters__main-tile">

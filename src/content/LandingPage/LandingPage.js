@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import { useHistory } from 'react-router-dom'
 import { Grid, Row, Column, ClickableTile, AspectRatio } from 'carbon-components-react';
 import { Table32, Add32 } from '@carbon/icons-react';
 
-import API from '../../components/API.tsx'
+import { useFetch } from '../../components/Hooks.tsx'
 
 const LandingPage = () => {
 
   const history = useHistory()
-  const [libraries, setLibraries] = useState(null)
-  useEffect(() => {
-    API.getLibraries(setLibraries).catch(() => history.push('/login') )
-  }, [])
 
-  if (!libraries) return <p>Loading...</p>
+  const {loading, data} = useFetch([{url: 'getLibraries'}])
+  const libraries = data.getLibraries
 
+  if (loading) return <p>Loading</p>
+  if (!libraries) return <p>Error</p>
 
   return (
     <Grid>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Grid, Row, Column, Tabs, Tab, Breadcrumb, BreadcrumbItem, Tag, DataTableSkeleton, Button, ButtonSet } from 'carbon-components-react'
 import { useParams } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ import Filters from '../../components/Filters';
 import { useHistory } from 'react-router-dom';
 import { Tag16 } from '@carbon/icons-react';
 
-import API from '../../components/API.tsx';
+import { useFetch } from '../../components/Hooks.tsx'
 import ModalStateManager from '../../components/ModalStateManager';
 import RunComputationModal from '../../components/RunComputationModal';
 import DeleteLibraryModal from '../../components/DeleteLibraryModal';
@@ -17,22 +17,13 @@ const LibraryPage = () => {
   const history = useHistory()
   const { libraryName } = useParams()
 
-  const [library, setLibrary] = useState(null)
-  const [libraryData, setLibraryData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
+  const { loading, data } = useFetch([
+    { url: 'getlibrary', params: { libraryName } },
+    { url: 'getLibraryData', params: { libraryName } }
+  ])
 
-    const get = async () => {
-
-      await API.getLibrary(setLibrary, { libraryName: libraryName })
-      await API.getLibraryData(setLibraryData, { libraryName: libraryName })
-      setLoading(false)
-
-    }
-
-    get()
-
-  }, [libraryName])
+  const library = data.getLibrary
+  const libraryData = data.getLibraryData
 
   // TODO: transform to state and/or db query
   const favourites = [{
@@ -157,10 +148,10 @@ const LibraryPage = () => {
             <Button>Edit settings</Button>
             <Button>Export library</Button>
             <ModalStateManager renderLauncher={({ setOpen }) =>
-            <Button onClick={() => setOpen(true)}>Delete library</Button>
+              <Button onClick={() => setOpen(true)}>Delete library</Button>
             }>
-              {modalProps => 
-              <DeleteLibraryModal {...modalProps} library={library} />
+              {modalProps =>
+                <DeleteLibraryModal {...modalProps} library={library} />
               }
             </ModalStateManager>
           </ButtonSet>

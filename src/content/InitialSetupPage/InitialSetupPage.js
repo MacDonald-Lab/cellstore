@@ -1,14 +1,14 @@
-import {useState} from 'react' 
+import { useState } from 'react'
 
 import { Grid, Row, Column, TextInput, Button } from 'carbon-components-react'
-import API from '../../components/API.tsx'
+import { useAPI } from '../../components/Hooks.tsx'
 
 const InitialSetupPage = () => {
     const [settings, setSettings] = useState({
         organizationName: ""
     })
 
-
+    const [pushSettings] = useAPI({ url: 'setSettings' })
 
     return <Grid>
         <Row>
@@ -18,8 +18,6 @@ const InitialSetupPage = () => {
                 <h3>Let's get started</h3>
 
             </Column>
-
-
         </Row>
         <Row>
             <Column>
@@ -32,7 +30,7 @@ const InitialSetupPage = () => {
                 )}
 
                 <Button onClick={async () => {
-                    await API.setSettings(null, {payload: settings}) 
+                    await pushSettings({ payload: settings })
                     window.location.reload()
 
                 }}>Submit</Button>

@@ -21,7 +21,7 @@ const UserProvider = ({ children }) => {
     }
 
     fetchData()
-  }, []);
+  }, [history]);
 
   return (
       <context.Provider value={user}>
