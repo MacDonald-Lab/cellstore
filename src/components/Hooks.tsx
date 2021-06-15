@@ -69,7 +69,7 @@ export const useAPI = (request: request) => {
 
 }
 
-export const API = async (request: request, setter?: (value: { [key: string]: any }) => void) => {
+const API = async (request: request, setter?: (value: { [key: string]: any }) => void) => {
   const response = await callAPI(request)
   if (response.status === 200 && response.headers.get("content-type")) {
     const toJson = await response.json()
