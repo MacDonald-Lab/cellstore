@@ -36,13 +36,13 @@ const LandingPage = () => {
       <Row condensed>
 
         {libraries.map((item) =>
-          <Column sm={2} md={4} lg={4} max={3}>
+          <Column key={item.name} sm={2} md={4} lg={4} max={3}>
 
             <ClickableTile handleClick={() => history.push(`/library/${item.name}`)}>
               <AspectRatio ratio="1x1">
                 <h4>
                   <strong>
-                    {item['friendlyName']}
+                    {item.friendlyName}
                   </strong>
                 </h4>
                 <br />

@@ -115,7 +115,7 @@ const LibraryPage = () => {
           {favourites.length > 0 && <>
             <h3>Favourites</h3>
             <br />
-            {favourites.map(item => <Tag type={item.color} onClick={() => history.push(`/library/cell/${item.id}`)}>{item.id}</Tag>)}
+            {favourites.map(item => <Tag key={item.id} type={item.color} onClick={() => history.push(`/library/cell/${item.id}`)}>{item.id}</Tag>)}
 
 
             <br />
@@ -127,7 +127,7 @@ const LibraryPage = () => {
           {tags.length > 0 && <>
             <h3>Tags</h3>
             <br />
-            {tags.map(item => <Tag type={item.color} renderIcon={Tag16} onClick={() => history.push(`/library/tags/${item.id}`)}>{item.id} <strong>{item.count}</strong></Tag>)}
+            {tags.map(item => <Tag key={item.id} type={item.color} renderIcon={Tag16} onClick={() => history.push(`/library/tags/${item.id}`)}>{item.id} <strong>{item.count}</strong></Tag>)}
             <br />
             <br />
           </>

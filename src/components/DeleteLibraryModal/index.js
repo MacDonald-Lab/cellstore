@@ -29,7 +29,7 @@ const DeleteLibraryModal = ({ open, setOpen, library }) => {
             <strong><p>THIS ACTION IS IRREVERSABLE!</p></strong>
             <br />
 
-            <TextInput placeholder={library.name} labelText={`To confirm, please type in: ${library.name}`} value={value} onChange={(e) => {
+            <TextInput placeholder={library.name} id={library.name + '-delete'} labelText={`To confirm, please type in: ${library.name}`} value={value} onChange={(e) => {
                 setValue(e.target.value)
                 if (e.target.value === library.name) setSubmit(false)
                 else setSubmit(true)

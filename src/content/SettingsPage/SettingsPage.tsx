@@ -1,7 +1,7 @@
 import { Accordion, AccordionItem, Button, Column, Grid, Row, TextInput, } from 'carbon-components-react';
 import { useState } from 'react';
 
-import { useFetch, API } from '../../components/Hooks'
+import { useFetch, useAPI } from '../../components/Hooks'
 
 const GeneralSettings = () => {
 
@@ -9,6 +9,8 @@ const GeneralSettings = () => {
     const { loading } = useFetch([{ url: 'getSettings' }], (data) =>
         setSettings(data.getSettings)
     )
+
+    const [submit] = useAPI({url: 'setSettings'})
 
     if (loading) return <p>Loading...</p>
     else if (!settings) return <p>Error getting settings</p>
@@ -20,7 +22,7 @@ const GeneralSettings = () => {
             }} />
         )}
         <Button onClick={async () => {
-            await API({ url: 'setSettings', params: {payload: settings}})
+            await submit({ url: 'setSettings', params: {payload: settings}})
             window.location.reload()
         }}>Submit</Button>
     </>

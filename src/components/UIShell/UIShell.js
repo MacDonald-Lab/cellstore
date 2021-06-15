@@ -41,7 +41,7 @@ var userAgent = navigator.userAgent.toLowerCase()
     <HeaderMenu aria-label="Link 4" menuLinkName="Libraries" isCurrentPage={location.pathname === '/library'}>
       {libraries.map(item =>
 
-        <HeaderMenuItem element={Link} to={"/library/" + item.name} onClick={props.onClick}>{item.friendlyName}</HeaderMenuItem>
+        <HeaderMenuItem key={item.name} element={Link} to={"/library/" + item.name} onClick={props.onClick}>{item.friendlyName}</HeaderMenuItem>
       )}
       <HeaderMenuItem element={Link} to="/settings/create" onClick={props.onClick}><Add16 />Create library</HeaderMenuItem>
     </HeaderMenu>
@@ -79,7 +79,7 @@ var userAgent = navigator.userAgent.toLowerCase()
 
 
           <HeaderGlobalBar>
-            <HeaderGlobalAction
+            <HeaderGlobalAction aria-label="Log out"
               style={{ width: 'auto', paddingRight: 10, paddingLeft: 10 }}
               onClick={() => {
                 fetch('/api/auth/logout')

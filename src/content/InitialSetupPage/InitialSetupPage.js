@@ -22,7 +22,7 @@ const InitialSetupPage = () => {
         <Row>
             <Column>
                 {Object.keys(settings).map((item, i) =>
-                    <TextInput key={i} value={settings[item]} labelText={item} onChange={(e) => {
+                    <TextInput key={item} id={item} value={settings[item]} labelText={item} onChange={(e) => {
                         const tempSettings = { ...settings }
                         tempSettings[item] = e.target.value
                         setSettings(tempSettings)

@@ -157,29 +157,29 @@ const Filters = ({ library }) => {
 
             {library['fields'].map((item, i) => {
 
-                const { dataType, friendlyName } = item
+                const { dataType, friendlyName, name } = item
                 const header = <Row><Column><h6>{friendlyName}</h6><br /></Column></Row>
 
-                if (dataType === 'int' || dataType === 'string') return <>
+                if (dataType === 'int' || dataType === 'string') return <div key={name}>
 
 
                     {header}
                     <Row>
                         <Column>
-                            <Dropdown light id={i} titleText={friendlyName + ' operator'} label={'Select a value'} items={FILTER_OPTIONS[dataType]} itemToString={item => (item ? item['text'] : '')} selectedItem={filters[i].filter.operator} onChange={(item) => {
+                            <Dropdown light id={name} titleText={friendlyName + ' operator'} label={'Select a value'} items={FILTER_OPTIONS[dataType]} itemToString={item => (item ? item['text'] : '')} selectedItem={filters[i].filter.operator} onChange={(item) => {
                                 filters[i]['filter']['operator'] = item['selectedItem']
                                 setFilters(filters)
                                 forceUpdate()
                             }} />
                         </Column>
                         <Column>
-                            <TextInput labelText={friendlyName + ' value'} id={i} light onChange={handleTextField} value={filters[i]['filter']['value']} />
+                            <TextInput labelText={friendlyName + ' value'} id={name} light onChange={handleTextField} value={filters[i]['filter']['value']} />
                         </Column>
                         <br />
 
                     </Row>
-                </>
-                if (dataType === 'multiselect') return <>
+                </div>
+                if (dataType === 'multiselect') return <div key={name}>
                     {header}
                     {item.multiselectOptions.map(({ friendlyName: optionName, storedAs }, j) =>
 
@@ -187,7 +187,7 @@ const Filters = ({ library }) => {
                         <Checkbox labelText={optionName} id={`${i}-${j}`} key={`${i}-${j}`} checked={filters[i]['filter'].includes(storedAs)} onChange={handleCheckbox} />
                     )}
                     <br />
-                </>
+                </div>
 
 
                 return <h6>{friendlyName}: Unknown Type</h6>
