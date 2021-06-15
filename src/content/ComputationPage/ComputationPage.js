@@ -1,38 +1,16 @@
-import { Button, Column, Grid, Row, ClickableTile, AspectRatio } from 'carbon-components-react'
-import { React, useEffect, useState } from 'react'
+import { Column, Grid, Row, ClickableTile, AspectRatio } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 
-import API from '../../components/API.tsx'
-// import HEKAReaderPy from './HEKAReaderPy'
-
-// const handlePython = async () => {
-//     console.log(window.pyodide.runPythonAsync(HEKAReaderPy));
-// }
+import {useFetch} from '../../components/Hooks.tsx'
 
 const ComputationPage = () => {
 
     const history = useHistory()
-
-    const [computations, setComputations] = useState(null)
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        API.getComputations(setComputations, {}, setLoading)
-    }, [])
-
-
-
-    // useEffect(() => {
-    //     const loadPyodide = async () => {
-    //         await window.loadPyodide({
-    //             indexURL : process.env.PUBLIC_URL + "/pyodide/"
-    //         })
-    //     }
-
-    //     loadPyodide()
-    // }, [])
+    const {loading, data} = useFetch([{url: 'getComputations'}])
+    const computations = data.getComputations
 
     if (loading) return <p>Loading...</p>
+    if (!computations) return <p>Error!</p>
 
     return <Grid>
         <Row>
@@ -57,17 +35,6 @@ const ComputationPage = () => {
             </Column>)}
 
         </Row>
-        <Row>
-            <Column>
-                <Button onClick={() => history.push('/computations/image-test')}>Go to Image Classification Test</Button>
-            </Column>
-        </Row>
-        {/* <Row>
-            <Column>
-                <h1>Python Code Test</h1>
-                <Button onClick={() => handlePython()}>Run Program</Button>
-            </Column>
-        </Row> */}
     </Grid>
 }
 

@@ -18,7 +18,7 @@ const LibraryPage = () => {
   const { libraryName } = useParams()
 
   const { loading, data } = useFetch([
-    { url: 'getlibrary', params: { libraryName } },
+    { url: 'getLibrary', params: { libraryName } },
     { url: 'getLibraryData', params: { libraryName } }
   ])
 

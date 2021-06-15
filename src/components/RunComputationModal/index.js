@@ -1,29 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody, Dropdown } from 'carbon-components-react'
 
-import API from '../API.tsx'
+import { useFetch, useAPI } from '../../components/Hooks.tsx'
 
 const RunComputationModal = ({ open, setOpen, library }) => {
 
-    const [computations, setComputations] = useState(null)
-    const [loading, setLoading] = useState(true)
     const [computation, setComputation] = useState(null)
     const [computationMaps, setComputationMaps] = useState(undefined)
     const [submit, setSubmit] = useState(true)
 
-    useEffect(() => API.getComputations(setComputations, {}, setLoading), [])
+    const { loading, data } = useFetch([{ url: 'getComputations' }])
+    const [runComp] = useAPI({ url: 'runComputationOnLibrary' })
+
+    const computations = data.getComputations
 
     if (loading) return <p>Loading...</p>
     if (!computations) return <p>Error</p>
 
     const handleSubmit = async () => {
-        const response = await API.runComputationOnLibrary(null, {
+        const response = await runComp({
             libraryName: library.name,
             computationName: computation.name,
-            computationMaps: computationMaps
+            computationMaps
         })
 
-        console.log(await response.json())
+        console.log(response)
     }
 
     const checkSubmit = () => {

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ComposedModal, ModalFooter, ModalHeader, ModalBody, TextInput } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 
-import API from '../API.tsx'
+import { useAPI } from '../../components/Hooks.tsx'
 
 const DeleteLibraryModal = ({ open, setOpen, library }) => {
     const history = useHistory()
@@ -10,8 +10,10 @@ const DeleteLibraryModal = ({ open, setOpen, library }) => {
     const [submit, setSubmit] = useState(true)
     const [value, setValue] = useState('')
 
+    const [deleteLibrary] = useAPI({ url: 'deleteLibrary'})
+
     const handleSubmit = async () => {
-        await API.deleteLibrary(null, {libraryName: library.name})
+        await deleteLibrary({libraryName: library.name})
         history.push('/')
     }
 
