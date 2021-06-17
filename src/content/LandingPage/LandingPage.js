@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom'
 import { Grid, Row, Column, ClickableTile, AspectRatio } from 'carbon-components-react';
 import { Table32, Add32 } from '@carbon/icons-react';
 
+import SkeletonPages from '../../components/SkeletonPages'
+
 import { useFetch } from '../../components/Hooks.tsx'
 
 const LandingPage = () => {
@@ -13,7 +15,7 @@ const LandingPage = () => {
   const {loading, data} = useFetch([{url: 'getLibraries'}])
   const libraries = data.getLibraries
 
-  if (loading) return <p>Loading</p>
+  if (loading) return <SkeletonPages page='LandingPage' />
   if (!libraries) return <p>Error</p>
 
   return (
@@ -21,25 +23,22 @@ const LandingPage = () => {
       <Row className='landing-page__header'>
         <Column>
           <h4>Overview</h4>
-          <br />
-          <br />
         </Column>
       </Row>
 
-      <Row>
+      <Row className='landing-page__library-header'>
         <Column>
           <h1>Libraries</h1>
-          <br />
 
         </Column>
       </Row>
       <Row condensed>
 
         {libraries.map((item) =>
-          <Column key={item.name} sm={2} md={4} lg={4} max={3}>
+          <Column className='landing-page__library-tile' key={item.name} sm={2} md={2} lg={4} max={4}>
 
             <ClickableTile handleClick={() => history.push(`/library/${item.name}`)}>
-              <AspectRatio ratio="1x1">
+              <AspectRatio ratio="2x1">
                 <h4>
                   <strong>
                     {item.friendlyName}
@@ -55,10 +54,10 @@ const LandingPage = () => {
             </ClickableTile>
           </Column>
         )}
-        <Column sm={2} md={4} lg={4} max={3}>
+        <Column sm={2} md={2} lg={4} max={4}>
 
           <ClickableTile handleClick={() => history.push(`/settings/create`)}>
-            <AspectRatio ratio="1x1">
+            <AspectRatio ratio="2x1">
               <div className="landing-page__create-items">
 
                 <h4>
@@ -71,14 +70,6 @@ const LandingPage = () => {
 
             </AspectRatio>
           </ClickableTile>
-        </Column>
-      </Row>
-
-      <Row>
-        <Column>
-          <h1>Computation Centre</h1>
-          <h4>CellSTORE (Cell Storage To Organize Research Everywhere)</h4>
-
         </Column>
       </Row>
     </Grid>
