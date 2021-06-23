@@ -9,6 +9,7 @@ import {
   BreadcrumbSkeleton,
   TabsSkeleton,
   TagSkeleton,
+  ButtonSkeleton,
 } from "carbon-components-react";
 
 const SkeletonPages = ({ page }) => {
@@ -74,6 +75,31 @@ const SkeletonPages = ({ page }) => {
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
                 <TagSkeleton style={{ width: item * 16 }} key={item} />
               ))}
+            </Column>
+          </Row>
+        </Grid>
+      );
+    case "CellInfoPage":
+      return (
+        <Grid>
+          <Row className="cell-info-page__banner">
+            <Column>
+              <BreadcrumbSkeleton style={{ marginBottom: "1em" }} />
+              <SkeletonText
+                heading
+                width="36em"
+                style={{ marginBottom: "1em" }}
+              />
+            </Column>
+            <Column className="cell-info-page__actions">
+              <ButtonSkeleton />
+            </Column>
+          </Row>
+          <Row>
+            <Column sm={4} md={4} max={4}>
+              <AspectRatio ratio="2x1">
+                <SkeletonPlaceholder style={{ width: "100%" }} />
+              </AspectRatio>
             </Column>
           </Row>
         </Grid>
