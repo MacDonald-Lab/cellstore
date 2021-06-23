@@ -32,7 +32,6 @@
     "graphql": "^15.5.0",
     "import-jsx": "^4.0.0",
     "method-override": "^3.0.0",
-    "ml5": "^0.6.1",
     "papaparse": "^5.3.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
