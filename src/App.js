@@ -15,7 +15,6 @@ import UploadPage from './content/UploadPage';
 import CreateLibraryPage from './content/CreateLibraryPage';
 import SettingsPage from './content/SettingsPage';
 import ComputationPage from './content/ComputationPage';
-import ImageClassificationTestPage from './content/ImageClassificationTestPage';
 import LoginPage from './content/LoginPage';
 import ComputationInfoPage from './content/ComputationInfoPage';
 import RegisterPage from './content/RegisterPage';
@@ -73,7 +72,6 @@ const AuthRoutes = () => {
         <Route exact path='/settings/create' component={CreateLibraryPage} />
         <Route exact path='/computations' component={ComputationPage} />
         <Route exact path='/computation/:computationName' component={ComputationInfoPage} />
-        <Route exact path='/computations/image-test' component={ImageClassificationTestPage} />
       </Switch>
 
     </Content>
