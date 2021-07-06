@@ -76,6 +76,8 @@ const CreateLibraryPage = () => {
     viewingTableColumns: [],
   })
 
+  const [formValid, setFormValid] = useState(false)
+  const [valid, setValid] = useState({friendlyName: undefined, description: undefined})
 
   const handleSubmit = async () => {
 
@@ -133,6 +135,35 @@ const CreateLibraryPage = () => {
       forcePageUpdate()
     }
 
+    const checkValid = (id, value) => {
+
+      switch (id) {
+        case "friendlyName":
+          if (value === "") return "Text cannot be empty"
+          if (!/[a-zA-Z]/.test(value.substring(0, 1))) return "Text must begin with a letter (a-z)"
+          else return undefined
+        default:
+          return undefined
+      }
+    }
+
+    const handleValid = (id, value) => {
+      valid[id] = checkValid(id, value)
+      setValid(valid)
+    }
+
+    const newHandleTextField = (e, id) => {
+      library[id] = e.target.value
+      handleValid(id, e.target.value)
+      setLibrary(library)
+      setValid(valid)
+      forcePageUpdate()
+    }
+    const setSlug = (e, id) => {
+      library[id] = slugify(e.target.value)
+      setLibrary(library)
+    }
+
     const handleDragEnd = ({ source, destination }) => {
       if (destination) {
 
@@ -142,20 +173,22 @@ const CreateLibraryPage = () => {
       }
     }
 
-    // const renderDraggable = useDraggableInPortal()
 
     return <>
       <Row>
         <Column>
           <h3>General</h3>
-          <p>A library is a collection of similar cells with the same identifiers, similar to a spreadsheet with column names. General information is used to identify library content.</p>
+          <p>A library is a collection of similar cells with the same identifiers, s1milar to a spreadsheet with column names. General information is used to identify library content.</p>
           <br />
         </Column>
       </Row>
 
       <Row>
         <Column lg={8}>
-          <TextInput id={'friendlyName'} labelText={'Library name'} inline value={library.friendlyName} onChange={handleTextField} />
+          <TextInput id={'friendlyName'} helperText={"Required"} labelText={'Library name'} required inline invalidText={valid['friendlyName']} invalid={valid['friendlyName']} value={library.friendlyName} onChange={(e) => {
+            setSlug(e, 'name')
+            newHandleTextField(e, 'friendlyName')
+          }} />
         </Column>
         <Column lg={8}>
           <TextInput id={'description'} labelText={'Library description'} inline value={library.description} onChange={handleTextField} />
