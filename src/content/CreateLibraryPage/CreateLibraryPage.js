@@ -1,24 +1,40 @@
-import { React, useState } from 'react';
-import { Breadcrumb, BreadcrumbItem, Grid, Row, Column, ProgressIndicator, ProgressStep, Button, TextInput, SelectableTile, AspectRatio, ButtonSet, Tile } from 'carbon-components-react';
-import { Link, useHistory } from 'react-router-dom'
-import { Add16 } from '@carbon/icons-react';
-import DataTypes from '../../dataTypes/index.ts'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import Field from '../../components/LibraryField'
-import { useForceUpdate, randId, slugify } from '../../components/Hooks.tsx'
-import { useAPI } from '../../components/Hooks.tsx'
+import { React, useState } from "react";
+import {
+  Grid,
+  Row,
+  Column,
+  ProgressIndicator,
+  ProgressStep,
+  Button,
+  TextInput,
+  SelectableTile,
+  AspectRatio,
+  ButtonSet,
+  Tile,
+} from "carbon-components-react";
+import { useHistory } from "react-router-dom";
+import { Add16 } from "@carbon/icons-react";
+import DataTypes from "../../dataTypes/index.ts";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import Field from "../../components/LibraryField";
+import { useForceUpdate, randId, slugify } from "../../components/Hooks.tsx";
+import { useAPI } from "../../components/Hooks.tsx";
+import PageHeader from "../../components/PageHeader";
+import PageSection from "../../components/PageSection/PageSection";
 
 // HOOKS and FUNCTIONS
 
 const FormProgress = (props) => (
-  <ProgressIndicator className="create-library-page__progress" currentIndex={props.step}>
+  <ProgressIndicator
+    className="create-library-page__progress"
+    currentIndex={props.step}
+  >
     <ProgressStep label="Descriptors" />
     <ProgressStep label="Data types" />
     <ProgressStep label="Columns" />
     <ProgressStep label="Submit" />
   </ProgressIndicator>
-
-)
+);
 
 const getItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
@@ -30,13 +46,13 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   opacity: isDragging && 0.8,
   // position: 'static',
   // styles we need to apply on draggables
-  ...draggableStyle
+  ...draggableStyle,
 });
 
-const getListStyle = isDraggingOver => ({
+const getListStyle = (isDraggingOver) => ({
   background: isDraggingOver ? "lightblue" : "lightgrey",
   padding: 5,
-  width: 250
+  width: 250,
 });
 
 // a little function to help us with reordering the result
@@ -48,16 +64,15 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const typeDescriptions = DataTypes.initDescriptions()
+const typeDescriptions = DataTypes.initDescriptions();
 
 const CreateLibraryPage = () => {
-
   // states and hooks
   // FIXME potential for issue with primary key in general fields, move out to own
 
-  const history = useHistory()
-  const [callCreate] = useAPI({ url: 'createLibrary' })
-  const [page, setPage] = useState(0)
+  const history = useHistory();
+  const [callCreate] = useAPI({ url: "createLibrary" });
+  const [page, setPage] = useState(0);
   const [library, setLibrary] = useState({
     name: "",
     friendlyName: "",
@@ -65,373 +80,417 @@ const CreateLibraryPage = () => {
     fields: [
       {
         name: "",
-        key: 'primary-abcdef',
+        key: "primary-abcdef",
         friendlyName: "",
         dataType: null,
         restrictions: null,
-        primaryKey: true
-      }
+        primaryKey: true,
+      },
     ],
     dataTypes: [],
     viewingTableColumns: [],
-  })
+  });
 
-  const [formValid, setFormValid] = useState(false)
-  const [valid, setValid] = useState({friendlyName: undefined, description: undefined})
+  const [formValid, setFormValid] = useState(false);
+  const [valid, setValid] = useState({
+    friendlyName: undefined,
+    description: undefined,
+  });
 
   const handleSubmit = async () => {
-
     // cleanup library submit
     for (var field of library.fields) {
-
       // if type is multiselect, add those values
-      if (field.dataType.value === 'multiselect') {
-
+      if (field.dataType.value === "multiselect") {
         for (const option of field.dataType.options.multiselectOptions) {
-
           // move color value up if tags is selected
-          if (field.dataType.options.multiselectTags) option.color = option.color.value
+          if (field.dataType.options.multiselectTags)
+            option.color = option.color.value;
 
           // store multiselect values as int
-          option.storedAs = parseInt(option.storedAs)
+          option.storedAs = parseInt(option.storedAs);
         }
 
         // elevate data out of field.dataType.options
         // so dataType can be just a string
-        const tempData = field.dataType.options
-        field.dataType = 'multiselect'
-        Object.assign(field, tempData)
+        const tempData = field.dataType.options;
+        field.dataType = "multiselect";
+        Object.assign(field, tempData);
       }
 
       // if type is any other type, elevate value
       else {
-        field.dataType = field.dataType.value
+        field.dataType = field.dataType.value;
       }
     }
 
     // elevate viewing column names
     for (const i of library.viewingTableColumns.keys()) {
-      library.viewingTableColumns[i] = library.viewingTableColumns[i].name
+      library.viewingTableColumns[i] = library.viewingTableColumns[i].name;
     }
 
     // call API to make library and redirect home
-    await callCreate(library)
-    history.push('/')
-
-  }
+    await callCreate(library);
+    history.push("/");
+  };
 
   const Page1 = () => {
-
-    const forcePageUpdate = useForceUpdate()
+    const forcePageUpdate = useForceUpdate();
 
     const handleTextField = (e) => {
-      const id = e.target.id
-      var value = e.target.value
+      const id = e.target.id;
+      var value = e.target.value;
 
-      library[id] = value
-      if (id === 'friendlyName') library.name = slugify(value)
+      library[id] = value;
+      if (id === "friendlyName") library.name = slugify(value);
 
-      setLibrary(library)
-      forcePageUpdate()
-    }
+      setLibrary(library);
+      forcePageUpdate();
+    };
 
     const checkValid = (id, value) => {
-
       switch (id) {
         case "friendlyName":
-          if (value === "") return "Text cannot be empty"
-          if (!/[a-zA-Z]/.test(value.substring(0, 1))) return "Text must begin with a letter (a-z)"
-          else return undefined
+          if (value === "") return "Text cannot be empty";
+          if (!/[a-zA-Z]/.test(value.substring(0, 1)))
+            return "Text must begin with a letter (a-z)";
+          else return undefined;
         default:
-          return undefined
+          return undefined;
       }
-    }
+    };
 
     const handleValid = (id, value) => {
-      valid[id] = checkValid(id, value)
-      setValid(valid)
-    }
+      valid[id] = checkValid(id, value);
+      setValid(valid);
+    };
 
     const newHandleTextField = (e, id) => {
-      library[id] = e.target.value
-      handleValid(id, e.target.value)
-      setLibrary(library)
-      setValid(valid)
-      forcePageUpdate()
-    }
+      library[id] = e.target.value;
+      handleValid(id, e.target.value);
+      setLibrary(library);
+      setValid(valid);
+      forcePageUpdate();
+    };
     const setSlug = (e, id) => {
-      library[id] = slugify(e.target.value)
-      setLibrary(library)
-    }
+      library[id] = slugify(e.target.value);
+      setLibrary(library);
+    };
 
     const handleDragEnd = ({ source, destination }) => {
       if (destination) {
-
-
-        library.fields = reorder(library.fields, source.index, destination.index)
-        setLibrary(library)
+        library.fields = reorder(
+          library.fields,
+          source.index,
+          destination.index
+        );
+        setLibrary(library);
       }
-    }
+    };
 
+    return (
+      <>
+        <PageSection
+          title="General"
+          description="A library is a collection of similar cells with the same
+        identifiers, s1milar to a spreadsheet with column names. General
+        information is used to identify library content."
+        />
 
-    return <>
-      <Row>
-        <Column>
-          <h3>General</h3>
-          <p>A library is a collection of similar cells with the same identifiers, s1milar to a spreadsheet with column names. General information is used to identify library content.</p>
-          <br />
-        </Column>
-      </Row>
+        <Row>
+          <Column lg={8}>
+            <TextInput
+              id={"friendlyName"}
+              helperText={"Required"}
+              labelText={"Library name"}
+              required
+              inline
+              invalidText={valid["friendlyName"]}
+              invalid={valid["friendlyName"]}
+              value={library.friendlyName}
+              onChange={(e) => {
+                setSlug(e, "name");
+                newHandleTextField(e, "friendlyName");
+              }}
+            />
+          </Column>
+          <Column lg={8}>
+            <TextInput
+              id={"description"}
+              labelText={"Library description"}
+              inline
+              value={library.description}
+              onChange={handleTextField}
+            />
+          </Column>
+        </Row>
 
-      <Row>
-        <Column lg={8}>
-          <TextInput id={'friendlyName'} helperText={"Required"} labelText={'Library name'} required inline invalidText={valid['friendlyName']} invalid={valid['friendlyName']} value={library.friendlyName} onChange={(e) => {
-            setSlug(e, 'name')
-            newHandleTextField(e, 'friendlyName')
-          }} />
-        </Column>
-        <Column lg={8}>
-          <TextInput id={'description'} labelText={'Library description'} inline value={library.description} onChange={handleTextField} />
-        </Column>
-      </Row>
+        <PageSection
+          title="Primary field"
+          description="
+              The primary field is the main identifier for items in this
+              library."
+        />
 
-      <Row>
-        <Column>
-          <br />
-          <h3>Primary field</h3>
-          <p>The primary field is the main identifier for items in this library.</p>
-          <br />
-        </Column>
-      </Row>
-      <Field forcePageUpdate={forcePageUpdate} library={library} setLibrary={setLibrary} i={0} />
+        <Field
+          forcePageUpdate={forcePageUpdate}
+          library={library}
+          setLibrary={setLibrary}
+          i={0}
+        />
 
-      <Row>
-        <Column>
-          <br />
-          <h3>Fields</h3>
-          <br />
-        </Column>
-      </Row>
+        <PageSection
+          title="Fields"
+          description="Fields contain information about the data in the library." />
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="fields">
-          {(provided, snapshot) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            // style={getListStyle(snapshot.isDraggingOver)}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="fields">
+            {(provided, snapshot) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                // style={getListStyle(snapshot.isDraggingOver)}
+              >
+                {library.fields.map((item, i) => {
+                  if (i > 0)
+                    return (
+                      <Draggable
+                        key={item.key}
+                        draggableId={item.key}
+                        index={i}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            // {...provided.dragHandleProps}
+                            style={getItemStyle(
+                              snapshot.isDragging,
+                              provided.draggableProps.style
+                            )}
+                          >
+                            <Field
+                              editable={i !== 0}
+                              library={library}
+                              setLibrary={setLibrary}
+                              i={i}
+                              forcePageUpdate={forcePageUpdate}
+                              provided={provided}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    );
+
+                  return null;
+                })}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+
+        <Row>
+          <Column>
+            <Button
+              renderIcon={Add16}
+              onClick={() => {
+                const id = randId();
+
+                library.fields.push({
+                  name: "",
+                  key: id,
+                  friendlyName: "",
+                  dataType: null,
+                  restrictions: null,
+                  primaryKey: false,
+                });
+
+                setLibrary(library);
+                forcePageUpdate();
+              }}
             >
-              {library.fields.map((item, i) => {
-                if (i > 0) return <Draggable key={item.key} draggableId={item.key} index={i} >
-                  {((provided, snapshot) =>
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      // {...provided.dragHandleProps}
-                      style={getItemStyle(
-                        snapshot.isDragging,
-                        provided.draggableProps.style
-                      )}>
-
-                      <Field editable={i !== 0} library={library} setLibrary={setLibrary} i={i} forcePageUpdate={forcePageUpdate} provided={provided} />
-
-                    </div>)}
-
-                </Draggable>
-
-                return null
-              })}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-
-      <Row>
-        <Column>
-          <Button renderIcon={Add16} onClick={() => {
-
-            const id = randId()
-
-            library.fields.push({
-              name: "",
-              key: id,
-              friendlyName: "",
-              dataType: null,
-              restrictions: null,
-              primaryKey: false
-            })
-
-            setLibrary(library)
-            forcePageUpdate()
-          }}>Add field</Button>
-          {/* <ModalStateManager renderLauncher={({ setOpen }) =>
+              Add field
+            </Button>
+            {/* <ModalStateManager renderLauncher={({ setOpen }) =>
           <Button onClick={() => setOpen(true)} renderIcon={Download16}>Import fields from file</Button>
         }>
           {(modalProps) => <ImportColumnNamesModal {...modalProps} fieldState={fields} fieldSetState={setFields} />}
         </ModalStateManager> */}
-        </Column>
+          </Column>
+        </Row>
+
+        <Row>
+          <Column>
+            <br />
+            <ButtonSet>
+              <Button onClick={() => setPage(1)}>Continue to data types</Button>
+            </ButtonSet>
+          </Column>
+        </Row>
+      </>
+    );
+  };
+
+  const Page2 = () => (
+    <>
+    <PageSection
+    title="Data types"
+    description="Data types are used to store more specific information about each cell." />
+
+      <Row condensed>
+        {typeDescriptions.map((item) => (
+          <Column sm={2} md={4} lg={4}>
+            <SelectableTile
+              id={item.id}
+              name="tiles"
+              key={item.id}
+              value={item.id}
+              selected={library.dataTypes.includes(item.id)}
+              onChange={() => {
+                if (library.dataTypes.includes(item.id)) {
+                  library.dataTypes = library.dataTypes.filter(
+                    (filter) => filter !== item.id
+                  );
+                } else {
+                  library.dataTypes = [...library.dataTypes, item.id];
+                }
+                setLibrary(library);
+                console.log(library);
+              }}
+            >
+              <AspectRatio ratio="2x1">
+                <p>
+                  <strong>{item.name}</strong>
+                </p>
+                <p>{item.description}</p>
+                <div className={"create-library-page__data-icon"}>
+                  <item.icon />
+                </div>
+              </AspectRatio>
+            </SelectableTile>
+          </Column>
+        ))}
       </Row>
 
       <Row>
         <Column>
           <br />
           <ButtonSet>
-            <Button onClick={() => setPage(1)}>Continue to data types</Button>
+            <Button kind="secondary" onClick={() => setPage(0)}>
+              Return to descriptors
+            </Button>
+            <Button onClick={() => setPage(2)}>
+              Continue to table columns
+            </Button>
           </ButtonSet>
         </Column>
       </Row>
     </>
-  }
-
-  const Page2 = () => <>
-    <Row>
-      <Column>
-        <h3>Data types</h3>
-        <br />
-      </Column>
-    </Row>
-
-    <Row condensed>
-      {typeDescriptions.map(item => <Column sm={2} md={4} lg={4}>
-        <SelectableTile id={item.id} name="tiles" key={item.id} value={item.id} selected={library.dataTypes.includes(item.id)} onChange={() => {
-          if (library.dataTypes.includes(item.id)) {
-            library.dataTypes = library.dataTypes.filter(filter => filter !== item.id)
-          } else {
-            library.dataTypes = [...library.dataTypes, item.id]
-          }
-          setLibrary(library)
-          console.log(library)
-        }}>
-          <AspectRatio ratio='2x1'>
-            <p><strong>{item.name}</strong></p>
-            <p>{item.description}</p>
-            <div className={'create-library-page__data-icon'}>
-              <item.icon />
-            </div>
-          </AspectRatio>
-        </SelectableTile>
-      </Column>
-
-      )}
-    </Row>
-
-    <Row>
-      <Column>
-        <br />
-        <ButtonSet>
-          <Button kind='secondary' onClick={() => setPage(0)}>Return to descriptors</Button>
-          <Button onClick={() => setPage(2)}>Continue to table columns</Button>
-        </ButtonSet>
-      </Column>
-    </Row>
-
-  </>
+  );
 
   const Page3 = () => {
-
     const [libraryColumns, setLibraryColumns] = useState(
       library.fields.slice(1)
-    )
-
-
+    );
 
     const handleDragEnd = ({ source, destination }) => {
-      const newReordered = reorder(libraryColumns, source.index, destination.index)
-      setLibraryColumns(newReordered)
-      library.viewingTableColumns = [
-        library.fields[0],
-        ...newReordered
-      ]
-      setLibrary(library)
-    }
+      const newReordered = reorder(
+        libraryColumns,
+        source.index,
+        destination.index
+      );
+      setLibraryColumns(newReordered);
+      library.viewingTableColumns = [library.fields[0], ...newReordered];
+      setLibrary(library);
+    };
 
-    return <>
+    return (
+      <>
+      <PageSection
+      title="Table columns"
+      description="Re-arrange how you would like your columns to appear in the table." />
 
-      <Row>
-        <Column>
-          <DragDropContext onDragEnd={handleDragEnd}>
+        <Row>
+          <Column>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="droppable">
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}
+                  >
+                    {libraryColumns.map((item, i) => (
+                      <Draggable
+                        key={item.name}
+                        draggableId={item.name}
+                        index={i}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={getItemStyle(
+                              snapshot.isDragging,
+                              provided.draggableProps.style
+                            )}
+                          >
+                            <Tile>
+                              <h5>{item.friendlyName}</h5>
+                              <p>{item.name}</p>
+                              <p>{item.dataType.text}</p>
+                            </Tile>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
 
-            <Droppable droppableId="droppable">
-              {(provided, snapshot) =>
-                <div {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={getListStyle(snapshot.isDraggingOver)}>
-
-                  {libraryColumns.map((item, i) =>
-                    <Draggable
-                      key={item.name} draggableId={item.name} index={i}
-                    >
-                      {(provided, snapshot) =>
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={getItemStyle(
-                            snapshot.isDragging,
-                            provided.draggableProps.style
-                          )}
-                        >
-                          <Tile>
-                            <h5>{item.friendlyName}</h5>
-                            <p>{item.name}</p>
-                            <p>{item.dataType.text}</p>
-                          </Tile>
-                        </div>
-                      }
-
-                    </Draggable>
-
-
-                  )}
-
-                  {provided.placeholder}
-                </div>
-              }
-
-            </Droppable>
-
-          </DragDropContext>
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <br />
-          <ButtonSet>
-            <Button kind='secondary' onClick={() => setPage(1)}>Return to data types</Button>
-            <Button onClick={handleSubmit}>Submit</Button>
-          </ButtonSet>
-        </Column>
-      </Row >
-    </>
-  }
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </Column>
+        </Row>
+        <Row>
+          <Column>
+            <br />
+            <ButtonSet>
+              <Button kind="secondary" onClick={() => setPage(1)}>
+                Return to data types
+              </Button>
+              <Button onClick={handleSubmit}>Submit</Button>
+            </ButtonSet>
+          </Column>
+        </Row>
+        <PageSection
+        title="Preview your colummns"
+        description="Preview how your columns will appear in the table." />
+      </>
+    );
+  };
 
   // page renderer
   const PageRenderer = () => {
-    if (page === 0) return <Page1 />
-    if (page === 1) return <Page2 />
-    if (page === 2) return <Page3 />
-    return <p>Error</p>
-  }
+    if (page === 0) return <Page1 />;
+    if (page === 1) return <Page2 />;
+    if (page === 2) return <Page3 />;
+    return <p>Error</p>;
+  };
 
-  return <Grid>
-    <Row className="create-library-page__banner">
-      <Column>
-
-        <Breadcrumb>
-          <BreadcrumbItem>
-            <Link to="/settings">Settings</Link>
-          </BreadcrumbItem>
-        </Breadcrumb>
-
-        <h1>Create a library</h1>
+  return (
+    <Grid>
+      <PageHeader
+        pageTitle="Create a library"
+        breadcrumbs={[{ label: "Libraries", url: "/" }]}
+      >
         <FormProgress step={page} />
+      </PageHeader>
 
-      </Column>
-    </Row>
-
-    <PageRenderer />
-
-  </Grid>
-}
+      <PageRenderer />
+    </Grid>
+  );
+};
 
 export default CreateLibraryPage;
