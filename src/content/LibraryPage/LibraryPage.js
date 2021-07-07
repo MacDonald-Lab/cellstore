@@ -5,10 +5,7 @@ import {
   Column,
   Tabs,
   Tab,
-  Breadcrumb,
-  BreadcrumbItem,
   Tag,
-  DataTableSkeleton,
   Button,
   ButtonSet,
 } from "carbon-components-react";
@@ -24,6 +21,7 @@ import ModalStateManager from "../../components/ModalStateManager";
 import RunComputationModal from "../../components/RunComputationModal";
 import DeleteLibraryModal from "../../components/DeleteLibraryModal";
 import SkeletonPages from "../../components/SkeletonPages";
+import PageHeader from "../../components/PageHeader";
 
 const LibraryPage = () => {
   const history = useHistory();
@@ -86,17 +84,11 @@ const LibraryPage = () => {
 
   return (
     <Grid>
-      <Row className="library-page__banner">
-        <Column lg={8}>
-          <Breadcrumb>
-            <BreadcrumbItem isCurrentPage>
-              <>Libraries</>
-            </BreadcrumbItem>
-          </Breadcrumb>
-          <h1>{library.friendlyName}</h1>
-          <p>{library.description}</p>
-        </Column>
-      </Row>
+      <PageHeader
+        breadcrumbs={[{ label: "Libraries", url: "/" }]}
+        pageTitle={library.friendlyName}
+        description={library.description}
+        />
 
       <Row>
         <Column lg={12} md={12} sm={16}>

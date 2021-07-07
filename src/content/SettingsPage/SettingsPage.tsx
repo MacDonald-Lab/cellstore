@@ -2,6 +2,8 @@ import { Accordion, AccordionItem, Button, Column, Grid, Row, TextInput, } from 
 import { useState } from 'react';
 
 import { useFetch, useAPI, useForceUpdate } from '../../components/Hooks'
+import PageHeader from '../../components/PageHeader';
+import PageSection from '../../components/PageSection/PageSection';
 
 const GeneralSettings = () => {
 
@@ -35,15 +37,12 @@ const GeneralSettings = () => {
 const SettingsPage = () => {
 
     return <Grid>
-        <Row>
-            <Column>
-                <h1>Settings</h1>
-            </Column>
-        </Row>
+        <PageHeader pageTitle="Settings" description="Edit system-wide settings for CellSTORE." breadcrumbs={false} children/>
         <Row>
             <Column>
                 <Accordion>
                     <AccordionItem title="General">
+                        <PageSection title="General" description="General settings for CellSTORE." children/>
                         <GeneralSettings />
                     </AccordionItem>
                     <AccordionItem title="Libraries">
