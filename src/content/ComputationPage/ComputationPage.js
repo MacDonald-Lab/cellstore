@@ -2,6 +2,8 @@ import { Column, Grid, Row, ClickableTile, AspectRatio } from 'carbon-components
 import { useHistory } from 'react-router-dom'
 
 import {useFetch} from '../../components/Hooks.tsx'
+import PageHeader from '../../components/PageHeader'
+import PageSection from '../../components/PageSection/PageSection'
 
 const ComputationPage = () => {
 
@@ -13,13 +15,9 @@ const ComputationPage = () => {
     if (!computations) return <p>Error!</p>
 
     return <Grid>
-        <Row>
-            <Column>
-                <h1>Computations</h1>
-                <br />
-                <br />
-            </Column>
-        </Row>
+        <PageHeader pageTitle="Computations" description="Manage your saved computations."/>
+        
+        <PageSection title="Stored computations" description="List of your saved computations." />
 
         <Row>
             {computations.map(computation => <Column sm={2} md={4} lg={4} max={3}>
@@ -35,6 +33,9 @@ const ComputationPage = () => {
             </Column>)}
 
         </Row>
+
+        <PageSection title="History" description="View historical results to your computations" />
+        <PageSection title="Manage" description="Manage your saved computations" />
     </Grid>
 }
 
