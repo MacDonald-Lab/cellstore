@@ -24,17 +24,13 @@ import UserProvider from './contexts/UserProvider';
 
 const LoadingScreen = () => <div className="loading__container">
   <div className="loading__elements">
-    <h1>CellSTORE</h1>
-    <br />
-    <br />
-    <br />
-    <br />
-    <div className="loading__indicator">
+    <h1 className="loading__title">CellSTORE</h1>
 
+    <div className="loading__indicator">
       <Loading small={true} withOverlay={false} />
     </div>
-    <br />
-    <p>Please wait while the application loads.</p>
+
+    <p className="loading__text">Please wait while the application loads.</p>
 
 
   </div>

@@ -15,6 +15,8 @@
 @import "./content/UploadPage/upload-page.scss";
 @import "./content/CreateLibraryPage/create-library-page.scss";
 @import "./content/SettingsPage/settings-page.scss";
+@import "./content/LoginPage/login-page.scss";
+@import "./content/RegisterPage/register-page.scss";
 
 .loading__container {
   -webkit-app-region: drag;
@@ -27,6 +29,14 @@
 
 .loading__elements {
   text-align: center;
+}
+
+.loading__title {
+  padding-bottom: $spacing-07*4;
+}
+
+.loading__text {
+  padding-top: $spacing-07;
 }
 
 .loading__indicator {
