@@ -57,7 +57,6 @@ const RunComputationModal = ({ open, setOpen, library }) => {
 
                 <h5>Fields</h5>
 
-                <br />
 
                 {computation.inputs.map((item, i) => <Dropdown id={i} titleText={item.friendlyName} label='Select column' items={library.fields} itemToString={item => item.friendlyName} onChange={(select) => {
                     computationMaps[item.parameterName] = select.selectedItem.name

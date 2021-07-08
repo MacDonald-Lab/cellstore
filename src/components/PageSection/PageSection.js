@@ -2,7 +2,7 @@ import { Row, Column } from "carbon-components-react";
 
 const PageSection = ({ title, description, children }) => {
   return (
-    <>
+    <div>
       <Row className="page-section">
         <Column>
           <h2>{title}</h2>
@@ -10,7 +10,7 @@ const PageSection = ({ title, description, children }) => {
         </Column>
       </Row>
       {children}
-    </>
+    </div>
   );
 };
 

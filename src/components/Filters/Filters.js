@@ -4,6 +4,7 @@ import { useState } from 'react';
 import LibraryTable from '../../components/LibraryTable'
 
 import { useForceUpdate, useAPI } from '../../components/Hooks.tsx'
+import PageSection from '../PageSection/PageSection';
 
 const Filters = ({ library }) => {
 
@@ -150,18 +151,14 @@ const Filters = ({ library }) => {
     return (<>
         <Tile className="filters__main-tile">
 
-            <h3>Filters</h3>
-
-            <br />
-            <br />
+            <PageSection title="Filters" />
 
             {library['fields'].map((item, i) => {
 
                 const { dataType, friendlyName, name } = item
-                const header = <Row><Column><h6>{friendlyName}</h6><br /></Column></Row>
+                const header = <Row><Column><h6>{friendlyName}</h6></Column></Row>
 
                 if (dataType === 'int' || dataType === 'string') return <div key={name}>
-
 
                     {header}
                     <Row>
@@ -175,7 +172,6 @@ const Filters = ({ library }) => {
                         <Column>
                             <TextInput labelText={friendlyName + ' value'} id={name} light onChange={handleTextField} value={filters[i]['filter']['value']} />
                         </Column>
-                        <br />
 
                     </Row>
                 </div>
@@ -186,7 +182,6 @@ const Filters = ({ library }) => {
 
                         <Checkbox labelText={optionName} id={`${i}-${j}`} key={`${i}-${j}`} checked={filters[i]['filter'].includes(storedAs)} onChange={handleCheckbox} />
                     )}
-                    <br />
                 </div>
 
 

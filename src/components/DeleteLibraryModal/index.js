@@ -25,9 +25,7 @@ const DeleteLibraryModal = ({ open, setOpen, library }) => {
         <ModalHeader label={library.friendlyName} title='Delete library' />
         <ModalBody>
             <p>WARNING: This will delete the library along with all cell contents, history, and computation data. To ensure your data is safe, please export the library before proceeding.</p>
-            <br />
             <strong><p>THIS ACTION IS IRREVERSABLE!</p></strong>
-            <br />
 
             <TextInput placeholder={library.name} id={library.name + '-delete'} labelText={`To confirm, please type in: ${library.name}`} value={value} onChange={(e) => {
                 setValue(e.target.value)

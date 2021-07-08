@@ -24,7 +24,6 @@ const ComputationPage = () => {
             <ClickableTile handleClick={() => history.push('/computation/' + computation.name)}>
                 <AspectRatio ratio="1x1">
                     <h4>{computation.friendlyName}</h4>
-                    <br />
                     <p>{computation.description}</p>
 
 

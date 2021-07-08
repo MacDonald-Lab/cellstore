@@ -97,7 +97,6 @@ const CellInfoPage = () => {
           <Tile >
             <AspectRatio ratio="2x1">
               <h6>CELL INFORMATION</h6>
-              <br />
               {library.fields.map(field => <p>
                 <strong>{field.friendlyName}</strong> : <FieldItemView field={field} value={cell[field.name]} />
               </p>)}
@@ -110,7 +109,6 @@ const CellInfoPage = () => {
           <Tabs>
             {views.map((item) => <Tab key={item.id} id={item.id} label={item.friendlyName}>
               <h3>{item.friendlyName}</h3>
-              <br />
               <item.component />
             </Tab>)}
           </Tabs>

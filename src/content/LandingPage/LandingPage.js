@@ -44,7 +44,6 @@ const LandingPage = () => {
                     {item.friendlyName}
                   </strong>
                 </h4>
-                <br />
                 <p>{item.description}</p>
                 <div className="landing-page__table-icon">
 
@@ -63,7 +62,6 @@ const LandingPage = () => {
                 <h4>
                   Create a new library
                 </h4>
-                <br />
                 <Add32 />
 
               </div>
