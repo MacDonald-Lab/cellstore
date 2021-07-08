@@ -2,6 +2,7 @@
 import { React, useState } from 'react';
 import { Grid, Row, Column, TextInput, Button } from 'carbon-components-react';
 import { useHistory } from 'react-router-dom'
+import PageSection from '../../components/PageSection/PageSection';
 
 
 const LoginPage = () => {
@@ -32,15 +33,10 @@ const LoginPage = () => {
 
   return (
 
-    <Grid style={{ maxWidth: 600 }}>
+    <Grid className="register-page__main">
 
-      <Row>
-        <Column>
-          <h2>Register for CellSTORE</h2>
-          <br />
-          <br />
-        </Column>
-      </Row>
+      <PageSection title="Register for CellSTORE" />
+
       <Row>
         <Column>
           <TextInput
@@ -49,14 +45,13 @@ const LoginPage = () => {
             value={usernameReg}
             onChange={(e) => handleTextInput(e, setUsernameReg)}
           />
-          <br />
+
           <TextInput
             labelText="Password"
             type="password"
             value={passwordReg}
             onChange={(e) => handleTextInput(e, setPasswordReg)}
           />
-          <br />
 
         </Column>
       </Row>
