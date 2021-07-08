@@ -22,6 +22,7 @@ import RunComputationModal from "../../components/RunComputationModal";
 import DeleteLibraryModal from "../../components/DeleteLibraryModal";
 import SkeletonPages from "../../components/SkeletonPages";
 import PageHeader from "../../components/PageHeader";
+import PageSection from "../../components/PageSection/PageSection";
 
 const LibraryPage = () => {
   const history = useHistory();
@@ -88,7 +89,7 @@ const LibraryPage = () => {
         breadcrumbs={[{ label: "Libraries", url: "/" }]}
         pageTitle={library.friendlyName}
         description={library.description}
-        />
+      />
 
       <Row>
         <Column lg={12} md={12} sm={16}>
@@ -101,9 +102,8 @@ const LibraryPage = () => {
             </Tab>
           </Tabs>
         </Column>
-        <Column className='library-page__side-column'>
-          <h3>Computations</h3>
-          <br />
+        <Column className="library-page__side-column">
+          <PageSection title="Computations" />
           <ModalStateManager
             renderLauncher={({ setOpen }) => (
               <Button onClick={() => setOpen(true)}>
@@ -116,13 +116,10 @@ const LibraryPage = () => {
             )}
           </ModalStateManager>
 
-          <br />
-          <br />
-
           {favourites.length > 0 && (
             <>
-              <h3>Favourites</h3>
-              <br />
+              <PageSection title="Favourites" />
+
               {favourites.map((item) => (
                 <Tag
                   key={item.id}
@@ -132,16 +129,12 @@ const LibraryPage = () => {
                   {item.id}
                 </Tag>
               ))}
-
-              <br />
-              <br />
             </>
           )}
 
           {tags.length > 0 && (
             <>
-              <h3>Tags</h3>
-              <br />
+              <PageSection title="Tags" />
               {tags.map((item) => (
                 <Tag
                   key={item.id}
@@ -152,17 +145,11 @@ const LibraryPage = () => {
                   {item.id} <strong>{item.count}</strong>
                 </Tag>
               ))}
-              <br />
-              <br />
             </>
           )}
         </Column>
       </Row>
-      <Row>
-        <Column>
-          <h3>Library options</h3>
-        </Column>
-      </Row>
+      <PageSection title="Library options" />
       <Row>
         <Column>
           <ButtonSet>
