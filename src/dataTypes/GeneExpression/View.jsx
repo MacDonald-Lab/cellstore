@@ -1,6 +1,7 @@
 import { React } from 'react';
 import { Tag } from 'carbon-components-react';
 import { SimpleBarChart } from '@carbon/charts-react';
+import PageSection from '../../components/PageSection/PageSection';
 
 
 export const initView = (libraryName, queryData) => {
@@ -41,9 +42,7 @@ export const initView = (libraryName, queryData) => {
 
 
                 {medArrayGenes && <div>
-                    <h4>Top 100 Genes</h4>
-                    <h6>Sorted by Count</h6>
-                    <br />
+                    <PageSection title="Top 100 Genes" description="Sorted by count" />
                     {medArrayGenes.map(item => <Tag>{item.group} <strong>{item.value}</strong></Tag>)}
                 </div>}
 

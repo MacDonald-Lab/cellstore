@@ -9,7 +9,6 @@ import {
   TextInput,
   SelectableTile,
   AspectRatio,
-  ButtonSet,
   Tile,
 } from "carbon-components-react";
 import { useHistory } from "react-router-dom";
@@ -21,6 +20,7 @@ import { useForceUpdate, randId, slugify } from "../../components/Hooks.tsx";
 import { useAPI } from "../../components/Hooks.tsx";
 import PageHeader from "../../components/PageHeader";
 import PageSection from "../../components/PageSection/PageSection";
+import FormNavigation from "../../components/FormNavigation";
 
 // HOOKS and FUNCTIONS
 
@@ -241,7 +241,8 @@ const CreateLibraryPage = () => {
 
         <PageSection
           title="Fields"
-          description="Fields contain information about the data in the library." />
+          description="Fields contain information about the data in the library."
+        />
 
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="fields">
@@ -319,23 +320,20 @@ const CreateLibraryPage = () => {
           </Column>
         </Row>
 
-        <Row>
-          <Column>
-            <br />
-            <ButtonSet>
-              <Button onClick={() => setPage(1)}>Continue to data types</Button>
-            </ButtonSet>
-          </Column>
-        </Row>
+        <FormNavigation
+          next="Continue to data types"
+          onNext={() => setPage(1)}
+        />
       </>
     );
   };
 
   const Page2 = () => (
     <>
-    <PageSection
-    title="Data types"
-    description="Data types are used to store more specific information about each cell." />
+      <PageSection
+        title="Data types"
+        description="Data types are used to store more specific information about each cell."
+      />
 
       <Row condensed>
         {typeDescriptions.map((item) => (
@@ -372,19 +370,12 @@ const CreateLibraryPage = () => {
         ))}
       </Row>
 
-      <Row>
-        <Column>
-          <br />
-          <ButtonSet>
-            <Button kind="secondary" onClick={() => setPage(0)}>
-              Return to descriptors
-            </Button>
-            <Button onClick={() => setPage(2)}>
-              Continue to table columns
-            </Button>
-          </ButtonSet>
-        </Column>
-      </Row>
+      <FormNavigation
+        prev="Return to descriptors"
+        next="Continue to tableColumns"
+        onPrev={() => setPage(0)}
+        onNext={() => setPage(2)}
+      />
     </>
   );
 
@@ -406,9 +397,10 @@ const CreateLibraryPage = () => {
 
     return (
       <>
-      <PageSection
-      title="Table columns"
-      description="Re-arrange how you would like your columns to appear in the table." />
+        <PageSection
+          title="Table columns"
+          description="Re-arrange how you would like your columns to appear in the table."
+        />
 
         <Row>
           <Column>
@@ -453,20 +445,18 @@ const CreateLibraryPage = () => {
             </DragDropContext>
           </Column>
         </Row>
-        <Row>
-          <Column>
-            <br />
-            <ButtonSet>
-              <Button kind="secondary" onClick={() => setPage(1)}>
-                Return to data types
-              </Button>
-              <Button onClick={handleSubmit}>Submit</Button>
-            </ButtonSet>
-          </Column>
-        </Row>
+
         <PageSection
-        title="Preview your colummns"
-        description="Preview how your columns will appear in the table." />
+          title="Preview your colummns"
+          description="Preview how your columns will appear in the table."
+        />
+
+        <FormNavigation
+          prev="Return to data types"
+          next="Submit"
+          onPrev={() => setPage(1)}
+          onNext={handleSubmit}
+        />
       </>
     );
   };

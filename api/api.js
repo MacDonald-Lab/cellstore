@@ -1,10 +1,10 @@
 import express from 'express';
 import seq from 'sequelize'
-const { DataTypes, Op } = seq
 import Computations from '../src/computations/index.js'
-// import importJsx from 'import-jsx'
 import Types from '../src/dataTypes/index.ts'
 import checkLogin from './checkLogin.js'
+const { DataTypes, Op } = seq
+// import importJsx from 'import-jsx'
 
 const apiRoutes = (sequelize, models) => {
 
