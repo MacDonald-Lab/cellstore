@@ -34,7 +34,7 @@ const LoginPage = () => {
   
   return (
 
-    <Grid style={{ maxWidth: 600 }}>
+    <Grid className="login-page__main">
       <Row>
         <Column>
           <TextInput
@@ -43,14 +43,12 @@ const LoginPage = () => {
             value={username}
             onChange={(e) => handleTextInput(e, setUsername)}
           />
-          <br />
           <TextInput
             labelText="Password"
             type="password"
             value={password}
             onChange={(e) => handleTextInput(e, setPassword)}
           />
-          <br />
 
         </Column>
       </Row>
