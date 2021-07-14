@@ -221,6 +221,68 @@ const apiRoutes = (sequelize, models) => {
         else res.status(200).send(data)
     })
 
+    router.all('/getCellTypeData', async (req, res) => {
+        const libraryName = req.body['libraryName']
+        const cellId = req.body['cellId']
+        const dataType = req.body['dataType']
+
+        const { library } = await getLibrary(libraryName)
+        const dataTypeLibrary = await constructDataTypeSchema(libraryName, dataType, res, library)
+
+        const data = await dataTypeLibrary.findOne({ where: { libraryKey: cellId } })
+
+        if (!library || !data) res.status(404).send()
+        else res.status(200).send(data)
+
+    })
+
+    router.all('/getCellsTypeData', async (req, res) => {
+        const libraryName = req.body['libraryName']
+        const cellId = req.body['cellId']
+        const dataTypes = req.body['dataTypes']
+
+        var response = {}
+        
+        const { library } = await getLibrary(libraryName)
+        if (!library) return res.status(404).send()
+
+        for (const dataType of dataTypes) {
+
+            const dataTypeLibrary = await constructDataTypeSchema(libraryName, dataType, res, library)
+            
+            const currentRes = await dataTypeLibrary.findOne({ where: { libraryKey: cellId } })
+            if (!currentRes) return res.status(404).send()
+            response[dataType] = currentRes
+        }
+
+        return res.status(200).send(response)
+
+    })
+
+    router.all('/getCellAllTypeData', async (req, res) => {
+        const libraryName = req.body['libraryName']
+        const cellId = req.body['cellId']
+
+        var response = {}
+
+        const { library, model } = await getLibrary(libraryName)
+        const dataTypes = model.definition.dataTypes
+
+        if (!library) return res.status(404).send()
+
+        for (const dataType of dataTypes) {
+
+            const dataTypeLibrary = await constructDataTypeSchema(libraryName, dataType, res, library)
+            
+            const currentRes = await dataTypeLibrary.findOne({ where: { libraryKey: cellId } })
+            if (!currentRes) return res.status(404).send()
+            response[dataType] = currentRes
+        }
+
+        return res.status(200).send(response)
+
+    })
+
     router.all('/getLibraryData', async (req, res) => {
 
         const libraryName = req.body['libraryName']
