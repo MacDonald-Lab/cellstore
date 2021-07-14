@@ -3,6 +3,7 @@ import { React, useState } from 'react';
 import { useForceUpdate } from '../../components/Hooks.tsx'
 
 import papa from 'papaparse'
+import { randId, slugify } from '../Hooks';
 
 const getType = (str) => {
 
@@ -30,6 +31,23 @@ const getType = (str) => {
     }
 }
 
+const determineType = (str) =>
+{
+    switch (str){
+        case 'integer':
+            return {
+                value: 'int', text: "Integer Number"
+            };
+        case 'float':
+            return {
+                value: 'float', text: "Decimal Number"
+            };
+        default:
+            return {value: 'string', text: "Text"}
+    }
+
+}
+
 const ImportColumnNamesModal = (props) => {
 
     const forceUpdate = useForceUpdate()
@@ -38,7 +56,7 @@ const ImportColumnNamesModal = (props) => {
     const [fileHeaders, setFileHeaders] = useState(null)
     const [buttonDisabled, setButtonDisabled] = useState(true)
 
-    const { open, setOpen, fieldState, fieldSetState } = props
+    const { open, setOpen, forcePageUpdate, library, setLibrary } = props
 
     const handleFileUpload = (evt, { addedFiles }) => {
         setUploadedFile(addedFiles[0])
@@ -50,7 +68,8 @@ const ImportColumnNamesModal = (props) => {
                     name: key,
                     type: getType(result.data[key]),
                     selected: false,
-                    friendlyName: undefined
+                    friendlyName: undefined,
+                    selectedAsColumn: false
                 })))
                 parser.abort()
             }
@@ -97,12 +116,19 @@ const ImportColumnNamesModal = (props) => {
     }
 
     const handleSubmit = () => {
-
-        fieldSetState([...fieldState, ...fileHeaders.filter(({ selected }) => selected === true).map(({ friendlyName, type, name }) => {
-            if (friendlyName === undefined) friendlyName = name
-            return [friendlyName, type]
-        })])
-
+        
+        library.fields = [...library.fields, ...fileHeaders.filter(element => element.selected === true).map(({friendlyName, type, name }) => ({
+            friendlyName: name,
+            type,
+            dataType: determineType(type),
+            name: slugify(name),
+            key: randId(),
+            primaryKey: false,
+            restrictions: null
+        }))]
+        setLibrary(library)
+        forcePageUpdate()
+        setOpen(false)
     }
 
     const handleClearAll = () => {
@@ -125,8 +151,10 @@ const ImportColumnNamesModal = (props) => {
 
     }
 
+    // TODO get rid of checkbox selection
+
     return <ComposedModal open={open} onClose={handleClose}>
-        <ModalHeader label={'[current library name]'} title='Import column names from .csv file' />
+        <ModalHeader label={'Create a library'} title='Import column names from .csv file' />
         <ModalBody>
 
             <p>Upload a file to automatically infer and import column names from a .csv file.</p>
@@ -136,7 +164,7 @@ const ImportColumnNamesModal = (props) => {
                         labelText="Drag and drop file here or click to upload"
                         accept={['.csv']}
                         multiple={false}
-                        name="Upload images"
+                        name="Upload file"
                         onAddFiles={handleFileUpload}
                     /> : <>
 
@@ -153,7 +181,6 @@ const ImportColumnNamesModal = (props) => {
                             {fileHeaders.map(field => <>
 
                                 <Checkbox key={field.name} id={`field-check__${field.name}`} labelText={field.name} onChange={handleCheckbox} checked={field.selected} />
-
                                 {field.selected &&
 
                                     <>
