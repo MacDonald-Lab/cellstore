@@ -1,14 +1,13 @@
 // require = require('esm')(module)
 
 import dotenv from 'dotenv';
-dotenv.config()
 
 import path from 'path'
 
 import express from 'express';
 import seq from 'sequelize';
-const { DataTypes } = seq;
 import cors from 'cors';
+import bodyParser from 'body-parser';
 import cookieSession from 'cookie-session';
 
 import database from './database.js'
@@ -19,8 +18,11 @@ import settingsModel from './models/settings.js'
 import authRoutes from './auth.js'
 import apiRoutes from './api.js'
 
-const main = async () => {
+dotenv.config()
+const { DataTypes } = seq;
 
+const main = async () => {
+  
 
   // GET DATABASE PROPERTIES
 
@@ -54,7 +56,7 @@ const main = async () => {
 
 
   const app = express();
-  app.use(express.json())
+  app.use(express.json({ limit: '50mb' }))
   app.use(cors())
   app.use(cookieSession({
     name: 'session',

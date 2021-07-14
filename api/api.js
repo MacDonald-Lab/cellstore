@@ -20,7 +20,7 @@ const apiRoutes = (sequelize, models) => {
 
         // find model in the library (settings) table
         const model = await models.Library.findByPk(libraryName)
-        const { key, schema } = model
+        const { schema } = model
 
         // reconstruct sequelize data type object from string representation
         // stored in database
@@ -29,9 +29,9 @@ const apiRoutes = (sequelize, models) => {
         }
 
         // define library object and create table if not created
-        const library = sequelize.define(key, schema, {
+        const library = sequelize.define(sqlTableName(libraryName), schema, {
             freezeTableName: true,
-            tableName: libraryName
+            tableName: sqlTableName(libraryName)
         })
         await library.sync()
 
@@ -106,66 +106,52 @@ const apiRoutes = (sequelize, models) => {
     const DATA_TYPE_MAPS = {
         string: DataTypes.STRING,
         int: DataTypes.INTEGER,
-        multiselect: DataTypes.INTEGER
+        multiselect: DataTypes.INTEGER,
+        float: DataTypes.FLOAT,
     }
 
     const DATA_TYPE_STRING_MAPS = {
         string: "STRING",
         int: "INTEGER",
-        multiselect: "INTEGER"
+        multiselect: "INTEGER",
+        float: "FLOAT"
     }
 
     router.all('/createLibrary', async (req, res) => {
+
+        // setup variables
 
         const { name, fields, dataTypes } = req.body
         const libraryDefinition = req.body
 
         let pkey
 
-        // create database schema
-
+        // create Sequelize schema for the library
         const schema = Object.fromEntries(fields.map(field => {
             const def = {
                 type: DATA_TYPE_MAPS[field.dataType],
                 primaryKey: field.primaryKey
             }
 
+            // set the primary key to its own variable
             if (!pkey && field.primaryKey) pkey = def
 
             return [field['name'], def]
         }))
 
         if (!pkey) return res.status(400).send({ message: 'Invalid request: missing primary key declaration' })
-
-        const Library = sequelize.define(name, schema, {
+        
+        // create Sequelize object for the library
+        const Library = sequelize.define(sqlTableName(name), schema, {
             freezeTableName: true,
-            tableName: name
+            tableName: sqlTableName(name)
         })
 
         // create schemas for dataTypes
         pkey.fieldName = 'key'
 
         for (const type of dataTypes) {
-
-            console.log(pkey)
-
-            const def = Types.getDatabaseDefinition(type)(DataTypes)
-            if (!def) return res.status(400).send({ message: `Invalid data: missing definition for data type ${type}` })
-            const tableName = name + '__' + type
-
-            const tableSchema = Object.assign({ key: pkey }, def)
-
-            const Table = sequelize.define(tableName, tableSchema, {
-                freezeTableName: true,
-                tableName
-            })
-
-            // define relationship
-            Library.hasOne(Table, { as: type })
-            Table.belongsTo(Library)
-
-            // TODO push table schema to array so it can be stored in database
-
+            await constructDataTypeSchema(name, type, res, Library)
         }
 
         // sync tables
@@ -310,6 +296,23 @@ const apiRoutes = (sequelize, models) => {
         res.status(200).send()
 
     })
+ 
+    router.all('/addDataTypeItemsToLibrary', async (req, res) => {
+        const libraryName = req.body['libraryName']
+        const libraryDataType = req.body['libraryDataType']
+        const libraryItems = req.body['libraryItems']
+
+        const { library } = await getLibrary(libraryName)
+        const dataTypeLibrary = await constructDataTypeSchema(libraryName, libraryDataType, res, library)
+
+        const dataType = Types.getType(libraryDataType)
+
+        // add items to library
+        await dataType.onDatabaseImport(libraryItems, dataTypeLibrary)
+
+        res.status(200).send()      
+    
+    }) 
 
     router.all('/getFilteredCells', async (req, res) => {
         const libraryName = req.body['libraryName']
