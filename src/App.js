@@ -18,6 +18,7 @@ import ComputationPage from './content/ComputationPage';
 import LoginPage from './content/LoginPage';
 import ComputationInfoPage from './content/ComputationInfoPage';
 import RegisterPage from './content/RegisterPage';
+import UploadDataTypePage from './content/UploadDataTypePage';
 
 import InitialSetupPage from './content/InitialSetupPage'
 import UserProvider from './contexts/UserProvider';
@@ -64,6 +65,7 @@ const AuthRoutes = () => {
         <Route exact path="/library/:libraryName" component={LibraryPage} />
         <Route exact path="/library/:libraryName/cell/:cellId" component={CellInfoPage} />
         <Route exact path="/library/:libraryName/upload/" component={UploadPage} />
+        <Route exact path="/library/:libraryName/upload/data" component={UploadDataTypePage} />
         <Route exact path='/settings' component={SettingsPage} />
         <Route exact path='/settings/create' component={CreateLibraryPage} />
         <Route exact path='/computations' component={ComputationPage} />
