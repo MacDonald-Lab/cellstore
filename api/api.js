@@ -39,6 +39,35 @@ const apiRoutes = (sequelize, models) => {
 
     }
 
+    const sqlTableName = (libraryName, typeName) => {
+    if (typeName) return `library/${libraryName}/${typeName}`
+    return `library/${libraryName}`
+    }
+
+    const constructDataTypeSchema = async (name, type, res, Library) => {
+    
+        const def = Types.getDatabaseDefinition(type)(DataTypes)
+
+        if (!def) return res.status(400).send({ message: `Invalid data: missing definition for data type ${type}` })
+        
+
+        const tableName = sqlTableName(name, type)
+
+        const Table = sequelize.define(tableName, def, {
+            freezeTableName: true,
+            tableName
+        })
+
+        // define relationship
+        Library.hasOne(Table, { as: type, foriegnKey: "libraryKey" })
+        Table.belongsTo(Library, { foreignKey: "libraryKey" })
+
+        await sequelize.sync()
+
+        // TODO push table schema to array so it can be stored in database
+
+        return Table
+    }
     // TODO streamline error codes
 
     router.all('/getSettings', checkLogin, async (req, res) => {
