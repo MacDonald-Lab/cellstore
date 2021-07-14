@@ -4,9 +4,9 @@ import { SimpleBarChart } from '@carbon/charts-react';
 import PageSection from '../../components/PageSection/PageSection';
 
 
-export const initView = (libraryName, queryData) => {
+export const initView = (typeData) => {
 
-    const parsedQuery = queryData['rawDnaByJoanCellId'][`${libraryName}GeneExpressionByForeignId`]
+    const expression = typeData.expressionData
     const chartOptions = {
         "title": "Common Gene Expressions",
         "axes": {
@@ -20,12 +20,11 @@ export const initView = (libraryName, queryData) => {
         },
         "height": "450px"
     }
-    if (parsedQuery) {
 
-        const arrayGenes = Object.keys(parsedQuery.expression).map(key =>
+        const arrayGenes = Object.keys(expression).map(key =>
         ({
             "group": key,
-            "value": parseInt(parsedQuery.expression[key])
+            "value": parseInt(expression[key])
         })).sort((a, b) => b.value - a.value) // Sorted in descending order of count
 
         const smallArrayGenes = arrayGenes.slice(0, 9)
@@ -48,8 +47,7 @@ export const initView = (libraryName, queryData) => {
 
             </div>
         }
-    }
 
-    return null
+  
 
 }

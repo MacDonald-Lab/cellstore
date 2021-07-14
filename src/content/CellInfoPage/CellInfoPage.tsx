@@ -10,7 +10,7 @@ import DeleteCellModal from '../../components/DeleteCellModal';
 import FieldItemView from '../../components/FieldItemView';
 
 import {useFetch} from '../../components/Hooks'
-
+import DataTypes from '../../dataTypes/index'
 // import DataTypes from '../../dataTypes'
 
 
@@ -20,15 +20,17 @@ const CellInfoPage = () => {
   const { libraryName, cellId } = useParams<{libraryName: string, cellId: string}>()
 
   const {loading, data} = useFetch([
-      {url: 'getLibrary', params: {libraryName}},
-    {url: 'getCell', params: {libraryName, cellId}}
+    {url: 'getLibrary', params: {libraryName}},
+    {url: 'getCell', params: {libraryName, cellId}},
+    {url: 'getCellAllTypeData', params: {libraryName, cellId}}
   ])
 
   const library = data.getLibrary as Library
   const cell = data.getCell
+  const typeData = data.getCellAllTypeData
 
   if (loading) return (<Loading />)
-  if (!library || !cell) return <p>Error</p>
+  if (!library || !cell ) return <p>Error</p>
 
   const pkField = library.fields.find(field => field.primaryKey)
 
@@ -37,10 +39,10 @@ const CellInfoPage = () => {
     pkName = pkField.name;
   } else return <p>error</p>
 
-
-
-  // const views = DataTypes.initViews(libraryName, libraryData)
-  const views: any[] = []
+  var views: any[] = []
+if (typeData) {
+  views = DataTypes.initViews(typeData)
+}
 
 
   return (<>
