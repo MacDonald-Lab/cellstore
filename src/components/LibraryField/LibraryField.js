@@ -52,7 +52,7 @@ const TAG_COLORS = [
 
 const PRIMARY_DATA_TYPES = [
     {
-        text: 'Integer',
+        text: 'Integer Number',
         value: 'int'
     },
     {
@@ -62,12 +62,16 @@ const PRIMARY_DATA_TYPES = [
 ]
 const DATA_TYPES = [
     {
-        text: 'Integer',
+        text: 'Integer Number',
         value: 'int'
     },
     {
         text: 'Text',
         value: 'string'
+    },
+    {
+        text: 'Decimal Number',
+        value: 'float'
     },
     {
         text: 'Multi-select',
