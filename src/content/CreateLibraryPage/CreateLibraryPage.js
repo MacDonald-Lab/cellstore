@@ -10,9 +10,17 @@ import {
   SelectableTile,
   AspectRatio,
   Tile,
+  ButtonSet,
+  Checkbox,
+  DataTable,
+  Table,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "carbon-components-react";
 import { useHistory } from "react-router-dom";
-import { Add16 } from "@carbon/icons-react";
+import { Add16, Download16 } from "@carbon/icons-react";
 import DataTypes from "../../dataTypes/index.ts";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Field from "../../components/LibraryField";
@@ -21,6 +29,8 @@ import { useAPI } from "../../components/Hooks.tsx";
 import PageHeader from "../../components/PageHeader";
 import PageSection from "../../components/PageSection/PageSection";
 import FormNavigation from "../../components/FormNavigation";
+import ModalStateManager from "../../components/ModalStateManager";
+import ImportColumnNamesModal from "../../components/ImportColumnNamesModal";
 
 // HOOKS and FUNCTIONS
 
@@ -34,6 +44,14 @@ const FormProgress = (props) => (
     <ProgressStep label="Columns" />
     <ProgressStep label="Submit" />
   </ProgressIndicator>
+);
+
+const ColumnTile = ({ friendlyName, name, dataType }) => (
+  <Tile>
+    <h5>{friendlyName}</h5>
+    <p>{name}</p>
+    <p>{dataType}</p>
+  </Tile>
 );
 
 const getItemStyle = (isDragging, draggableStyle) => ({
@@ -97,7 +115,10 @@ const CreateLibraryPage = () => {
     description: undefined,
   });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (libraryColumns) => {
+      library.viewingTableColumns = [library.fields[0], ...libraryColumns.filter(item => item.selectedAsColumn)];
+      setLibrary(library);
+
     // cleanup library submit
     for (var field of library.fields) {
       // if type is multiselect, add those values
@@ -193,7 +214,7 @@ const CreateLibraryPage = () => {
         <PageSection
           title="General"
           description="A library is a collection of similar cells with the same
-        identifiers, s1milar to a spreadsheet with column names. General
+        identifiers, similar to a spreadsheet with column names. General
         information is used to identify library content."
         />
 
@@ -244,6 +265,53 @@ const CreateLibraryPage = () => {
           description="Fields contain information about the data in the library."
         />
 
+        <Row>
+          <Column>
+            <ButtonSet>
+              <Button
+                renderIcon={Add16}
+                onClick={() => {
+                  const id = randId();
+
+                  library.fields.push({
+                    name: "",
+                    key: id,
+                    friendlyName: "",
+                    dataType: null,
+                    restrictions: null,
+                    primaryKey: false,
+                    selectedAsColumn: false,
+                  });
+
+                  setLibrary(library);
+                  forcePageUpdate();
+                }}
+              >
+                Add field
+              </Button>
+              <ModalStateManager
+                renderLauncher={({ setOpen }) => (
+                  <Button onClick={() => setOpen(true)} renderIcon={Download16}>
+                    Import fields from file
+                  </Button>
+                )}
+              >
+                {(modalProps) => (
+                  <ImportColumnNamesModal
+                    {...modalProps}
+                    library={library}
+                    setLibrary={setLibrary}
+                    forcePageUpdate={forcePageUpdate}
+                  />
+                )}
+              </ModalStateManager>
+              <Button renderIcon={Download16}>
+                Import fields from Redcap definition
+              </Button>
+            </ButtonSet>
+          </Column>
+        </Row>
+
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="fields">
             {(provided, snapshot) => (
@@ -289,37 +357,6 @@ const CreateLibraryPage = () => {
             )}
           </Droppable>
         </DragDropContext>
-
-        <Row>
-          <Column>
-            <Button
-              renderIcon={Add16}
-              onClick={() => {
-                const id = randId();
-
-                library.fields.push({
-                  name: "",
-                  key: id,
-                  friendlyName: "",
-                  dataType: null,
-                  restrictions: null,
-                  primaryKey: false,
-                });
-
-                setLibrary(library);
-                forcePageUpdate();
-              }}
-            >
-              Add field
-            </Button>
-            {/* <ModalStateManager renderLauncher={({ setOpen }) =>
-          <Button onClick={() => setOpen(true)} renderIcon={Download16}>Import fields from file</Button>
-        }>
-          {(modalProps) => <ImportColumnNamesModal {...modalProps} fieldState={fields} fieldSetState={setFields} />}
-        </ModalStateManager> */}
-          </Column>
-        </Row>
-
         <FormNavigation
           next="Continue to data types"
           onNext={() => setPage(1)}
@@ -384,6 +421,8 @@ const CreateLibraryPage = () => {
       library.fields.slice(1)
     );
 
+    const forcePageUpdate = useForceUpdate()
+
     const handleDragEnd = ({ source, destination }) => {
       const newReordered = reorder(
         libraryColumns,
@@ -391,8 +430,7 @@ const CreateLibraryPage = () => {
         destination.index
       );
       setLibraryColumns(newReordered);
-      library.viewingTableColumns = [library.fields[0], ...newReordered];
-      setLibrary(library);
+
     };
 
     return (
@@ -404,7 +442,21 @@ const CreateLibraryPage = () => {
 
         <Row>
           <Column>
-            <DragDropContext onDragEnd={handleDragEnd}>
+          {libraryColumns.map((item, i) => (
+            <Checkbox labelText={item.friendlyName} key={i} id={i} checked={item.selectedAsColumn} onChange={(value) => {
+              item.selectedAsColumn = value;
+              setLibraryColumns(libraryColumns);
+              forcePageUpdate()
+            }
+            }/>))}
+          </Column>
+            <Column>
+          <DragDropContext onDragEnd={handleDragEnd}>
+              <ColumnTile
+                name={library.fields[0].name}
+                friendlyName={library.fields[0].friendlyName}
+                dataType={library.fields[0].dataType.text}
+              />
               <Droppable droppableId="droppable">
                 {(provided, snapshot) => (
                   <div
@@ -412,7 +464,7 @@ const CreateLibraryPage = () => {
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}
                   >
-                    {libraryColumns.map((item, i) => (
+                    {libraryColumns.map((item, i) => {if (item.selectedAsColumn) return (
                       <Draggable
                         key={item.name}
                         draggableId={item.name}
@@ -428,22 +480,23 @@ const CreateLibraryPage = () => {
                               provided.draggableProps.style
                             )}
                           >
-                            <Tile>
-                              <h5>{item.friendlyName}</h5>
-                              <p>{item.name}</p>
-                              <p>{item.dataType.text}</p>
-                            </Tile>
+                            <ColumnTile
+                              name={item.name}
+                              dataType={item.dataType.text}
+                              friendlyName={item.friendlyName}
+                            />
                           </div>
                         )}
                       </Draggable>
-                    ))}
+                    ) 
+                    else return <div></div> })}
 
                     {provided.placeholder}
                   </div>
                 )}
               </Droppable>
-            </DragDropContext>
-          </Column>
+          </DragDropContext>
+            </Column>
         </Row>
 
         <PageSection
@@ -451,11 +504,42 @@ const CreateLibraryPage = () => {
           description="Preview how your columns will appear in the table."
         />
 
+        <DataTable rows={[]} headers={[{header: library.fields[0].friendlyName, key: library.fields[0].name}, ...libraryColumns.filter((item) => item.selectedAsColumn).map((item) => ({ header: item.friendlyName, key: item.name}))]}>
+
+      {({
+        rows,
+        headers,
+        getHeaderProps,
+        getRowProps,
+        getSelectionProps,
+        getBatchActionProps,
+        onInputChange,
+        selectedRows,
+      }) => (
+        <TableContainer>
+
+          <Table>
+            <TableHead>
+              <TableRow>
+                {headers.map((header) => (
+                  <TableHeader {...getHeaderProps({ header })}>
+                    {header.header}
+                  </TableHeader>
+                ))}
+              </TableRow>
+            </TableHead>
+            </Table>
+            </TableContainer>)}
+
+
+
+        </DataTable>
+
         <FormNavigation
           prev="Return to data types"
           next="Submit"
           onPrev={() => setPage(1)}
-          onNext={handleSubmit}
+          onNext={() => handleSubmit(libraryColumns)}
         />
       </>
     );
