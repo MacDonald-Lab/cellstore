@@ -16,7 +16,7 @@ import {
   Dropdown,
   ButtonSet,
 } from "carbon-components-react";
-import { Link, useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, Link } from "react-router-dom";
 import papa from "papaparse";
 import { Close16 } from "@carbon/icons-react";
 import { useForceUpdate, useFetch, useAPI } from "../../components/Hooks.tsx";
@@ -152,6 +152,8 @@ const UploadPage = () => {
           const value = result.data[column.selectedItem.nameFromFile];
           if (column.dataType === "int" || column.dataType === "multiselect") {
             newResult[column.name] = parseInt(value);
+          } else if (column.dataType === "float") {
+            newResult[column.name] = parseFloat(value);
           } else {
             newResult[column.name] = value;
           }
@@ -211,6 +213,8 @@ const UploadPage = () => {
                   <p>Not processing</p>
                 )}
               </FormGroup>
+
+              <p><Link to={`/library/${libraryName}/upload/data`}>Looking to upload data types? Click here.</Link></p>
 
               <FormNavigation
                 next="Continue to label data"

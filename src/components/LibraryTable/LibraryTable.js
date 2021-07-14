@@ -41,8 +41,6 @@ const getHeaderData = (library) => library.viewingTableColumns.map(columnId => (
   key: columnId
 }))
 
-// const sexName = ["Female", "Male"]
-// <Tag type={["gray", "purple", "green", "blue"][row.diabetesStatus]}>{["None", "Type 2", "Pre-diabetes", "Type 1"][row.diabetesStatus]}</Tag>
 const getRowItems = (library, libraryData) =>
 {  
   const pkName = library.fields.find(field => field.primaryKey === true).name
@@ -61,7 +59,6 @@ const LibraryTable = ({library, libraryData}) => {
   var max = (pageInfo.page * pageInfo.pageSize) - 1
 
 
-  // TODO add custom sorting for columns
   // TODO generalize modal launcher for multiple modals
   // FIXME pagination on filter
   return (<>
@@ -122,7 +119,6 @@ const LibraryTable = ({library, libraryData}) => {
                   Action 3
             </TableToolbarAction>
               </TableToolbarMenu>
-              {/* <AddRNAModal /> */}
               <Button onClick={() => history.push('/library/' + library.name + '/upload')} size="small" kind="primary" renderIcon={Upload16}>Upload to Library</Button>
 
             </TableToolbarContent>
@@ -140,9 +136,9 @@ const LibraryTable = ({library, libraryData}) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.filter((element, i) => min <= i && i <= max).map(row => <TableRow {...getRowProps({ row })}>
+              {rows.filter((element, i) => min <= i && i <= max).map((row) => <TableRow {...getRowProps({ row })}>
                 <TableSelectRow {...getSelectionProps({ row })} />
-                {row.cells.map((cell, i) => (<TableCell key={cell.id}> <FieldItemView field={library.fields.find(field => field.name === library.viewingTableColumns[i])} value={cell.value} /></TableCell>))}
+                {row.cells.map((cell, j) => (<TableCell key={`${cell.id}-${j}`}> <FieldItemView field={library.fields.find(field => field.name === library.viewingTableColumns[j])} value={cell.value} /></TableCell>))}
                 <TableCell className="bx--table-column-menu">
 
                   <ModalStateManager renderLauncher={({ setOpen }) =>

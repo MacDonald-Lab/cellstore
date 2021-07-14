@@ -7,6 +7,8 @@ import { Table32, Add32 } from '@carbon/icons-react';
 import SkeletonPages from '../../components/SkeletonPages'
 
 import { useFetch } from '../../components/Hooks.tsx'
+import PageHeader from '../../components/PageHeader';
+import PageSection from '../../components/PageSection/PageSection';
 
 const LandingPage = () => {
 
@@ -20,18 +22,8 @@ const LandingPage = () => {
 
   return (
     <Grid>
-      <Row className='landing-page__header'>
-        <Column>
-          <h4>Overview</h4>
-        </Column>
-      </Row>
-
-      <Row className='landing-page__library-header'>
-        <Column>
-          <h1>Libraries</h1>
-
-        </Column>
-      </Row>
+      <PageHeader pageTitle='Overview' description="View your libraries." />
+      <PageSection title='Libraries' description="All libraries ordered by creation date."/>
       <Row condensed>
 
         {libraries.map((item) =>
@@ -70,6 +62,8 @@ const LandingPage = () => {
           </ClickableTile>
         </Column>
       </Row>
+      <PageSection title="Statistics" description="See how your cell data is performing."/>
+      <PageSection title="Quick actions" description="Quickly perform common actions on your libraries."/>
     </Grid>
   )
 }

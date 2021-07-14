@@ -5,6 +5,7 @@ export const initDescription = () => (
         name: "Gene expression",
         id: "gene-expression",
         description: "This is a description about gene expression.",
-        icon: DataConnected32
+        icon: DataConnected32,
+        uploadType: "csv"
     }
 )
