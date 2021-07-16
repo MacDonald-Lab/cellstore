@@ -7,7 +7,6 @@ import path from 'path'
 import express from 'express';
 import seq from 'sequelize';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import cookieSession from 'cookie-session';
 
 import database from './database.js'
@@ -81,10 +80,18 @@ const main = async () => {
 
   }
 
+  // const __dirname = path.resolve()
+  // app.use(express.static(path.join(__dirname, 'resources')))
+  // app.get('*', (req, res) => {
+  //   res.sendFile(path.join(__dirname, 'resources/index.html'))
+  // })
+
   app.listen(port, () => {
-    console.log(`Development API listening on port ${port}`)
+    console.log(`API listening on port ${port}`)
   })
 
 }
 
 main()
+
+// export default main
