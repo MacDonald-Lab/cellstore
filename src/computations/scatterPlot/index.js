@@ -5,6 +5,7 @@ const definition = {
   name: "scatter-plot",
   friendlyName: "Scatter Plot",
   description: "View a scatter plot.",
+  group: true,
 
   inputs: [
     {
