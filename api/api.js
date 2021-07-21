@@ -3,8 +3,8 @@ import seq from 'sequelize'
 import Computations from '../src/computations/index.js'
 import Types from '../src/dataTypes/index.ts'
 import checkLogin from './checkLogin.js'
+import * as error from './error.ts'
 const { DataTypes, Op } = seq
-// import importJsx from 'import-jsx'
 
 const apiRoutes = (sequelize, models) => {
 
@@ -68,26 +68,24 @@ const apiRoutes = (sequelize, models) => {
 
         return Table
     }
-    // TODO streamline error codes
 
+    /** get settings used by the whole program **/
     router.all('/getSettings', checkLogin, async (req, res) => {
-
-        console.log('requesting settings or null if do not exist yet')
 
         const settings = await models.Settings.findByPk('settings')
 
-        if (settings) res.status(200).send(settings['data'])
-
-        res.status(520).send()
-
+        if (!settings) res.status(520).send()
+        
+        res.status(200).send(settings['data'])
     })
 
     router.all('/setSettings', checkLogin, async (req, res) => {
 
-        const payload = req.body['payload']
+        error.bodyCheck(req, res, ["settings"])
+        const {settings} = req.body
 
         console.log('updating settings')
-        const object = { key: 'settings', data: payload }
+        const object = { key: 'settings', data: settings }
 
         const setting = await models.Settings.findOrCreate(
 
@@ -120,9 +118,9 @@ const apiRoutes = (sequelize, models) => {
     router.all('/createLibrary', async (req, res) => {
 
         // setup variables
-
-        const { name, fields, dataTypes } = req.body
-        const libraryDefinition = req.body
+        error.bodyCheck(req, res, ["libraryDefinition"])
+        const {libraryDefinition} = req.body
+        const { name, fields, dataTypes } = libraryDefinition
 
         let pkey
 
@@ -185,7 +183,8 @@ const apiRoutes = (sequelize, models) => {
 
     router.all('/getLibrary', async (req, res) => {
 
-        const libraryName = req.body['libraryName']
+        error.bodyCheck(req, res, ["libraryName" ])
+        const { libraryName  } = req.body
 
         const library = await models.Library.findByPk(libraryName)
 
@@ -195,9 +194,8 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.all('/getCell', async (req, res) => {
-
-        const libraryName = req.body['libraryName']
-        const cellId = req.body['cellId']
+        error.bodyCheck(req, res, ["libraryName", "cellIds"])
+        const { libraryName, cellId} = req.body
 
         const { library } = await getLibrary(libraryName)
 
@@ -208,9 +206,9 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.all('/getCellTypeData', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const cellId = req.body['cellId']
-        const dataType = req.body['dataType']
+
+        error.bodyCheck(req, res, ["libraryName", "cellIds", "dataType"])
+        const { libraryName, cellId, dataType } = req.body
 
         const { library } = await getLibrary(libraryName)
         const dataTypeLibrary = await constructDataTypeSchema(libraryName, dataType, res, library)
@@ -223,9 +221,9 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.all('/getCellsTypeData', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const cellId = req.body['cellId']
-        const dataTypes = req.body['dataTypes']
+
+        error.bodyCheck(req, res, ["libraryName", "cellIds", "dataTypes"])
+        const { libraryName, cellId, dataTypes } = req.body
 
         var response = {}
         
@@ -246,8 +244,9 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.all('/getCellAllTypeData', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const cellId = req.body['cellId']
+
+        error.bodyCheck(req, res, ["libraryName", "cellId"])
+        const { libraryName, cellId } = req.body
 
         var response = {}
 
@@ -271,7 +270,8 @@ const apiRoutes = (sequelize, models) => {
 
     router.all('/getLibraryData', async (req, res) => {
 
-        const libraryName = req.body['libraryName']
+        error.bodyCheck(req, res, ["libraryName"])
+        const { libraryName } = req.body
 
         const { library } = await getLibrary(libraryName)
 
@@ -285,8 +285,8 @@ const apiRoutes = (sequelize, models) => {
 
     router.all('/addItemToLibrary', async (req, res) => {
 
-        const libraryName = req.body['libraryName']
-        const libraryItem = req.body['libraryItem']
+        error.bodyCheck(req, res, ["libraryName", "libraryItem"])
+        const { libraryName, libraryItem } = req.body
 
         const { library } = await getLibrary(libraryName)
 
@@ -298,25 +298,26 @@ const apiRoutes = (sequelize, models) => {
     })
  
     router.all('/addDataTypeItemsToLibrary', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const libraryDataType = req.body['libraryDataType']
-        const libraryItems = req.body['libraryItems']
+
+        error.bodyCheck(req, res, ["libraryName", "libraryItems", "libraryDataType"])
+        const { libraryName, libraryItems, libraryDataType } = req.body
 
         const { library } = await getLibrary(libraryName)
         const dataTypeLibrary = await constructDataTypeSchema(libraryName, libraryDataType, res, library)
 
         const dataType = Types.getType(libraryDataType)
 
-        // add items to library
-        await dataType.onDatabaseImport(libraryItems, dataTypeLibrary)
+    // add items to library
+       await dataType.onDatabaseImport(libraryItems, dataTypeLibrary)
 
         res.status(200).send()      
     
     }) 
 
     router.all('/getFilteredCells', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const filters = req.body['filters']
+
+        error.bodyCheck(req, res, ["libraryName", "filters"])
+        const { libraryName, filters } = req.body
 
         var where = {}
 
@@ -351,7 +352,9 @@ const apiRoutes = (sequelize, models) => {
 
     router.all('/getComputation', async (req, res) => {
 
-        const computationName = req.body['computationName']
+
+        error.bodyCheck(req, res, ["computationName"])
+        const { computationName } = req.body
 
         // get from code
         const definition = Computations.initDefinition(computationName)
@@ -365,8 +368,9 @@ const apiRoutes = (sequelize, models) => {
 
     router.post('/runComputation', async (req, res) => {
 
-        const computationName = req.body['computationName']
-        const computationParams = req.body['computationParams']
+
+        error.bodyCheck(req, res, ["computationName", "computationParams"])
+        const { computationName, computationParams } = req.body
 
         try {
             const output = await Computations.run(computationName, computationParams)
@@ -378,7 +382,9 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.post('/deleteLibrary', async (req, res) => {
-        const libraryName = req.body['libraryName']
+
+        error.bodyCheck(req, res, ["libraryName"])
+        const { libraryName } = req.body
 
         const { model, library } = await getLibrary(libraryName)
         await library.drop()
@@ -389,9 +395,10 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.post('/deleteCell', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const cellId = req.body['cellId']
 
+        error.bodyCheck(req, res, ["libraryName", "cellId"])
+        const { libraryName, cellId } = req.body
+        
         const { library } = await getLibrary(libraryName)
 
         const cell = await library.findByPk(cellId)
@@ -402,8 +409,9 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.post('/deleteCells', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const cellIds = req.body['cellIds']
+
+        error.bodyCheck(req, res, ["libraryName", "cellIds"])
+        const { libraryName, cellIds } = req.body
 
         const { library, model } = await getLibrary(libraryName)
 
@@ -413,9 +421,8 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.post('/exportCell', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const cellId = req.body['cellId']
-        const columns = req.body['columns']
+        error.bodyCheck(req, res, ["libraryName", "cellId", "columns"])
+        const { libraryName, cellId, columns } = req.body
 
         const { library, model } = await getLibrary(libraryName)
 
@@ -431,9 +438,8 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.post('/exportCells', async (req, res) => {
-        const libraryName = req.body['libraryName']
-        const cellIds = req.body['cellIds']
-        const columns = req.body['columns']
+        error.bodyCheck(req, res, ['libraryName', 'cellIds', 'columns'])
+        const {libraryName, cellIds, columns} = req.body
 
         const { library, model } = await getLibrary(libraryName)
 
@@ -450,9 +456,8 @@ const apiRoutes = (sequelize, models) => {
 
     router.post('/runComputationOnLibrary', async (req, res) => {
 
-        const libraryName = req.body['libraryName']
-        const computationName = req.body['computationName']
-        const computationMaps = req.body['computationMaps']
+        error.bodyCheck(req, res, ['libraryName, computationName, computationMaps'])
+        const {libraryName, computationName, computationMaps} = req.body
 
         const { library } = await getLibrary(libraryName)
 
