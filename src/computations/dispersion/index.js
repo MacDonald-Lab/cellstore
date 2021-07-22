@@ -7,12 +7,11 @@ const definition = {
 
   inputs: [
     {
-      name: "values",
-      friendlyName: "Values",
-      description: "A list of values to plot.",
-      parameterName: "values",
+      name: "value",
+      friendlyName: "Value",
+      description: "Value to plot.",
+      parameterName: "value",
       dataTypes: ["int", "float"],
-      multiCollect: true,
     },
   ],
 
@@ -62,7 +61,10 @@ const definition = {
   ],
 };
 
-const dispersion = ({ values }) => {
+const dispersion = (inputs) => {
+
+  const values = inputs.map(input => input.value);
+
   return {
     variance: variance(values),
     sampleVariance: sampleVariance(values),

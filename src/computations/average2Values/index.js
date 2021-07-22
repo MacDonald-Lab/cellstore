@@ -2,6 +2,7 @@ const definition = {
     name: "average-2-values",
     friendlyName: "Average 2 Values",
     description: "Determine the mean (average) of 2 values in 2 columns",
+    group: false,
 
     inputs: [
         {

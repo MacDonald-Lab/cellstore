@@ -13,7 +13,6 @@ const definition = {
       friendlyName: "Values",
       description: "A list of values to plot.",
       parameterName: "values",
-      multiCollect: true,
       inputs: [
         {
           name: "xValues",
