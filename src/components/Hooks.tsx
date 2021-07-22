@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import Papa from 'papaparse'
+import { InlineNotification } from 'carbon-components-react'
 
 export const getPkNameOfLibrary = (library: Library) => {
   const field = library.fields.find(field => field.primaryKey)
@@ -75,8 +77,23 @@ const API = async (request: request, setter?: (value: { [key: string]: any }) =>
     const toJson = await response.json()
     if (setter) setter(toJson)
     return toJson
+  } else if (response.status === 400 || response.status === 500) {
+    const toJson = await response.json()
+    toast((t) => (
+      <span>
+        <b>{toJson.title}</b>
+        {toJson.message}
+        <button onClick={() => toast.dismiss(t.id)}>
+          Dismiss
+        </button>
+      </span>)
+    )}
+
+  else {
+    console.log('unknown')
   }
-  else return
+  toast.error("An unknown error occured")
+  return 
 }
 
 
@@ -101,7 +118,15 @@ export const useFetch = (requests: request[], callback?: (data: { [url: string]:
           history.push('/login')
           setLoading(false)
           return
-        } else if (response.headers.get('content-type')) {
+        } else if ((response.status === 400 || response.status == 500) && response.headers.get("content-type")) { 
+
+          const {title, detail, type} = await response.json()
+
+
+          toast((t) => (<InlineNotification style={{margin: 0}} onCloseButtonClick={() => toast.dismiss(t.id)} kind={type} title={title} subtitle={detail}/>), {duration: 10000})
+          
+        }
+        else if (response.headers.get('content-type')) {
 
           data[request.url] = await response.json()
 
