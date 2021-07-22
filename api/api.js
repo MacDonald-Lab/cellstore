@@ -1,6 +1,6 @@
 import express from 'express';
 import seq from 'sequelize'
-import Computations from '../src/computations/index.js'
+import * as Computations from '../src/computations/index.js'
 import Types from '../src/dataTypes/index.ts'
 import checkLogin from './checkLogin.js'
 import * as error from './error.ts'
@@ -102,6 +102,17 @@ const apiRoutes = (sequelize, models) => {
 
     })
 
+    /** get all historic messages from database **/
+    router.all('/getMessages', checkLogin, async (req, res, next) => {
+        
+        const messages = await models.Messages.findAll({
+            limit: 50,
+            order: [['createdAt', 'DESC']]
+        })
+        res.status(200).send(messages)
+    
+    })
+
     const DATA_TYPE_MAPS = {
         string: DataTypes.STRING,
         int: DataTypes.INTEGER,
@@ -195,7 +206,7 @@ const apiRoutes = (sequelize, models) => {
     })
 
     router.all('/getCell', async (req, res, next) => {
-        error.bodyCheck(req, next, ["libraryName", "cellIds"])
+        error.bodyCheck(req, next, ["libraryName", "cellId"])
         const { libraryName, cellId} = req.body
 
         const { library } = await getLibrary(libraryName, next)
@@ -358,7 +369,7 @@ const apiRoutes = (sequelize, models) => {
         const { computationName } = req.body
 
         // get from code
-        const definition = Computations.initDefinition(computationName)
+        var definition = Computations.initDefinition(computationName)
 
         // TODO get from DB
 
@@ -377,9 +388,34 @@ const apiRoutes = (sequelize, models) => {
             const output = await Computations.run(computationName, computationParams)
             res.status(200).send(output)
         } catch (e) {
-            res.status(500).send(e.message)
+            error.error(next, "error", "Computation error", e.message)
         }
 
+    })
+
+    router.post('/runGroupComputation', async (req, res, next) => {
+        error.bodyCheck(req, next, ["libraryName", "computationName", "computationMaps", "cellIds" ])
+        const { libraryName, computationName, computationMaps, cellIds } = req.body
+
+        const { library, model } = await getLibrary(libraryName, next)
+
+        // figure out column names from computation maps
+        // get values from library
+        const pk = getPkNameOfLibrary(model.schema)
+        const libraryResults = await library.findAll({
+            raw: true,
+            where: { [pk]: cellIds }, 
+            attributes: [[pk, "id"], ...Object.keys(computationMaps).map((key) => [computationMaps[key], key])]
+        })
+
+        // run computation
+        const results = Computations.runGroup(computationName, libraryResults)
+        
+
+        // TODO: add history to db
+        res.status(200).send(results)
+        
+    
     })
 
     router.post('/deleteLibrary', async (req, res, next) => {
@@ -455,9 +491,11 @@ const apiRoutes = (sequelize, models) => {
 
     })
 
+    /** @deprecated use run computation on multiple instead*/
+    // TODO combine with runComputation into single one
     router.post('/runComputationOnLibrary', async (req, res, next) => {
 
-        error.bodyCheck(req, next, ['libraryName, computationName, computationMaps'])
+        error.bodyCheck(req, next, ["libraryName", "computationName", "computationMaps"])
         const {libraryName, computationName, computationMaps} = req.body
 
         const { library } = await getLibrary(libraryName, next)
