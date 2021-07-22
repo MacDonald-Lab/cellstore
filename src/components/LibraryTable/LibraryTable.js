@@ -34,6 +34,7 @@ import ModalStateManager from '../ModalStateManager'
 import ExportCellModal from '../ExportCellModal';
 import ExportCellsModal from '../ExportCellsModal';
 import DeleteCellsModal from '../DeleteCellsModal';
+import RunGroupComputationModal from '../RunGroupComputationModal';
 import FieldItemView from '../FieldItemView';
 
 const getHeaderData = (library) => library.viewingTableColumns.map(columnId => ({
@@ -78,6 +79,7 @@ const LibraryTable = ({library, libraryData}) => {
         <TableContainer>
           <TableToolbar>
             <TableBatchActions {...getBatchActionProps()}>
+              {/* Delete modal */}
               <ModalStateManager renderLauncher={({ setOpen }) =>
                 <TableBatchAction
                   tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
@@ -89,6 +91,8 @@ const LibraryTable = ({library, libraryData}) => {
               }>
                 {(modalProps) => <DeleteCellsModal {...modalProps} id={selectedRows} library={library}/>}
               </ModalStateManager>
+              
+              {/* Export modal */}
               <ModalStateManager renderLauncher={({ setOpen }) =>
                 <TableBatchAction
                   tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
@@ -99,6 +103,19 @@ const LibraryTable = ({library, libraryData}) => {
                 </TableBatchAction>
               }>
                 {(modalProps) => <ExportCellsModal {...modalProps} id={selectedRows} library={library} />}
+              </ModalStateManager>
+
+              {/* Computation modal */}
+              <ModalStateManager renderLauncher={({ setOpen }) =>
+                <TableBatchAction
+                  tabIndex={getBatchActionProps().shouldShowBatchActions ? 0 : -1}
+                  renderIcon={Download}
+                  onClick={() => setOpen(true)}
+                >
+                  Run computation
+                </TableBatchAction>
+              }>
+                {(modalProps) => <RunGroupComputationModal {...modalProps} id={selectedRows} library={library} />}
               </ModalStateManager>
             </TableBatchActions>
             <TableToolbarContent>

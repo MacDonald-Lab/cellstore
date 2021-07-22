@@ -19,6 +19,8 @@ import LoginPage from './content/LoginPage';
 import ComputationInfoPage from './content/ComputationInfoPage';
 import RegisterPage from './content/RegisterPage';
 import UploadDataTypePage from './content/UploadDataTypePage';
+import MessagesPage from './content/MessagesPage';
+import ComputationResultPage from './content/ComputationResultPage/ComputationResultPage';
 
 import InitialSetupPage from './content/InitialSetupPage'
 import UserProvider from './contexts/UserProvider';
@@ -62,7 +64,7 @@ const AuthRoutes = () => {
     <UIShell libraries={libraries} organizationName={settings ? settings['organizationName'] : ""} />
 
     <Content>
-  <Toaster toastOptions={{className: '',
+  <Toaster position="top-right" toastOptions={{className: '',
 style: {
   padding: 0,
   margin: 0,
@@ -80,6 +82,8 @@ style: {
         <Route exact path='/settings/create' component={CreateLibraryPage} />
         <Route exact path='/computations' component={ComputationPage} />
         <Route exact path='/computation/:computationName' component={ComputationInfoPage} />
+        <Route exact path="/messages" component={MessagesPage} />
+        <Route exact path="/computations/results" component={ComputationResultPage} />
       </Switch>
 
     </Content>

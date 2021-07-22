@@ -116,7 +116,10 @@ const UIShell = ({ organizationName, libraries }) => {
             >
               Log out of {user.username}
             </HeaderGlobalAction>
-            <HeaderGlobalAction aria-label="Notifications">
+            <HeaderGlobalAction 
+              aria-label="Messages"
+              onClick={() => history.push("/messages")}
+            >
               <Notification20 />
             </HeaderGlobalAction>
             <HeaderGlobalAction aria-label="User Avatar">
