@@ -13,6 +13,8 @@ import database from './database.js'
 
 import libraryModel from './models/library.js'
 import settingsModel from './models/settings.js'
+import messagesModel from './models/messages.js'
+import computationHistoryModel from './models/computationHistory.js'
 
 import authRoutes from './auth.js'
 import apiRoutes from './api.js'
@@ -45,7 +47,9 @@ const main = async () => {
   // TODO move to db file
   const models = {
     Library: libraryModel(sequelize, DataTypes),
-    Settings: settingsModel(sequelize, DataTypes)
+    Settings: settingsModel(sequelize, DataTypes),
+    Messages: messagesModel(sequelize, DataTypes),
+    ComputationHistory: computationHistoryModel(sequelize, DataTypes)
   }
 
   sequelize.sync()
@@ -69,7 +73,7 @@ const main = async () => {
 
   app.use('/api/auth', authRoutes(sequelize, app))
   app.use('/api/v1', apiRoutes(sequelize, models))
-  app.use(error.middleware)
+  app.use(error.middleware(models))
 
   if (process.env.NODE_ENV === 'production') {
 
