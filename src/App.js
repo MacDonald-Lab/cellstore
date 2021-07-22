@@ -22,6 +22,7 @@ import UploadDataTypePage from './content/UploadDataTypePage';
 
 import InitialSetupPage from './content/InitialSetupPage'
 import UserProvider from './contexts/UserProvider';
+import { Toaster } from 'react-hot-toast';
 
 const LoadingScreen = () => <div className="loading__container">
   <div className="loading__elements">
@@ -56,9 +57,18 @@ const AuthRoutes = () => {
   else return <> <UserProvider>
 
 
+
+
     <UIShell libraries={libraries} organizationName={settings ? settings['organizationName'] : ""} />
 
     <Content>
+  <Toaster toastOptions={{className: '',
+style: {
+  padding: 0,
+  margin: 0,
+  borderRadius: 0,
+  marginLeft: 20
+}}}/>
 
       <Switch>
         <Route exact path="/" component={LandingPage} />
@@ -74,7 +84,6 @@ const AuthRoutes = () => {
 
     </Content>
   </UserProvider>
-
   </>
 }
 
