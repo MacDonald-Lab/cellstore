@@ -16,7 +16,7 @@ import settingsModel from './models/settings.js'
 
 import authRoutes from './auth.js'
 import apiRoutes from './api.js'
-
+import * as error from './error.ts'
 dotenv.config()
 const { DataTypes } = seq;
 
@@ -69,6 +69,7 @@ const main = async () => {
 
   app.use('/api/auth', authRoutes(sequelize, app))
   app.use('/api/v1', apiRoutes(sequelize, models))
+  app.use(error.middleware)
 
   if (process.env.NODE_ENV === 'production') {
 
