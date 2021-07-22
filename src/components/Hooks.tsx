@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import Papa from 'papaparse'
-import { InlineNotification } from 'carbon-components-react'
+import { ToastNotification } from 'carbon-components-react'
 
 export const getPkNameOfLibrary = (library: Library) => {
   const field = library.fields.find(field => field.primaryKey)
@@ -123,7 +123,7 @@ export const useFetch = (requests: request[], callback?: (data: { [url: string]:
           const {title, detail, type} = await response.json()
 
 
-          toast((t) => (<InlineNotification style={{margin: 0}} onCloseButtonClick={() => toast.dismiss(t.id)} kind={type} title={title} subtitle={detail}/>), {duration: 10000})
+          toast((t) => (<ToastNotification style={{margin: 0}} onCloseButtonClick={() => toast.dismiss(t.id)} kind={type} title={title} subtitle={detail}/>), {duration: 10000})
           
         }
         else if (response.headers.get('content-type')) {
