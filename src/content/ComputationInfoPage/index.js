@@ -3,6 +3,7 @@ import { Grid, Row, Column, Button, TextInput, Loading } from 'carbon-components
 import { useParams } from 'react-router-dom';
 
 import { useForceUpdate, useFetch, useAPI } from '../../components/Hooks.tsx'
+import PageHeader from '../../components/PageHeader';
 
 const ComputationInfoPage = () => {
 
@@ -36,11 +37,7 @@ const ComputationInfoPage = () => {
 
 
     return <Grid>
-        <Row>
-            <Column>
-                <h1>{computation.definition.friendlyName}</h1>
-            </Column>
-        </Row>
+        <PageHeader pageTitle={computation.definition.friendlyName} breadcrumbs={[{ url: '/computations', label: 'Computations' }]} />
         <Row>
             <Column>
                 <p>{computation.definition.name}</p>
@@ -54,6 +51,7 @@ const ComputationInfoPage = () => {
                 <h3>Inputs</h3>
             </Column>
         </Row>
+
         <Row>
             {computation.definition.inputs.map((item) => <Column max={4}>
                 <p>{item.friendlyName}</p>
@@ -78,6 +76,7 @@ const ComputationInfoPage = () => {
                 <h3>Run Sample Calculation</h3>
             </Column>
         </Row>
+        {!computation.definition.group ? <>
         <Row>
             {computation.definition.inputs.map((item, i) => <Column max={4}>
 
@@ -85,13 +84,13 @@ const ComputationInfoPage = () => {
                 <p>Available data types: {item.dataTypes.map(item => item + ' ')}</p>
                 <p>{item.description}</p>
             </Column>)}
-        </Row>
+        </Row> 
 
         <Row>
             <Column>
                 <Button onClick={handleSubmit}>Run Calculation</Button>
             </Column>
-        </Row>
+        </Row> </>: <p>A sample cannot be run yet on a computation that requires a group of data.</p>}
 
         {result && <>
             <Row>
