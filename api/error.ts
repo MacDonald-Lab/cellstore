@@ -69,12 +69,22 @@ const bodyCheck = (req: any, next: any, params: string[]) => {
   }
 };
 
-const middleware = (err: any, req: any, res: any, next: any) => {
-  console.log(err.message)
-  res.status(err.statusCode).send(err);
+const middleware = (models: any) => {
+
+  const func = (err: any, req: any, res: any, next: any) => {
+  if (err) {
+
+    // log the error
+    console.log(err)
+    models.Messages.create(err)
+
+    // if the error is an error, send it to the client
+    res.status(err.statusCode).send(err);
+
+  } else next()
 }
 
-const errorLoggingMiddleware = (req: any, res: any, next: any) => {
+ return func
 
 }
 
