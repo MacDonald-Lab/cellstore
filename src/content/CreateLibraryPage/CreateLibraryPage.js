@@ -151,7 +151,7 @@ const CreateLibraryPage = () => {
     }
 
     // call API to make library and redirect home
-    await callCreate(library);
+    await callCreate({libraryDefinition: library});
     history.push("/");
   };
 

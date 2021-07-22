@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useHistory } from 'react-router-dom'
-import { Grid, Row, Column, ClickableTile, AspectRatio } from 'carbon-components-react';
+import { Grid, Row, Column, ClickableTile, AspectRatio, Button } from 'carbon-components-react';
 import { Table32, Add32 } from '@carbon/icons-react';
 
 import SkeletonPages from '../../components/SkeletonPages'
@@ -9,6 +9,7 @@ import SkeletonPages from '../../components/SkeletonPages'
 import { useFetch } from '../../components/Hooks.tsx'
 import PageHeader from '../../components/PageHeader';
 import PageSection from '../../components/PageSection/PageSection';
+import toast from 'react-hot-toast';
 
 const LandingPage = () => {
 
@@ -63,6 +64,7 @@ const LandingPage = () => {
         </Column>
       </Row>
       <PageSection title="Statistics" description="See how your cell data is performing."/>
+      <Button onClick={() => toast("hello!")}>Click me</Button>
       <PageSection title="Quick actions" description="Quickly perform common actions on your libraries."/>
     </Grid>
   )

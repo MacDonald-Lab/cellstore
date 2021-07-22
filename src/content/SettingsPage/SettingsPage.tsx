@@ -27,7 +27,7 @@ const GeneralSettings = () => {
             }} />
         )}
         <Button onClick={async () => {
-            await submit({payload: settings})
+            await submit({settings})
             window.location.reload()
         }}>Submit</Button>
     </>

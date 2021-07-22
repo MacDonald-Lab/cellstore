@@ -30,7 +30,7 @@ const InitialSetupPage = () => {
                 )}
 
                 <Button onClick={async () => {
-                    await pushSettings({ payload: settings })
+                    await pushSettings({ settings })
                     window.location.reload()
 
                 }}>Submit</Button>
