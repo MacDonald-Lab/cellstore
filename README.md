@@ -1,6 +1,6 @@
 # CellSTORE
 
-CellSTORE *(Cell Storage To Organize Research Everywhere)* is a web-based biobank management tool. It supports basic management functionality and will soon support algorithm processing online. CellSTORE is written in React and uses PostgreSQL as the default database.
+CellSTORE *(Cell Storage To Organize Research Everywhere)* is a web-based biobank management tool. It supports basic management functionality and will soon support algorithm processing online. CellSTORE is written in React with JS/TS and  ~~uses PostgreSQL as the default database~~ the [backend](https://github.com/rajanmaghera/cellstore-server) is currently being re-written in Rust using MongoDB.
 
 ![Create Library Page Screenshot](img/create-cell-library.png)
 
